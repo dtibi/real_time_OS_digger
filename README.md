@@ -39,14 +39,14 @@ Grid size: 13 X 8
 player will be the side of 2 textual |_|_| (GREEN)
 
 Nobin will look the same but colored RED
-							_
-						  _| |_
+							
+						  _____
 diamond will look like:  |_   _| and colored (Tchelet)
 						   |_|
 						   
-							_,_,_
-Gold bags will look like:  |__$__|
-						   |__$__|
+							_,_,_,_
+Gold bags will look like:  |__$$__|
+						   |__$$__|
 												  _   _
 and when opened will look like 2 chunks of gold: |_| |_|
 
