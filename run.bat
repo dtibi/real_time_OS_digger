@@ -1,2 +1,2 @@
-tcc -I.. %1.c ../xinu.lib
-%1.exe
+tcc -I.. main.c ../xinu.lib
+main.exe

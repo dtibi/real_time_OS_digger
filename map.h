@@ -8,15 +8,19 @@ typedef struct map {
 	} Map;
 
 void clean_screen(int screen_color){
-	asm {
-	MOV              AX,0B800h
-	MOV              ES,AX
-	MOV              DI,0
-	MOV              AL,' '
-	MOV              AH,BYTE PTR screen_color
-	MOV              CX,2000
+	asm{
+	MOV 		AH,0          // Select function = 'Set mode'
+	MOV 		AL,3          // 40 by 25 color image
+	INT 		10h           // Adapter initialized. Page 0 displayed	
+
+	MOV             AX,0B800h
+	MOV             ES,AX
+	MOV             DI,0
+	MOV             AL,' '
+	MOV             AH,BYTE PTR screen_color
+	MOV             CX,50
 	CLD
-	REP              STOSW
+	REP             STOSW
 
 	}
 }
