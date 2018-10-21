@@ -9,7 +9,8 @@
  */
 xmain()
 {
-	Map m = create_map(0,1000);
+	create_map();
 	sleep(5);
+	return;
 }
 
