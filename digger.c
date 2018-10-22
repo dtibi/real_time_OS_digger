@@ -5,8 +5,8 @@
 
 void create_digger(Digger *player)
 {
-	*player.x = 7;
-	*player.y = 7;
+	*player.x = 40;
+	*player.y = 24;
 }
 
 void move(Digger *player)

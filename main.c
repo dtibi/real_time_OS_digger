@@ -40,6 +40,7 @@ xmain()
 	move(&player);
 	
 	create_map();
+	draw_digger(player);
 	//background_music();
 	sleep(10);
 	

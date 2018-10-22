@@ -1,5 +1,6 @@
 #include <conf.h>
 #include "map.h"
+#include "digger.h"
 
 char pixel_lvl_0[25][80];
 char **level_pixels;
@@ -110,6 +111,15 @@ void draw_empty(unsigned int i,unsigned int j){
 		}
 }
 
+
+void draw_digger(Digger d){
+	int i=d.x,j=d.y;
+	
+	draw_pixel_with_char(i,j,RED_ON_BLACK,'<');
+	draw_pixel_with_char(i,j-1,BROWN_BG,'o');
+	draw_pixel_with_char(i,j-2,GREEN_BG,'E');
+	
+}
 
 int pixel_2_row( unsigned int pixel_index ) {
 	return ((pixel_index+1)/3);
