@@ -2,6 +2,7 @@
 
 #include <conf.h>
 #include "map.h"
+#include "sound.h"
 
 /*------------------------------------------------------------------------
  *----------------------   Main Digger Program ---------------------------
@@ -10,7 +11,8 @@
 xmain()
 {
 	create_map();
-	sleep(5);
+	//background_music();
+	sleep(10);
 	return;
 }
 

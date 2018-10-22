@@ -9,11 +9,11 @@
 #define COLUMNS_PIXELS 80
 #define BLACK_BG 0
 #define BLUE_BG 16
-#define GREEN_BG 32
+#define GREEN_BG 38
 #define BABY_BG 48
 #define RED_BG 64
 #define PURPLE_BG 80
-#define BROWN_BG 96
+#define BROWN_BG 98
 #define GRAY_BG 112
 
 static int start_address = 47104; //B800h
