@@ -1,2 +1,2 @@
-tcc -I.. main.c map.c sound.c ../xinu.lib
+tcc -I.. main.c map.c sound.c digger.c ../xinu.lib
 main.exe
