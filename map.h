@@ -17,7 +17,6 @@
 #define GRAY_BG 112
 
 static int start_address = 47104; //B800h
-char pixel_lvl_0[25][80];
 static char level_0[8][13] = {
 	0 , 1 , 3 , 1 , 3 , 1 , 1 , 1 , 1 , 1 , 0 , 0 , 0 ,
     0 , 2 , 2 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 3 , 1 ,
@@ -35,6 +34,7 @@ typedef struct map {
 	char dirt[25][80];
 	} Map;
 
+	
 void clean_screen();
 void create_map();
 

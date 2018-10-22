@@ -1,5 +1,3 @@
-/* ex1.c - xmain */
-
 #include <conf.h>
 #include "map.h"
 #include "sound.h"

@@ -1,7 +1,9 @@
 #include <conf.h>
 #include "map.h"
 
+char pixel_lvl_0[25][80];
 char **level_pixels;
+
 void clean_screen(){
 	asm{
 	MOV 		AH,0          // Select function = 'Set mode'
@@ -127,9 +129,10 @@ int column_2_pixel(unsigned int column_index) {
 	return ((column_index*6)+1);
 }
 
-void create_map(){
+void create_map(int pixel_lvl[ROWS_PIXELS][COLUMNS_PIXELS]){
 	int i,j;
-	level_pixels = pixel_lvl_0;
+	level_pixels = (char**)malloc(sizeof(char*)*ROWS);
+	for (i=1; i<ROWS; i++) level_pixels[i] = pixel_lvl[i];
 	for (i=1; i<ROWS_PIXELS; i++) draw_pixel(i,0,BROWN_BG);
 	for (i=1; i<ROWS_PIXELS; i++) draw_pixel(i,79,BROWN_BG);
 	for (i=0; i<ROWS; i++) {
