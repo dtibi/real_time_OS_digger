@@ -1,11 +1,8 @@
-/* ex1.c - xmain */
-
 #include <conf.h>
+#include "myints.h"
 #include "map.h"
 #include "sound.h"
 #include "digger.h"
-
-void interrupt (*Int9Save) (void);
 
 /*------------------------------------------------------------------------
  *----------------------   Main Digger Program ---------------------------
@@ -14,6 +11,9 @@ void interrupt (*Int9Save) (void);
 xmain()
 {
 	Digger player;
+	
+	void interrupt (*Int9Save) (void);
+	
 	Int9Save = getvect(0x09);
 	setvect(9, MyISR9);
 
