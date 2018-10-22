@@ -2,7 +2,7 @@
 #include "map.h"
 #include "digger.h"
 
-char pixel_lvl_0[25][80];
+char pixel_lvl_0[25][80] = 0;
 char **level_pixels;
 
 void clean_screen(){
@@ -116,10 +116,24 @@ void draw_digger(Digger d){
 	int i=d.x,j=d.y;
 	
 	draw_pixel_with_char(i,j,RED_ON_BLACK,'<');
-	draw_pixel_with_char(i,j-1,BROWN_BG,'o');
-	draw_pixel_with_char(i,j-2,GREEN_BG,'E');
+	draw_pixel_with_char(i,j-1,RED_BG,'o');
+	draw_pixel_with_char(i,j-2,BROWN_BG,'E');
 	
 }
+
+/* void draw_nobbin(Nobbin n){
+	int i=n.x,j=n.y;
+	
+	draw_pixel_with_char(i,j,RED_ON_BLACK,'<');
+	draw_pixel_with_char(i,j-1,RED_BG,'o');
+	draw_pixel_with_char(i,j-2,BROWN_BG,'E');
+	
+} */
+
+
+/* void draw_fire_ball(FireBall fb){
+	
+} */
 
 int pixel_2_row( unsigned int pixel_index ) {
 	return ((pixel_index+1)/3);
