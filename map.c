@@ -199,16 +199,16 @@ int move_is_possible(int x,int y, char direction, int i_can_dig){
 	} else {
 		switch(direction) {
 			case 'u':
-				if (dirt_map[y-2][x]==0) return 1;
+				if (current_map[y-2][x][1]==BLACK_BG) return 1;
 				break;
 			case 'd':
-				if (dirt_map[y+2][x]==0) return 1;
+				if (current_map[y+2][x][1]==BLACK_BG) return 1;
 				break;
 			case 'r':
-				if (dirt_map[y][x+4]==0) return 1;
+				if (current_map[y][x+4][1]==BLACK_BG) return 1;
 				break;
 			case 'l':
-				if (dirt_map[y][x-4]==0) return 1;
+				if (current_map[y][x-4][1]==BLACK_BG) return 1;
 				break;
 		}
 	}
@@ -236,29 +236,14 @@ int column_2_pixel(unsigned int column_index) {
 void create_map(Digger player){
 	int i,j;
 	
-	//update dirt_map for movement control
-	for(j=0;j<COLUMNS_PIXELS; j++) dirt_map[0][j]=0;
-	for (i=1; i<ROWS_PIXELS; i++) 
-		for(j=0;j<COLUMNS_PIXELS; j++) dirt_map[i][j]=1;
-	
-	//padding first and last column
-	for (i=1; i<ROWS_PIXELS; i++) draw_pixel(i,0,BROWN_BG);
-	for (i=1; i<ROWS_PIXELS; i++) draw_pixel(i,79,BROWN_BG);
-	
-	//initial drawing of map
 	for (i=0; i<ROWS; i++) {
 		for(j=0;j<COLUMNS; j++) {
-			map[i][j]=level_0[i][j];
-			printf("%d",map[i][j]);
 			if (level_0[i][j]==1) draw_dirt(i,j);
 			else if(level_0[i][j]==2) draw_diamond(i,j);
 			else if (level_0[i][j]==3) draw_bag(i,j);
 			else if (level_0[i][j]==0) draw_empty(i,j);
 		}
-		printf("\n");
 	}
-	
-	draw_digger(player);
 }
 
 void refresh_map(Digger *player){
