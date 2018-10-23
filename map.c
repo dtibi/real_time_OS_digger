@@ -230,8 +230,8 @@ int move_is_possible(int x,int y, int direction, int i_can_dig){
 		else if (direction==DOWN_ARROW  && current_map[y+2][x][1]==BLACK_BG) return 1;
 		else if (direction==RIGHT_ARROW && current_map[y][x+3][1]==BLACK_BG) return 1;
 		else if (direction==LEFT_ARROW  && current_map[y][x-3][1]==BLACK_BG) return 1;
-	}
 	return 0;
+	}
 }
 
 int pixel_2_row( unsigned int pixel_index ) {
@@ -251,6 +251,12 @@ int row_2_pixel( unsigned int row_index ) {
 // offset of screen to be used for register DI
 int column_2_pixel(unsigned int column_index) {
 	return (column_index*WIDTH);
+}
+
+//return the color of the pixel (BLACK_BG || GREEN_BG || BROWN_BG || )
+int getPixelColor(int x, int y)
+{
+	return current_map[y][x][1]; 
 }
 
 void create_map(){

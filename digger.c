@@ -18,34 +18,34 @@ Digger create_digger()
 void move(Digger *player,int direction)
 {	
 	int *XYchanges;
-	if (!move_is_possible((*player).x,(*player).y,direction,1)) return;
+	if (!move_is_possible((*player).x,(*player).y,direction, 1)) return;
 	
 	if(direction != (*player).direction) //check if the wanted move direction is diffrent from the current
 	{
-		XYchanges = directionChanged(direction, (*player).direction); //check what are the changes in x and y according to the prev direction and the next direction
+		XYchanges = directionChanged((*player).direction, direction); //check what are the changes in x and y according to the prev direction and the next direction
 		(*player).direction = direction; //chane direction
 		(*player).x -=  XYchanges[0]; //update x
 		(*player).y -=  XYchanges[1]; //update y
 		return;
 	}
-	//printf("dx=%d - dy=%d ,",XYchanges[0],XYchanges[1]);
 	switch (direction)
 	{
 		case LEFT_ARROW:
-			(*player).x --;
+				(*player).x --;
 			break;
 		case RIGHT_ARROW:
-			(*player).x ++;
+				(*player).x ++;
 			break;
 		case DOWN_ARROW:
-			(*player).y ++;
+				(*player).y ++;
 			break;
 		case UP_ARROW:
-			(*player).y --;
+				(*player).y --;
 			break;
 	}
 }
 
+//calculating the change in x and y that need to be done when the direction is changed
 int* directionChanged (int prevDirection, int nextDirection)
 {
 	int XYchanges[2] = {0, 0};
@@ -55,16 +55,16 @@ int* directionChanged (int prevDirection, int nextDirection)
 			switch(nextDirection)
 			{	
 				case RIGHT_ARROW:
-					XYchanges[0] = 2;
+					XYchanges[0] = -3;
 					break;
 					
 				case DOWN_ARROW:
-					XYchanges[0] = 1;
+					XYchanges[0] = -2;
 					XYchanges[1] = -1;
 					break;
 					
 				case UP_ARROW:
-					XYchanges[0] = 1;
+					XYchanges[0] = -2;
 					XYchanges[1] = 1;
 					break;
 			}
@@ -74,16 +74,21 @@ int* directionChanged (int prevDirection, int nextDirection)
 			switch(nextDirection)
 			{
 				case LEFT_ARROW:
-					XYchanges[0] = -2;
+					XYchanges[0] = 3;
 					break;
 					
 				case DOWN_ARROW:
+<<<<<<< HEAD
 					XYchanges[0] = -1;
 					XYchanges[1] = 1;
+=======
+					XYchanges[0] = 2;
+					XYchanges[1] = -1;
+>>>>>>> origin/HEAD
 					break;
 					
 				case UP_ARROW:
-					XYchanges[0] = -1;
+					XYchanges[0] = 2;
 					XYchanges[1] = 1;
 					break;
 			}
@@ -93,12 +98,12 @@ int* directionChanged (int prevDirection, int nextDirection)
 			switch(nextDirection)
 			{
 				case LEFT_ARROW:
-					XYchanges[0] = -1;
+					XYchanges[0] = 2;
 					XYchanges[1] = 1;
 					break;
 					
 				case RIGHT_ARROW:
-					XYchanges[0] = 1;
+					XYchanges[0] = -2;
 					XYchanges[1] = 1;
 					break;
 					
@@ -112,12 +117,12 @@ int* directionChanged (int prevDirection, int nextDirection)
 			switch(nextDirection)
 			{
 				case LEFT_ARROW:
-					XYchanges[0] = -1;
+					XYchanges[0] = 2;
 					XYchanges[1] = -1;
 					break;
 					
 				case RIGHT_ARROW:
-					XYchanges[0] = 1;
+					XYchanges[0] = -2;
 					XYchanges[1] = -1;
 					break;
 					
@@ -133,6 +138,5 @@ int* directionChanged (int prevDirection, int nextDirection)
 void move_digger(Digger *player){
 	while(1){
 		move(player,receive());
-	  } // while
-		
+	  }
 }
