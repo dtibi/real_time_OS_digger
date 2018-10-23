@@ -26,9 +26,9 @@ void move(Digger *player,int direction)
 		(*player).direction = direction; //chane direction
 		(*player).x -=  XYchanges[0]; //update x
 		(*player).y -=  XYchanges[1]; //update y
+		return;
 	}
 	//printf("dx=%d - dy=%d ,",XYchanges[0],XYchanges[1]);
-	if (XYchanges[0]!=0 || XYchanges[1]!=0) return;//if a change of direction is the case we dkip the move
 	switch (direction)
 	{
 		case LEFT_ARROW:
@@ -79,7 +79,7 @@ int* directionChanged (int prevDirection, int nextDirection)
 					
 				case DOWN_ARROW:
 					XYchanges[0] = -1;
-					XYchanges[1] = -1;
+					XYchanges[1] = 1;
 					break;
 					
 				case UP_ARROW:
