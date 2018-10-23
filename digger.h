@@ -7,7 +7,7 @@ typedef struct digger {
 	int direction; //LEFT_ARROW || RIGHT_ARROW || DOWN_ARROW || UP_ARROW
 	} Digger;
 
-void move(Digger* player);
+void move(Digger* player,int direction);
 void fire(Digger* player);
 Digger create_digger();
 void move_digger(Digger *player);

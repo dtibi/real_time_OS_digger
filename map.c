@@ -121,8 +121,8 @@ void draw_dig(unsigned int i,unsigned int j){
 
 void draw_area(int y, int x){
 	int i,j;
-	for(i=y-2;i>=0 && i<y+2;i++)
-		for(j=x-4;j>=0 && j<x+4;j++)
+	for(i=y-2;i>=0 && i<y+2 && i<ROWS_PIXELS;i++)
+		for(j=x-4;j>=0 && j<x+4 && j<COLUMNS_PIXELS;j++)
 			draw_pixel_with_char(i,j,current_map[i][j][1],current_map[i][j][0]);
 }
 
@@ -175,10 +175,13 @@ void draw_digger(Digger player){
 } */
 
 int move_is_possible(int x,int y, int direction, int i_can_dig){
-	if ((y-2)<=0 || (y+1)>=ROWS_PIXELS || (x+3)>=COLUMNS_PIXELS || (x-3)<0) return 0;
+	if ((direction==UP_ARROW && (y-1)<=0) || 
+		(direction==DOWN_ARROW  && (y+1)>=ROWS_PIXELS) || 
+		(direction==RIGHT_ARROW && ((x+2)>=COLUMNS_PIXELS)) || 
+		(direction==LEFT_ARROW && (x-2)<0)) return 0;
 	if (direction!=UP_ARROW && direction!=DOWN_ARROW && direction!=RIGHT_ARROW && direction!=LEFT_ARROW) return 0;
 	
-	if(		 direction==UP_ARROW    && (y-(HEIGHT/2)-1)<=0) return 0;
+	if		(direction==UP_ARROW    && (y-(HEIGHT/2)-1)<=0) return 0;
 	else if (direction==DOWN_ARROW  && (y+(HEIGHT/2)+1)>=ROWS_PIXELS) return 0;
 	else if (direction==RIGHT_ARROW && (x+(WIDTH/2)+1)>=COLUMNS_PIXELS) return 0;
 	else if (direction==LEFT_ARROW  && (x-(WIDTH/2)-1)<=0) return 0;
