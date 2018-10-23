@@ -134,7 +134,6 @@ void draw_area(int y, int x){
 void draw_digger(Digger player){
 	int x=player.x,y=player.y,i,j;
 	char direction = player.direction;
-	sprintf(str,"x = %d , y = %d " , x , y);
 	switch (direction) {
 		case 'r':
 			draw_dig(y,x);
@@ -233,7 +232,7 @@ int column_2_pixel(unsigned int column_index) {
 	return ((column_index*6)+1);
 }
 
-void create_map(Digger player){
+void create_map(){
 	int i,j;
 	
 	for (i=0; i<ROWS; i++) {

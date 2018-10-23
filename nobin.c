@@ -1,7 +1,7 @@
 #include "digger.h"
 #include "nobin.h"
 
-void move(){
+void move_nobbin(){
 
 }
 char find_direction_to_digger(Nobbin n){

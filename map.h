@@ -22,7 +22,6 @@
 #define BROWN_ON_BLACK 6
 
 
-extern char* str;
 static int start_address = 47104; //B800h
 static char level_1[ROWS_PIXELS][COLUMNS_PIXELS];
 static char level_0[ROWS][COLUMNS] = {
@@ -44,7 +43,7 @@ typedef struct map {
 
 	
 void clean_screen();
-void create_map(Digger player);
+void create_map();
 
 void draw_pixel(int row, int col, char color);
 void draw_diamond(unsigned int i,unsigned int j);
