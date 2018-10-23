@@ -4,7 +4,6 @@
 #include "digger.h"
 #include "myints.h"
 
-Digger player;
 int need_refresh = 0;
 
 void refresh_map();

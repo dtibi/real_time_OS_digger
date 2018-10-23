@@ -134,7 +134,6 @@ void draw_area(int y, int x){
 void draw_digger(Digger player){
 	int x=player.x,y=player.y,i,j;
 	int direction = player.direction;
-	sprintf(str,"x = %d , y = %d " , x , y);
 	
 	switch (direction) {
 		case RIGHT_ARROW:
