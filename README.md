@@ -36,7 +36,20 @@ Grid size: 13 X 8
 
 
 									  _,_
-player will be the side of 2 textual |_|_| (GREEN)
+player will be the side of 2 textual |o|o|<  when looking right
+
+									   _,_
+player will be the side of 2 textual >|o|o|  when looking ךקכא
+
+									  _,_
+player will be the side of 2 textual |_|_|<  when looking right
+
+
+
+									  _,_
+player will be the side of 2 textual |_|_|<  when looking right
+
+
 
 Nobin will look the same but colored RED
 							

@@ -1,6 +1,8 @@
 #ifndef MAP_FILE
 #define MAP_FILE
 
+#include "digger.h"
+
 #define WIDTH 6
 #define HEIGHT 3
 #define ROWS 8
@@ -15,20 +17,13 @@
 #define PURPLE_BG 80
 #define BROWN_BG 98
 #define GRAY_BG 112
-#define RED_ON_BLACK 4
+#define BROWN_ON_RED 70
+#define GREEN_ON_BLACK 2
+#define BROWN_ON_BLACK 6
 
 
 static int start_address = 47104; //B800h
-static char level_0[8][13] = {
-	0 , 1 , 3 , 1 , 3 , 1 , 1 , 1 , 1 , 1 , 0 , 0 , 0 ,
-    0 , 2 , 2 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 3 , 1 ,
-	0 , 2 , 2 , 1 , 1 , 2 , 3 , 1 , 1 , 1 , 0 , 1 , 1 ,
-	0 , 2 , 2 , 3 , 1 , 2 , 1 , 1 , 1 , 1 , 0 , 2 , 2 ,
-	0 , 1 , 1 , 1 , 1 , 2 , 1 , 1 , 3 , 1 , 0 , 2 , 2 ,
-	0 , 0 , 0 , 0 , 1 , 2 , 1 , 1 , 1 , 1 , 0 , 1 , 1 ,
-	2 , 1 , 1 , 0 , 0 , 1 , 1 , 1 , 1 , 1 , 0 , 1 , 2 ,
-	2 , 2 , 1 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 
-};
+extern char level_0[8][13];
 
 
 typedef struct map {
@@ -38,12 +33,13 @@ typedef struct map {
 
 	
 void clean_screen();
-void create_map();
+void create_map(Digger player);
 
 void draw_pixel(int row, int col, char color);
 void draw_diamond(unsigned int i,unsigned int j);
 void draw_dirt(unsigned int i,unsigned int j);
 void draw_bag(unsigned int i,unsigned int j);
 void draw_empty(unsigned int i,unsigned int j);
+int move_is_possible(int x,int y, char direction, int i_can_dig);
 
 #endif
