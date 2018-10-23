@@ -4,134 +4,136 @@
 #include "map.h"
 #include "myints.h"
 
-void create_digger(Digger *player)
+//Create digger
+Digger create_digger()
 {
-	(*player).x = 40;
-	(*player).y = 23;
-	(*player).direction = 'l';
+	Digger player;
+	player.x = 40;
+	player.y = 23;
+	player.direction = LEFT_ARROW;
+	
+	return player;
 }
 
 void move(Digger *player)
 {	
-	//moveDirection = scanCodeToDirection(scan);
+	int *XYchanges;
+	if(scan != (*player).direction) //check if the wanted move direction is diffrent from the current
+	{
+		XYchanges = directionChanged(scan, (*player).direction); //check what are the changes in x and y according to the prev direction and the next direction
+		(*player).direction = scan; //chane direction
+		(*player).x -=  XYchanges[0]; //update x
+		(*player).y -=  XYchanges[1]; //update y
+	}
+
+	if (!move_is_possible((*player).x,(*player).y,scan,1)) return;
 	switch (scan)
 	{
-		case 80: //down
-			if((*player).direction != 'd'){
-				(*player).direction = 'd';
-			}
-			else if((*player).y < ROWS_PIXELS-1)
-				(*player).y++;
+		case LEFT_ARROW:
+			if((*player).x > 0) //if (move_is_possible((*player).x - 1, (*player).y))
+				(*player).x --;
 			break;
-		
-		case 72: //up
-			if((*player).direction != 'u')
-				(*player).direction = 'u';
-			else if((*player).y > 2)
-				(*player).y--;
+			
+		case RIGHT_ARROW:
+			if((*player).x < COLUMNS_PIXELS) //if (move_is_possible((*player).x + 1, (*player).y))
+				(*player).x ++;
 			break;
-		
-		case 75: //left
-			if((*player).direction != 'l')
-				(*player).direction = 'l';
-			else if((*player).x > 2)
-				(*player).x--;
+					
+		case DOWN_ARROW:
+			if((*player).y < ROWS_PIXELS) //if (move_is_possible((*player).x, (*player).y + 1))
+				(*player).y ++;
 			break;
-		
-		case 77: //right
-			if((*player).direction != 'r')
-				(*player).direction = 'r';
-			else if((*player).x < COLUMNS_PIXELS-1)
-				(*player).x++;
+			
+		case UP_ARROW:
+			if((*player).y > 0) //if (move_is_possible((*player).x, (*player).y - 1))
+				(*player).y --;
 			break;
 	}
 }
 
-/*
-void changeDirection (Digger* player, scan)
+int* directionChanged (int prevDirection, int nextDirection)
 {
-	switch ((*player).direction)
+	int XYchanges[2] = {0, 0};
+	switch (prevDirection)
 	{
-		case 'l':
-			
-			if (scan == RIGHT_ARROW)
-			{
-				x
-			}
-			
-			else if (scan == DOWN_ARROW)
-			{
-				
-			}
-			
-			else // scan == UP_ARROW
-			{
-				
-			}
-			
-			break;
-		
-		case 'r':
-			if (scan == LEFT_ARROW)
-			{
-				
-			}
-			
-			else if (scan == DOWN_ARROW)
-			{
-				
-			}
-			
-			else // scan == UP_ARROW
-			{
-				
+		case LEFT_ARROW:
+			switch(nextDirection)
+			{	
+				case RIGHT_ARROW:
+					XYchanges[0] = 3;
+					break;
+					
+				case DOWN_ARROW:
+					XYchanges[0] = 1;
+					XYchanges[1] = -1;
+					break;
+					
+				case UP_ARROW:
+					XYchanges[0] = 1;
+					XYchanges[1] = 1;
+					break;
 			}
 			break;
 		
-		case 'd':
-			if (scan == LEFT_ARROW)
+		case RIGHT_ARROW:
+			switch(nextDirection)
 			{
-				
-			}
-			
-			else if (scan == RIGHT_ARROW)
-			{
-				
-			}
-			
-			else // scan == UP_ARROW
-			{
-				
+				case LEFT_ARROW:
+					XYchanges[0] = -3;
+					break;
+					
+				case DOWN_ARROW:
+					XYchanges[0] = -1;
+					XYchanges[1] = -1;
+					break;
+					
+				case UP_ARROW:
+					XYchanges[0] = -1;
+					XYchanges[1] = 1;
+					break;
 			}
 			break;
 		
-		case 'u':
-			if (scan == LEFT_ARROW)
+		case DOWN_ARROW:
+			switch(nextDirection)
 			{
-				
+				case LEFT_ARROW:
+					XYchanges[0] = -1;
+					XYchanges[1] = 1;
+					break;
+					
+				case RIGHT_ARROW:
+					XYchanges[0] = 1;
+					XYchanges[1] = 1;
+					break;
+					
+				case UP_ARROW:
+					XYchanges[1] = 2;
+					break;
 			}
-			
-			else if (scan == RIGHT_ARROW)
+			break;
+		
+		case UP_ARROW:
+			switch(nextDirection)
 			{
-				
+				case LEFT_ARROW:
+					XYchanges[0] = -1;
+					XYchanges[1] = -1;
+					break;
+					
+				case RIGHT_ARROW:
+					XYchanges[0] = 1;
+					XYchanges[1] = -1;
+					break;
+					
+				case DOWN_ARROW:
+					XYchanges[1] = -2;
+					break;
 			}
-			
-			else // scan == DOWN_ARROW
-			{
-				
-			}
-			
 			break;
 	}
+	return XYchanges;
 }
-
-
-int directionChange(scan, direction)
-{
-	char temp 
-	if (scan == LEFT_ARROW)
-}
-*/
 
 void move_digger(Digger *player){
 		move(player);

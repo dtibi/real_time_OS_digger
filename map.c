@@ -1,10 +1,11 @@
 #include <conf.h>
 #include "map.h"
 #include "digger.h"
+#include "myints.h"
 
 
 char current_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
-
+volatile Digger player;
 
 void clean_screen(){
 	asm{
@@ -127,9 +128,10 @@ void draw_area(int y, int x){
 
 void draw_digger(Digger player){
 	int x=player.x,y=player.y,i,j;
-	char direction = player.direction;
+	int direction = player.direction;
+	
 	switch (direction) {
-		case 'r':
+		case RIGHT_ARROW:
 			draw_dig(y,x);
 			current_map[y][x][0] = '<';
 			current_map[y][x-1][0] = 'o';
@@ -139,7 +141,7 @@ void draw_digger(Digger player){
 			current_map[y][x-2][1] = BROWN_ON_RED;
 			draw_area(y,x);
 			break;
-		case 'l':
+		case LEFT_ARROW:
 			draw_dig(y,x);
 			current_map[y][x][0] = '>';
 			current_map[y][x+1][0] = 'o';
@@ -149,7 +151,7 @@ void draw_digger(Digger player){
 			current_map[y][x+2][1] = BROWN_ON_RED;
 			draw_area(y,x);
 			break;
-		case 'u':
+		case UP_ARROW:
 			draw_dig(y,x);
 			current_map[y][x][0] = 'V';
 			current_map[y+1][x][0] = '8';
@@ -157,7 +159,7 @@ void draw_digger(Digger player){
 			current_map[y+1][x][1] = BROWN_ON_RED;
 			draw_area(y,x);
 			break;
-		case 'd':
+		case DOWN_ARROW:
 			draw_dig(y,x);
 			current_map[y][x][0] = '^';
 			current_map[y-1][x][0] = '8';
@@ -172,39 +174,22 @@ void draw_digger(Digger player){
 	
 } */
 
-int move_is_possible(int x,int y, char direction, int i_can_dig){
-	if (y-2<=0 || y+2>=ROWS_PIXELS || x+3>=COLUMNS_PIXELS || x-3<0) return 0;
-	switch(direction) {
-		case 'u':
-			if ((y-3)<0) return 0;
-			break;
-		case 'd':
-			if ((y+3)>ROWS_PIXELS) return 0;
-			break;
-		case 'r':
-			if ((x+4)>COLUMNS_PIXELS) return 0;
-			break;
-		case 'l':
-			if ((x-3)<0) return 0;
-			break;
-	}
+int move_is_possible(int x,int y, int direction, int i_can_dig){
+	if ((y-2)<=0 || (y+1)>=ROWS_PIXELS || (x+3)>=COLUMNS_PIXELS || (x-3)<0) return 0;
+	if (direction!=UP_ARROW && direction!=DOWN_ARROW && direction!=RIGHT_ARROW && direction!=LEFT_ARROW) return 0;
+	
+	if(		 direction==UP_ARROW    && (y-(HEIGHT/2)-1)<=0) return 0;
+	else if (direction==DOWN_ARROW  && (y+(HEIGHT/2)+1)>=ROWS_PIXELS) return 0;
+	else if (direction==RIGHT_ARROW && (x+(WIDTH/2)+1)>=COLUMNS_PIXELS) return 0;
+	else if (direction==LEFT_ARROW  && (x-(WIDTH/2)-1)<=0) return 0;
+	
 	if(i_can_dig){
 		return 1;
 	} else {
-		switch(direction) {
-			case 'u':
-				if (current_map[y-2][x][1]==BLACK_BG) return 1;
-				break;
-			case 'd':
-				if (current_map[y+2][x][1]==BLACK_BG) return 1;
-				break;
-			case 'r':
-				if (current_map[y][x+3][1]==BLACK_BG) return 1;
-				break;
-			case 'l':
-				if (current_map[y][x-3][1]==BLACK_BG) return 1;
-				break;
-		}
+		if(		 direction==UP_ARROW    && current_map[y-2][x][1]==BLACK_BG) return 1;
+		else if (direction==DOWN_ARROW  && current_map[y+2][x][1]==BLACK_BG) return 1;
+		else if (direction==RIGHT_ARROW && current_map[y][x+3][1]==BLACK_BG) return 1;
+		else if (direction==LEFT_ARROW  && current_map[y][x-3][1]==BLACK_BG) return 1;
 	}
 	return 0;
 }
@@ -241,12 +226,13 @@ void create_map(){
 	}
 }
 
-void refresh_map(Digger *player){
+void refresh_map(){
 	create_map();
 	//printf("x = %d , y = %d , dir = %c", (*player).x, (*player).y, (*player).direction);
-	draw_digger(*player);
+	player = create_digger();
+	draw_digger(player);
 	while(1) {
-		draw_digger(*player);
+		draw_digger(player);
 	}
 }
 

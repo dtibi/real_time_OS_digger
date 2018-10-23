@@ -23,6 +23,8 @@
 #define GRAY_ON_BROWN 103
 
 
+extern volatile Digger player;
+extern char* str;
 static int start_address = 47104; //B800h
 static char level_1[ROWS_PIXELS][COLUMNS_PIXELS];
 static char level_0[ROWS][COLUMNS] = {
@@ -51,7 +53,7 @@ void draw_diamond(unsigned int i,unsigned int j);
 void draw_dirt(unsigned int i,unsigned int j);
 void draw_bag(unsigned int i,unsigned int j);
 void draw_empty(unsigned int i,unsigned int j);
-int move_is_possible(int x,int y, char direction, int i_can_dig);
+int move_is_possible(int x,int y, int direction, int i_can_dig);
 void draw_dig(unsigned int i,unsigned int j);
 void refresh_map(Digger *player);
 
