@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <dos.h>
 #include "myints.h"
+#include "map.h"
 
 volatile unsigned char scan;
+volatile unsigned char timer;
+void interrupt (*Int9Save) (void);
+void interrupt (*Int8Save) (void);
+
 void interrupt MyISR9(void)
 {
 	asm{
@@ -20,4 +25,16 @@ void interrupt MyISR9(void)
 		mov al, 20h //end int
 		out 20h, al
 	}
+	
+	if (scan==46) {
+		clean_screen();
+		xdone();
+	}
+}
+
+void interrupt MyISR8(void)
+{
+	Int8Save();
+	timer++;
+	if(timer%180)timer=0;
 }
