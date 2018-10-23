@@ -3,6 +3,7 @@
 #include "digger.h"
 
 char current_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
+volatile Digger player;
 char* str = "               ";
 
 void clean_screen(){
@@ -111,10 +112,11 @@ void draw_area(int y, int x){
 
 void draw_digger(Digger player){
 	int x=player.x,y=player.y,i,j;
-	char direction = player.direction;
+	int direction = player.direction;
 	sprintf(str,"x = %d , y = %d " , x , y);
+	
 	switch (direction) {
-		case 'r':
+		case RIGHT_ARROW:
 			draw_dig(y,x);
 			current_map[y][x][0] = '<';
 			current_map[y][x-1][0] = 'o';
@@ -124,7 +126,7 @@ void draw_digger(Digger player){
 			current_map[y][x-2][1] = BROWN_ON_RED;
 			draw_area(y,x);
 			break;
-		case 'l':
+		case LEFT_ARROW:
 			draw_dig(y,x);
 			current_map[y][x][0] = '>';
 			current_map[y][x+1][0] = 'o';
@@ -134,7 +136,7 @@ void draw_digger(Digger player){
 			current_map[y][x+2][1] = BROWN_ON_RED;
 			draw_area(y,x);
 			break;
-		case 'u':
+		case UP_ARROW:
 			draw_dig(y,x);
 			current_map[y][x][0] = 'V';
 			current_map[y+1][x][0] = '8';
@@ -142,7 +144,7 @@ void draw_digger(Digger player){
 			current_map[y+1][x][1] = BROWN_ON_RED;
 			draw_area(y,x);
 			break;
-		case 'd':
+		case DOWN_ARROW:
 			draw_dig(y,x);
 			current_map[y][x][0] = '^';
 			current_map[y-1][x][0] = '8';
@@ -184,13 +186,14 @@ void create_map(){
 	}
 }
 
-void refresh_map(Digger *player){
+void refresh_map(){
 	create_map();
 	//printf("x = %d , y = %d , dir = %c", (*player).x, (*player).y, (*player).direction);
-	draw_digger(*player);
+	player = create_digger();
+	draw_digger(player);
 	while(1) {
-		draw_digger(*player);
-		move_digger(player);
+		draw_digger(player);
+		//move_digger(&player);
 	}
 }
 

@@ -30,6 +30,9 @@ void interrupt MyISR9(void)
 		clean_screen();
 		xdone();
 	}
+	
+	else
+		move_digger(&player);
 }
 
 void interrupt MyISR8(void)

@@ -20,6 +20,7 @@
 #define GREEN_ON_BLACK 2
 #define BROWN_ON_RED 70
 
+extern volatile Digger player;
 extern char* str;
 static int start_address = 47104; //B800h
 static char level_1[ROWS_PIXELS][COLUMNS_PIXELS];
