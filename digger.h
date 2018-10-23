@@ -9,5 +9,5 @@ typedef struct digger {
 
 void fire(Digger* player);
 void create_digger(Digger* player);
-
+void move_digger(Digger *player);
 #endif

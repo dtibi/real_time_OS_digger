@@ -22,8 +22,19 @@
 #define BROWN_ON_BLACK 6
 
 
+extern char* str;
 static int start_address = 47104; //B800h
-extern char level_0[8][13];
+static char level_1[ROWS_PIXELS][COLUMNS_PIXELS];
+static char level_0[ROWS][COLUMNS] = {
+	0 , 1 , 3 , 1 , 3 , 1 , 1 , 1 , 1 , 1 , 0 , 0 , 0 ,
+    0 , 2 , 2 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 3 , 1 ,
+	0 , 2 , 2 , 1 , 1 , 2 , 3 , 1 , 1 , 1 , 0 , 1 , 1 ,
+	0 , 2 , 2 , 3 , 1 , 2 , 1 , 1 , 1 , 1 , 0 , 2 , 2 ,
+	0 , 1 , 1 , 1 , 1 , 2 , 1 , 1 , 3 , 1 , 0 , 2 , 2 ,
+	0 , 0 , 0 , 0 , 1 , 2 , 1 , 1 , 1 , 1 , 0 , 1 , 1 ,
+	2 , 1 , 1 , 0 , 0 , 1 , 1 , 1 , 1 , 1 , 0 , 1 , 2 ,
+	2 , 2 , 1 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 
+};
 
 
 typedef struct map {
@@ -41,5 +52,7 @@ void draw_dirt(unsigned int i,unsigned int j);
 void draw_bag(unsigned int i,unsigned int j);
 void draw_empty(unsigned int i,unsigned int j);
 int move_is_possible(int x,int y, char direction, int i_can_dig);
+void draw_dig(unsigned int i,unsigned int j);
+void refresh_map(Digger *player);
 
 #endif

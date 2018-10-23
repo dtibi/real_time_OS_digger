@@ -2,18 +2,9 @@
 #include "map.h"
 #include "digger.h"
 
-char dirt_map[ROWS_PIXELS][COLUMNS_PIXELS];
-char map[ROWS][COLUMNS];
-char level_0[ROWS][COLUMNS] = {
-	0 , 1 , 3 , 1 , 3 , 1 , 1 , 1 , 1 , 1 , 0 , 0 , 0 ,
-    0 , 2 , 2 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 3 , 1 ,
-	0 , 2 , 2 , 1 , 1 , 2 , 3 , 1 , 1 , 1 , 0 , 1 , 1 ,
-	0 , 2 , 2 , 3 , 1 , 2 , 1 , 1 , 1 , 1 , 0 , 2 , 2 ,
-	0 , 1 , 1 , 1 , 1 , 2 , 1 , 1 , 3 , 1 , 0 , 2 , 2 ,
-	0 , 0 , 0 , 0 , 1 , 2 , 1 , 1 , 1 , 1 , 0 , 1 , 1 ,
-	2 , 1 , 1 , 0 , 0 , 1 , 1 , 1 , 1 , 1 , 0 , 1 , 2 ,
-	2 , 2 , 1 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 
-};
+
+char current_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
+
 
 void clean_screen(){
 	asm{
@@ -25,7 +16,7 @@ void clean_screen(){
 	MOV             ES,AX
 	MOV             DI,0
 	MOV             AL,' '
-	MOV             AH,BLACK_BG
+	MOV             AH,7
 	MOV             CX,2000
 	CLD
 	REP             STOSW
@@ -43,6 +34,8 @@ void draw_pixel_with_char(int row, int col, char color,char ch){
 		MOV             AH,color
 		MOV             ES:[DI], AX
 	}
+	current_map[row][col][0] = ch;
+	current_map[row][col][1] = color;
 }
 
 void draw_pixel(int row, int col, char color){
@@ -56,6 +49,9 @@ void draw_pixel(int row, int col, char color){
 		MOV             AH,color
 		MOV             ES:[DI], AX
 	}
+	
+	current_map[row][col][0] = ' ';
+	current_map[row][col][1] = color;
 }
 
 /*  draw_diamond(unsigned int i,unsigned int j)
@@ -105,55 +101,10 @@ void draw_dirt(unsigned int i,unsigned int j){
 }
 
 void draw_empty(unsigned int i,unsigned int j){
-	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j), k, l;
+	int row = row_2_pixel(i), col= column_2_pixel(j),k,l;
 	for (k=0;k<HEIGHT;k++)
-		for (l=0;l<WIDTH;l++){
-			draw_pixel(row_pixel+k,column_pixel+l,BLACK_BG);
-			dirt_map[row_pixel+k][column_pixel+l]=0;
-		}
-}
-
-
-void draw_digger(Digger d){
-	int i=d.y,j=d.x;
-	switch(d.direction) {
-		case 'u':
-			draw_pixel_with_char(i,j,GREEN_ON_BLACK,'V');
-			draw_pixel_with_char(i+1,j,BROWN_ON_RED,'8');
-			break;
-		case 'd':
-			draw_pixel_with_char(i,j,GREEN_ON_BLACK,'n');
-			draw_pixel_with_char(i-1,j,BROWN_ON_RED,'8');
-			break;
-		case 'r':
-			draw_pixel_with_char(i,j,GREEN_ON_BLACK,'<');
-			draw_pixel_with_char(i,j-1,BROWN_ON_RED,'o');
-			draw_pixel_with_char(i,j-2,BROWN_ON_RED,'o');
-			break;
-		case 'l':
-			draw_pixel_with_char(i,j,GREEN_ON_BLACK,'>');
-			draw_pixel_with_char(i,j+1,BROWN_ON_RED,'o');
-			draw_pixel_with_char(i,j+2,BROWN_ON_RED,'o');
-	}
-	//printf("x = %d , y = %d",d.x,d.y);
-}
-
-
-void draw_map(){
-	int i,j;
-	for (i=0; i<ROWS; i++) {
-		for(j=0;j<COLUMNS; j++) {
-			if(map[i][j]==2) draw_diamond(i,j);
-			else if (map[i][j]==3) draw_bag(i,j);
-		}
-	}
-	
-	for (i=1; i<ROWS_PIXELS; i++) 
-		for(j=0;j<COLUMNS_PIXELS; j++) 
-			if (dirt_map[i][j]==1) 
-				draw_pixel(i,j,BROWN_BG);
-			else 
-				draw_pixel(i,j,BLACK_BG);
+		for (l=0;l<WIDTH;l++)
+			draw_pixel(row+k,col+l,BLACK_BG);
 }
 /* void draw_nobbin(Nobbin n){
 	int i=n.x,j=n.y;
@@ -164,6 +115,65 @@ void draw_map(){
 	
 } */
 
+void draw_dig(unsigned int i,unsigned int j){
+	int row = i-1, col= j-3,k,l;
+	for (k=0;k<=HEIGHT;k++)
+		for (l=0;l<=WIDTH;l++){
+			current_map[row+k][col+l][0] = ' ';
+			current_map[row+k][col+l][1] = BLACK_BG;
+		}
+}
+
+void draw_area(int y, int x){
+	int i,j;
+	for(i=y-2;i>=0 && i<y+2;i++)
+		for(j=x-4;j>=0 && j<x+4;j++)
+			draw_pixel_with_char(i,j,current_map[i][j][1],current_map[i][j][0]);
+}
+
+void draw_digger(Digger player){
+	int x=player.x,y=player.y,i,j;
+	char direction = player.direction;
+	sprintf(str,"x = %d , y = %d " , x , y);
+	switch (direction) {
+		case 'r':
+			draw_dig(y,x);
+			current_map[y][x][0] = '<';
+			current_map[y][x-1][0] = 'o';
+			current_map[y][x-2][0] = 'o';
+			current_map[y][x][1] = GREEN_ON_BLACK;
+			current_map[y][x-1][1] = BROWN_ON_RED;
+			current_map[y][x-2][1] = BROWN_ON_RED;
+			draw_area(y,x);
+			break;
+		case 'l':
+			draw_dig(y,x);
+			current_map[y][x][0] = '>';
+			current_map[y][x+1][0] = 'o';
+			current_map[y][x+2][0] = 'o';
+			current_map[y][x][1] = GREEN_ON_BLACK;
+			current_map[y][x+1][1] = BROWN_ON_RED;
+			current_map[y][x+2][1] = BROWN_ON_RED;
+			draw_area(y,x);
+			break;
+		case 'u':
+			draw_dig(y,x);
+			current_map[y][x][0] = 'V';
+			current_map[y+1][x][0] = '8';
+			current_map[y][x][1] = GREEN_ON_BLACK;
+			current_map[y+1][x][1] = BROWN_ON_RED;
+			draw_area(y,x);
+			break;
+		case 'd':
+			draw_dig(y,x);
+			current_map[y][x][0] = '^';
+			current_map[y-1][x][0] = '8';
+			current_map[y][x][1] = GREEN_ON_BLACK;
+			current_map[y-1][x][1] = BROWN_ON_RED;
+			draw_area(y,x);
+			break;
+	}
+}
 
 /* void draw_fire_ball(FireBall fb){
 	
@@ -251,5 +261,13 @@ void create_map(Digger player){
 	draw_digger(player);
 }
 
-
+void refresh_map(Digger *player){
+	create_map();
+	//printf("x = %d , y = %d , dir = %c", (*player).x, (*player).y, (*player).direction);
+	draw_digger(*player);
+	while(1) {
+		draw_digger(*player);
+		move_digger(player);
+	}
+}
 
