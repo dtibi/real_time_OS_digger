@@ -7,9 +7,6 @@
 Digger player;
 int need_refresh = 0;
 
-void refresh_map();
-void move_digger(Digger *player);
-
 
 Digger player;
 
@@ -27,7 +24,7 @@ xmain()
 	//setvect(8, MyISR8);
 
 	resume(create(refresh_map,INITSTK,INITPRIO,"refresh_map",1,&player));
-	//resume(create(refresh_debug,INITSTK,INITPRIO,"refresh_debug",1,&player));
+	resume(create(move_digger,INITSTK,INITPRIO,"move_digger",1,&player));
 	while(1);
 	
 	//sleep(10);

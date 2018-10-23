@@ -55,41 +55,35 @@ void draw_pixel(int row, int col, char color){
 }
 
 /*  draw_diamond(unsigned int i,unsigned int j)
-	                       ______
- diamond will look like:  |_    _| and colored (GREEN)
-                            |__|
+	                       _____
+ diamond will look like:  |_   _| and colored (GREEN)
+                            |_|
 */
 void draw_diamond(unsigned int i,unsigned int j) {
 	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j);
 	draw_dirt(i,j);
-	draw_pixel_with_char(row_pixel,column_pixel+1,BROWN_BG, '_');
-	draw_pixel_with_char(row_pixel,column_pixel+2,BROWN_BG, '/');
-	draw_pixel_with_char(row_pixel,column_pixel+3,BROWN_BG, '\\');
-	draw_pixel_with_char(row_pixel,column_pixel+4,BROWN_BG, '_');
-	draw_pixel_with_char(row_pixel+1,column_pixel+1,GREEN_BG,'|');
-	draw_pixel(row_pixel+1,column_pixel+2,GREEN_BG);
-	draw_pixel(row_pixel+1,column_pixel+3,GREEN_BG);
-	draw_pixel_with_char(row_pixel+1,column_pixel+4,GREEN_BG,'|');
-	draw_pixel_with_char(row_pixel+2,column_pixel+2,GREEN_BG,'\\');
-	draw_pixel_with_char(row_pixel+2,column_pixel+3,GREEN_BG,'/');
+	draw_pixel_with_char(row_pixel+1,column_pixel+1,GREEN_BG, ' ');
+	draw_pixel_with_char(row_pixel+1,column_pixel+2,GREEN_BG, ' ');
+	draw_pixel_with_char(row_pixel+1,column_pixel+3,GREEN_BG, ' ');
+	draw_pixel_with_char(row_pixel+2,column_pixel+2,GREEN_BG,' ');
 }
 
 /* draw_bag(unsigned int i,unsigned int j)
-	                             _,_,_,_
-Gold bags will look like:		|__$$__|
-						   		|__$$__|
+	                              w
+Gold bags will look like:		 / \
+						   		|_$_|
 */
 void draw_bag(unsigned int i,unsigned int j){
 	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j),k, l;
 	draw_dirt(i,j);
-	for (k=0;k<HEIGHT-1;k++)
-		for (l=1;l<WIDTH-1;l++){
-			draw_pixel(row_pixel+k,column_pixel+l,GRAY_BG);
-		}
-	draw_pixel_with_char(row_pixel,column_pixel+2,GRAY_BG,'$');
-	draw_pixel_with_char(row_pixel,column_pixel+3,GRAY_BG,'$');
-	draw_pixel_with_char(row_pixel+1,column_pixel+2,GRAY_BG,'$');
-	draw_pixel_with_char(row_pixel+1,column_pixel+3,GRAY_BG,'$');
+	draw_pixel_with_char(row_pixel,column_pixel+2,GRAY_ON_BROWN,'w');
+	draw_pixel_with_char(row_pixel+1,column_pixel+1,GRAY_ON_BROWN,'/');
+	draw_pixel_with_char(row_pixel+1,column_pixel+2,GRAY_BG,' ');
+	draw_pixel_with_char(row_pixel+1,column_pixel+3,GRAY_ON_BROWN,'\\');
+	draw_pixel_with_char(row_pixel+2,column_pixel+1,GRAY_BG,' ');
+	draw_pixel_with_char(row_pixel+2,column_pixel+2,GRAY_BG,'$');
+	draw_pixel_with_char(row_pixel+2,column_pixel+3,GRAY_BG,' ');
+	
 }
 
 void draw_dirt(unsigned int i,unsigned int j){
@@ -179,18 +173,19 @@ void draw_digger(Digger player){
 } */
 
 int move_is_possible(int x,int y, char direction, int i_can_dig){
+	if (y-2<=0 || y+2>=ROWS_PIXELS || x+3>=COLUMNS_PIXELS || x-3<0) return 0;
 	switch(direction) {
 		case 'u':
 			if ((y-3)<0) return 0;
 			break;
 		case 'd':
-			if ((y+2)>ROWS_PIXELS) return 0;
+			if ((y+3)>ROWS_PIXELS) return 0;
 			break;
 		case 'r':
 			if ((x+4)>COLUMNS_PIXELS) return 0;
 			break;
 		case 'l':
-			if ((x-4)<0) return 0;
+			if ((x-3)<0) return 0;
 			break;
 	}
 	if(i_can_dig){
@@ -204,10 +199,10 @@ int move_is_possible(int x,int y, char direction, int i_can_dig){
 				if (current_map[y+2][x][1]==BLACK_BG) return 1;
 				break;
 			case 'r':
-				if (current_map[y][x+4][1]==BLACK_BG) return 1;
+				if (current_map[y][x+3][1]==BLACK_BG) return 1;
 				break;
 			case 'l':
-				if (current_map[y][x-4][1]==BLACK_BG) return 1;
+				if (current_map[y][x-3][1]==BLACK_BG) return 1;
 				break;
 		}
 	}
@@ -215,21 +210,22 @@ int move_is_possible(int x,int y, char direction, int i_can_dig){
 }
 
 int pixel_2_row( unsigned int pixel_index ) {
-	return ((pixel_index+1)/3);
+	if (pixel_index==0) return 0;
+	return ((pixel_index-1)/HEIGHT);
 }
 
 int pixel_2_column(unsigned int pixel_index) {
-	return ((pixel_index+1)/6);
+	return (pixel_index/WIDTH);
 }
 
 // row of screen
 int row_2_pixel( unsigned int row_index ) {
-	return ((row_index*3)+1);
+	return ((row_index*HEIGHT)+1);
 }
 
 // offset of screen to be used for register DI
 int column_2_pixel(unsigned int column_index) {
-	return ((column_index*6)+1);
+	return (column_index*WIDTH);
 }
 
 void create_map(){
@@ -251,7 +247,6 @@ void refresh_map(Digger *player){
 	draw_digger(*player);
 	while(1) {
 		draw_digger(*player);
-		move_digger(player);
 	}
 }
 
