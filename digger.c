@@ -30,27 +30,28 @@ void move(Digger *player)
 	switch (scan)
 	{
 		case LEFT_ARROW:
-			if((*player).x > 0) //if (move_is_possible((*player).x - 1, (*player).y))
+			if (move_is_possible((*player).x - 1, (*player).y, (*player).direction, 1))
 				(*player).x --;
 			break;
 			
 		case RIGHT_ARROW:
-			if((*player).x < 25) //if (move_is_possible((*player).x + 1, (*player).y))
+			if (move_is_possible((*player).x + 1, (*player).y, (*player).direction, 1))
 				(*player).x ++;
 			break;
 					
 		case DOWN_ARROW:
-			if((*player).y < 80) //if (move_is_possible((*player).x, (*player).y + 1))
+			if (move_is_possible((*player).x, (*player).y + 1, (*player).direction, 1))
 				(*player).y ++;
 			break;
 			
 		case UP_ARROW:
-			if((*player).y > 0) //if (move_is_possible((*player).x, (*player).y - 1))
+			if (move_is_possible((*player).x, (*player).y - 1, (*player).direction, 1))
 				(*player).y --;
 			break;
 	}
 }
 
+//calculating the change in x and y that need to be done when the direction is changed
 int* directionChanged (int prevDirection, int nextDirection)
 {
 	int XYchanges[2] = {0, 0};

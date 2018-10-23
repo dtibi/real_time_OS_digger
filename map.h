@@ -47,12 +47,13 @@ typedef struct map {
 void clean_screen();
 void create_map();
 
+int getPixelColor(int x, int y);
 void draw_pixel(int row, int col, char color);
 void draw_diamond(unsigned int i,unsigned int j);
 void draw_dirt(unsigned int i,unsigned int j);
 void draw_bag(unsigned int i,unsigned int j);
 void draw_empty(unsigned int i,unsigned int j);
-int move_is_possible(int x,int y, char direction, int i_can_dig);
+int move_is_possible(int x, int y, int direction, int i_can_dig);
 void draw_dig(unsigned int i,unsigned int j);
 void refresh_map(Digger *player);
 

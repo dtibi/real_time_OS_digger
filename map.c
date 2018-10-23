@@ -179,18 +179,18 @@ void draw_digger(Digger player){
 	
 } */
 
-int move_is_possible(int x,int y, char direction, int i_can_dig){
+int move_is_possible(int x, int y, int direction, int i_can_dig){
 	switch(direction) {
-		case 'u':
+		case UP_ARROW:
 			if ((y-3)<0) return 0;
 			break;
-		case 'd':
+		case DOWN_ARROW:
 			if ((y+2)>ROWS_PIXELS) return 0;
 			break;
-		case 'r':
+		case RIGHT_ARROW:
 			if ((x+4)>COLUMNS_PIXELS) return 0;
 			break;
-		case 'l':
+		case LEFT_ARROW:
 			if ((x-4)<0) return 0;
 			break;
 	}
@@ -198,16 +198,16 @@ int move_is_possible(int x,int y, char direction, int i_can_dig){
 		return 1;
 	} else {
 		switch(direction) {
-			case 'u':
+			case UP_ARROW:
 				if (current_map[y-2][x][1]==BLACK_BG) return 1;
 				break;
-			case 'd':
+			case DOWN_ARROW:
 				if (current_map[y+2][x][1]==BLACK_BG) return 1;
 				break;
-			case 'r':
+			case RIGHT_ARROW:
 				if (current_map[y][x+4][1]==BLACK_BG) return 1;
 				break;
-			case 'l':
+			case LEFT_ARROW:
 				if (current_map[y][x-4][1]==BLACK_BG) return 1;
 				break;
 		}
@@ -233,6 +233,12 @@ int column_2_pixel(unsigned int column_index) {
 	return ((column_index*6)+1);
 }
 
+//return the color of the pixel (BLACK_BG || GREEN_BG || BROWN_BG || )
+int getPixelColor(int x, int y)
+{
+	return current_map[y][x][1]; 
+}
+
 void create_map(){
 	int i,j;
 	
@@ -248,12 +254,11 @@ void create_map(){
 
 void refresh_map(){
 	create_map();
-	//printf("x = %d , y = %d , dir = %c", (*player).x, (*player).y, (*player).direction);
+	//printf("x = %d , y = %d , dir = %d", (*player).x, (*player).y, (*player).direction);
 	player = create_digger();
 	draw_digger(player);
 	while(1) {
 		draw_digger(player);
-		//move_digger(&player);
 	}
 }
 
