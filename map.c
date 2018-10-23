@@ -2,9 +2,9 @@
 #include "map.h"
 #include "digger.h"
 
+
 char current_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
 volatile Digger player;
-char* str = "               ";
 
 void clean_screen(){
 	asm{
@@ -54,26 +54,38 @@ void draw_pixel(int row, int col, char color){
 	current_map[row][col][1] = color;
 }
 
-//						    ______
-//diamond will look like:  |_    _| and colored (Tchelet)
-//  	                     |__|
+/*  draw_diamond(unsigned int i,unsigned int j)
+	                       ______
+ diamond will look like:  |_    _| and colored (GREEN)
+                            |__|
+*/
 void draw_diamond(unsigned int i,unsigned int j) {
 	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j);
 	draw_dirt(i,j);
-	draw_pixel(row_pixel+1,column_pixel+1,GREEN_BG);
+	draw_pixel_with_char(row_pixel,column_pixel+1,BROWN_BG, '_');
+	draw_pixel_with_char(row_pixel,column_pixel+2,BROWN_BG, '/');
+	draw_pixel_with_char(row_pixel,column_pixel+3,BROWN_BG, '\\');
+	draw_pixel_with_char(row_pixel,column_pixel+4,BROWN_BG, '_');
+	draw_pixel_with_char(row_pixel+1,column_pixel+1,GREEN_BG,'|');
 	draw_pixel(row_pixel+1,column_pixel+2,GREEN_BG);
 	draw_pixel(row_pixel+1,column_pixel+3,GREEN_BG);
-	draw_pixel(row_pixel+1,column_pixel+4,GREEN_BG);
-	draw_pixel(row_pixel+2,column_pixel+2,GREEN_BG);
-	draw_pixel(row_pixel+2,column_pixel+3,GREEN_BG);
+	draw_pixel_with_char(row_pixel+1,column_pixel+4,GREEN_BG,'|');
+	draw_pixel_with_char(row_pixel+2,column_pixel+2,GREEN_BG,'\\');
+	draw_pixel_with_char(row_pixel+2,column_pixel+3,GREEN_BG,'/');
 }
 
+/* draw_bag(unsigned int i,unsigned int j)
+	                             _,_,_,_
+Gold bags will look like:		|__$$__|
+						   		|__$$__|
+*/
 void draw_bag(unsigned int i,unsigned int j){
 	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j),k, l;
 	draw_dirt(i,j);
 	for (k=0;k<HEIGHT-1;k++)
-		for (l=1;l<WIDTH-1;l++)
+		for (l=1;l<WIDTH-1;l++){
 			draw_pixel(row_pixel+k,column_pixel+l,GRAY_BG);
+		}
 	draw_pixel_with_char(row_pixel,column_pixel+2,GRAY_BG,'$');
 	draw_pixel_with_char(row_pixel,column_pixel+3,GRAY_BG,'$');
 	draw_pixel_with_char(row_pixel+1,column_pixel+2,GRAY_BG,'$');
@@ -83,8 +95,9 @@ void draw_bag(unsigned int i,unsigned int j){
 void draw_dirt(unsigned int i,unsigned int j){
 	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j), k, l;
 	for (k=0;k<HEIGHT;k++)
-		for (l=0;l<WIDTH;l++)
+		for (l=0;l<WIDTH;l++) {
 			draw_pixel(row_pixel+k,column_pixel+l,BROWN_BG);
+		}
 }
 
 void draw_empty(unsigned int i,unsigned int j){
@@ -93,6 +106,14 @@ void draw_empty(unsigned int i,unsigned int j){
 		for (l=0;l<WIDTH;l++)
 			draw_pixel(row+k,col+l,BLACK_BG);
 }
+/* void draw_nobbin(Nobbin n){
+	int i=n.x,j=n.y;
+	
+	draw_pixel_with_char(i,j,RED_ON_BLACK,'<');
+	draw_pixel_with_char(i,j-1,RED_BG,'o');
+	draw_pixel_with_char(i,j-2,BROWN_BG,'E');
+	
+} */
 
 void draw_dig(unsigned int i,unsigned int j){
 	int row = i-1, col= j-3,k,l;
@@ -153,6 +174,46 @@ void draw_digger(Digger player){
 			draw_area(y,x);
 			break;
 	}
+}
+
+/* void draw_fire_ball(FireBall fb){
+	
+} */
+
+int move_is_possible(int x,int y, char direction, int i_can_dig){
+	switch(direction) {
+		case 'u':
+			if ((y-3)<0) return 0;
+			break;
+		case 'd':
+			if ((y+2)>ROWS_PIXELS) return 0;
+			break;
+		case 'r':
+			if ((x+4)>COLUMNS_PIXELS) return 0;
+			break;
+		case 'l':
+			if ((x-4)<0) return 0;
+			break;
+	}
+	if(i_can_dig){
+		return 1;
+	} else {
+		switch(direction) {
+			case 'u':
+				if (current_map[y-2][x][1]==BLACK_BG) return 1;
+				break;
+			case 'd':
+				if (current_map[y+2][x][1]==BLACK_BG) return 1;
+				break;
+			case 'r':
+				if (current_map[y][x+4][1]==BLACK_BG) return 1;
+				break;
+			case 'l':
+				if (current_map[y][x-4][1]==BLACK_BG) return 1;
+				break;
+		}
+	}
+	return 0;
 }
 
 int pixel_2_row( unsigned int pixel_index ) {

@@ -11,14 +11,16 @@
 #define COLUMNS_PIXELS 80
 #define BLACK_BG 0
 #define BLUE_BG 16
-#define GREEN_BG 32
+#define GREEN_BG 38
 #define BABY_BG 48
 #define RED_BG 64
 #define PURPLE_BG 80
-#define BROWN_BG 96
+#define BROWN_BG 98
 #define GRAY_BG 112
-#define GREEN_ON_BLACK 2
 #define BROWN_ON_RED 70
+#define GREEN_ON_BLACK 2
+#define BROWN_ON_BLACK 6
+
 
 extern volatile Digger player;
 extern char* str;
@@ -41,6 +43,7 @@ typedef struct map {
 	char dirt[25][80];
 	} Map;
 
+	
 void clean_screen();
 void create_map();
 
@@ -49,6 +52,7 @@ void draw_diamond(unsigned int i,unsigned int j);
 void draw_dirt(unsigned int i,unsigned int j);
 void draw_bag(unsigned int i,unsigned int j);
 void draw_empty(unsigned int i,unsigned int j);
+int move_is_possible(int x,int y, char direction, int i_can_dig);
 void draw_dig(unsigned int i,unsigned int j);
 void refresh_map(Digger *player);
 
