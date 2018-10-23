@@ -4,11 +4,13 @@
 #include "map.h"
 #include "myints.h"
 
-void create_digger(Digger *player)
+Digger create_digger()
 {
-	(*player).x = 7;
-	(*player).y = 7;
-	(*player).direction = 'l';
+	Digger player;
+	player.x = 7;
+	player.y = 7;
+	player.direction = 'l';
+	player.speed = 20;
 }
 
 void move(Digger *player)
