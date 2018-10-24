@@ -48,7 +48,7 @@ typedef struct map {
 void clean_screen();
 void create_map();
 
-int getPixelColor(int x, int y);
+int getNextPixelType(int x, int y, int direction, char level[ROWS][COLUMNS]);
 void draw_pixel(int row, int col, char color);
 void draw_diamond(unsigned int i,unsigned int j);
 void draw_dirt(unsigned int i,unsigned int j);

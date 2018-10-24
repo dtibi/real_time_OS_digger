@@ -217,9 +217,13 @@ int column_2_pixel(unsigned int column_index) {
 }
 
 //return the color of the pixel (BLACK_BG || GREEN_BG || BROWN_BG || )
-int getPixelColor(int x, int y)
-{
-	return current_map[y][x][1]; 
+int getNextPixelType(int x, int y, int direction, char level[ROWS][COLUMNS])
+{	
+	if		(direction==UP_ARROW   ) return level[(y-2) / (ROWS_PIXELS/ROWS)][x / (COLUMNS_PIXELS/COLUMNS)]; 
+	else if (direction==DOWN_ARROW ) return level[y + 2 / (ROWS_PIXELS/ROWS)][x / (COLUMNS_PIXELS/COLUMNS)];
+	else if (direction==RIGHT_ARROW) return level[y / (ROWS_PIXELS/ROWS)][(x+4) / (COLUMNS_PIXELS/COLUMNS)];
+	else if (direction==LEFT_ARROW ) return level[y / (ROWS_PIXELS/ROWS)][(x-4) / (COLUMNS_PIXELS/COLUMNS)];
+	return 0;
 }
 
 void create_map(){

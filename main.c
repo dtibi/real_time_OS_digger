@@ -46,7 +46,6 @@ xmain()
 	
 	Int9Save = getvect(0x09);
 	Int8Save = getvect(0x08);
-
 	
 	recvpid = create(move_digger,INITSTK,INITPRIO,"move_digger",1,&player);
 	receiver_pid = recvpid;
