@@ -70,12 +70,14 @@ xmain()
 	move_enemys_pid = create(move_nobbins,INITSTK,INITPRIO-1,"move_nobbins",0);
 	//bg_sound_pid = create(background_music,INITSTK,INITPRIO-1,"background_sounds",0);
 
+
 	resume(map_moves_pid);
 	resume(digger_move_pid);
 	resume(debug);
 	resume(terminate_xinu_pid);
 	resume(move_enemys_pid);
 	//resume(bg_sound_pid);
+
 	
 	set_new_int9_newisr();
 	
@@ -86,6 +88,7 @@ xmain()
 	}
 	
     schedule(3,57, map_moves_pid, 0,  digger_move_pid, 29, debug, 29 ,terminate_xinu_pid , 29,bg_sound_pid,29);
+
 } 
 
 

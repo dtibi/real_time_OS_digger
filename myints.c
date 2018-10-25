@@ -12,6 +12,7 @@ volatile unsigned char scan;
 volatile unsigned int map_moves_pid, digger_move_pid, debug, terminate_xinu_pid, move_enemys_pid,bg_sound_pid;
 volatile int keep_playing=1;
 
+
 void interrupt (*Int9Save) (void);
 void interrupt (*Int8Save) (void);
 
