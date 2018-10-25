@@ -3,9 +3,8 @@
 #include "digger.h"
 #include "myints.h"
 
-
-char current_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
 volatile Digger player;
+volatile Map gameMap;
 
 void clean_screen(){
 	asm{
@@ -35,8 +34,8 @@ void draw_pixel_with_char(int row, int col, char color,char ch){
 		MOV             AH,color
 		MOV             ES:[DI], AX
 	}
-	current_map[row][col][0] = ch;
-	current_map[row][col][1] = color;
+	gameMap.current_map[row][col][0] = ch;
+	gameMap.current_map[row][col][1] = color;
 }
 
 void draw_pixel(int row, int col, char color){
@@ -51,8 +50,9 @@ void draw_pixel(int row, int col, char color){
 		MOV             ES:[DI], AX
 	}
 	
-	current_map[row][col][0] = ' ';
-	current_map[row][col][1] = color;
+
+	gameMap.current_map[row][col][0] = ' ';
+	gameMap.current_map[row][col][1] = color;
 }
 
 /*  draw_diamond(unsigned int i,unsigned int j)
@@ -111,11 +111,11 @@ void draw_empty(unsigned int i,unsigned int j){
 } */
 
 void draw_dig(unsigned int i,unsigned int j){
-	int row = i-1, col= j-3,k,l;
-	for (k=0;k<=HEIGHT;k++)
-		for (l=0;l<=WIDTH;l++){
-			current_map[row+k][col+l][0] = ' ';
-			current_map[row+k][col+l][1] = BLACK_BG;
+	int row = i-(HEIGHT/2), col= j-(WIDTH/2),k,l;
+	for (k=0;k<HEIGHT;k++)
+		for (l=0;l<WIDTH;l++){
+			gameMap.current_map[row+k][col+l][0] = ' ';
+			gameMap.current_map[row+k][col+l][1] = BLACK_BG;
 		}
 }
 
@@ -123,7 +123,7 @@ void draw_area(int y, int x){
 	int i,j;
 	for(i=y-2;i>=0 && i<y+2 && i<ROWS_PIXELS;i++)
 		for(j=x-4;j>=0 && j<x+4 && j<COLUMNS_PIXELS;j++)
-			draw_pixel_with_char(i,j,current_map[i][j][1],current_map[i][j][0]);
+			draw_pixel_with_char(i,j,gameMap.current_map[i][j][1],gameMap.current_map[i][j][0]);
 }
 
 void draw_digger(Digger player){
@@ -133,38 +133,38 @@ void draw_digger(Digger player){
 	switch (direction) {
 		case RIGHT_ARROW:
 			draw_dig(y,x);
-			current_map[y][x][0] = '<';
-			current_map[y][x-1][0] = 'o';
-			current_map[y][x-2][0] = 'o';
-			current_map[y][x][1] = GREEN_ON_BLACK;
-			current_map[y][x-1][1] = BROWN_ON_RED;
-			current_map[y][x-2][1] = BROWN_ON_RED;
+			gameMap.current_map[y][x+2][0] = '<';
+			gameMap.current_map[y][x+1][0] = 'o';
+			gameMap.current_map[y][x][0] = 'o';
+			gameMap.current_map[y][x+2][1] = GREEN_ON_BLACK;
+			gameMap.current_map[y][x+1][1] = BROWN_ON_RED;
+			gameMap.current_map[y][x][1] = BROWN_ON_RED;
 			draw_area(y,x);
 			break;
 		case LEFT_ARROW:
 			draw_dig(y,x);
-			current_map[y][x][0] = '>';
-			current_map[y][x+1][0] = 'o';
-			current_map[y][x+2][0] = 'o';
-			current_map[y][x][1] = GREEN_ON_BLACK;
-			current_map[y][x+1][1] = BROWN_ON_RED;
-			current_map[y][x+2][1] = BROWN_ON_RED;
+			gameMap.current_map[y][x-2][0] = '>';
+			gameMap.current_map[y][x-1][0] = 'o';
+			gameMap.current_map[y][x][0] = 'o';
+			gameMap.current_map[y][x-2][1] = GREEN_ON_BLACK;
+			gameMap.current_map[y][x-1][1] = BROWN_ON_RED;
+			gameMap.current_map[y][x][1] = BROWN_ON_RED;
 			draw_area(y,x);
 			break;
 		case UP_ARROW:
 			draw_dig(y,x);
-			current_map[y][x][0] = 'V';
-			current_map[y+1][x][0] = '8';
-			current_map[y][x][1] = GREEN_ON_BLACK;
-			current_map[y+1][x][1] = BROWN_ON_RED;
+			gameMap.current_map[y-1][x][0] = 'V';
+			gameMap.current_map[y][x][0] = '8';
+			gameMap.current_map[y-1][x][1] = GREEN_ON_BLACK;
+			gameMap.current_map[y][x][1] = BROWN_ON_RED;
 			draw_area(y,x);
 			break;
 		case DOWN_ARROW:
 			draw_dig(y,x);
-			current_map[y][x][0] = '^';
-			current_map[y-1][x][0] = '8';
-			current_map[y][x][1] = GREEN_ON_BLACK;
-			current_map[y-1][x][1] = BROWN_ON_RED;
+			gameMap.current_map[y+1][x][0] = '^';
+			gameMap.current_map[y][x][0] = '8';
+			gameMap.current_map[y+1][x][1] = GREEN_ON_BLACK;
+			gameMap.current_map[y][x][1] = BROWN_ON_RED;
 			draw_area(y,x);
 			break;
 	}
@@ -175,26 +175,25 @@ void draw_digger(Digger player){
 } */
 
 int move_is_possible(int x,int y, int direction, int i_can_dig){
-	if ((direction==UP_ARROW && (y-1)<=0) || 
-		(direction==DOWN_ARROW  && (y+1)>=ROWS_PIXELS) || 
-		(direction==RIGHT_ARROW && ((x+2)>=COLUMNS_PIXELS)) || 
-		(direction==LEFT_ARROW && (x-2)<0)) return 0;
+	
+	if((direction==UP_ARROW    && (y/HEIGHT)-1 < 0	  	 )||
+	   (direction==DOWN_ARROW  && (y/HEIGHT)+2 > ROWS	 )||
+	   (direction==RIGHT_ARROW && (x/WIDTH)+2  > COLUMNS)||
+	   (direction==LEFT_ARROW  && (x/WIDTH)-1  < 0		 ))return 0;
+	
 	if (direction!=UP_ARROW && direction!=DOWN_ARROW && direction!=RIGHT_ARROW && direction!=LEFT_ARROW) return 0;
 	
-	if		(direction==UP_ARROW    && (y-(HEIGHT/2)-1)<=0) return 0;
-	else if (direction==DOWN_ARROW  && (y+(HEIGHT/2)+1)>=ROWS_PIXELS) return 0;
-	else if (direction==RIGHT_ARROW && (x+(WIDTH/2)+1)>=COLUMNS_PIXELS) return 0;
-	else if (direction==LEFT_ARROW  && (x-(WIDTH/2)-1)<=0) return 0;
-	
-	if(i_can_dig){
+	if(i_can_dig)
 		return 1;
-	} else {
-		if(		 direction==UP_ARROW    && current_map[y-2][x][1]==BLACK_BG) return 1;
-		else if (direction==DOWN_ARROW  && current_map[y+2][x][1]==BLACK_BG) return 1;
-		else if (direction==RIGHT_ARROW && current_map[y][x+3][1]==BLACK_BG) return 1;
-		else if (direction==LEFT_ARROW  && current_map[y][x-3][1]==BLACK_BG) return 1;
-	return 0;
+	
+	else{
+		if(		 direction==UP_ARROW    && gameMap.currentLevel[(y-HEIGHT)/HEIGHT][x/WIDTH]==0) return 1;
+		else if (direction==DOWN_ARROW  && gameMap.currentLevel[(y+HEIGHT)/HEIGHT][x/WIDTH]==0) return 1;
+		else if (direction==RIGHT_ARROW && gameMap.currentLevel[y/HEIGHT][(x+WIDTH)/WIDTH]==0) return 1;
+		else if (direction==LEFT_ARROW  && gameMap.currentLevel[y/HEIGHT][(x-WIDTH)/WIDTH]==0) return 1;
 	}
+	
+	return 0;
 }
 
 int pixel_2_row( unsigned int pixel_index ) {
@@ -217,31 +216,31 @@ int column_2_pixel(unsigned int column_index) {
 }
 
 //return the color of the pixel (BLACK_BG || GREEN_BG || BROWN_BG || )
-int getNextPixelType(int x, int y, int direction, char level[ROWS][COLUMNS])
+int getNextPixelType(int x, int y, int direction)
 {	
-	if		(direction==UP_ARROW   ) return level[(y-2) / (ROWS_PIXELS/ROWS)][x / (COLUMNS_PIXELS/COLUMNS)]; 
-	else if (direction==DOWN_ARROW ) return level[y + 2 / (ROWS_PIXELS/ROWS)][x / (COLUMNS_PIXELS/COLUMNS)];
-	else if (direction==RIGHT_ARROW) return level[y / (ROWS_PIXELS/ROWS)][(x+4) / (COLUMNS_PIXELS/COLUMNS)];
-	else if (direction==LEFT_ARROW ) return level[y / (ROWS_PIXELS/ROWS)][(x-4) / (COLUMNS_PIXELS/COLUMNS)];
+	if		(direction==UP_ARROW   ) return gameMap.currentLevel[(y-HEIGHT)/HEIGHT][x/WIDTH]; 
+	else if (direction==DOWN_ARROW ) return gameMap.currentLevel[(y+HEIGHT)/HEIGHT][x/WIDTH];
+	else if (direction==RIGHT_ARROW) return gameMap.currentLevel[y/HEIGHT][(x+WIDTH)/WIDTH];
+	else if (direction==LEFT_ARROW ) return gameMap.currentLevel[y/HEIGHT][(x-WIDTH)/WIDTH];
 	return 0;
 }
 
-void create_map(){
+Map create_map(){
 	int i,j;
-	
 	for (i=0; i<ROWS; i++) {
 		for(j=0;j<COLUMNS; j++) {
-			if (level_0[i][j]==1) draw_dirt(i,j);
-			else if(level_0[i][j]==2) draw_diamond(i,j);
-			else if (level_0[i][j]==3) draw_bag(i,j);
-			else if (level_0[i][j]==0) draw_empty(i,j);
+			if (gameMap.currentLevel[i][j]==1) draw_dirt(i,j);
+			else if(gameMap.currentLevel[i][j]==2) draw_diamond(i,j);
+			else if (gameMap.currentLevel[i][j]==3) draw_bag(i,j);
+			else if (gameMap.currentLevel[i][j]==0) draw_empty(i,j);
 		}
 	}
+	
+	return gameMap;
 }
 
 void refresh_map(){
-	create_map();
-	//printf("x = %d , y = %d , dir = %d", (*player).x, (*player).y, (*player).direction);
+	gameMap = create_map();
 	player = create_digger();
 	draw_digger(player);
 	while(1) {

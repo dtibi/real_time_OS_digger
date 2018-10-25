@@ -43,6 +43,7 @@ SYSCALL schedule(int no_of_pids, int cycle_length, int pid1, ...)
 xmain()
 {
 	int uppid, recvpid;
+	int i, j;
 	
 	Int9Save = getvect(0x09);
 	Int8Save = getvect(0x08);
@@ -52,6 +53,13 @@ xmain()
 	
 	set_new_int9_newisr();
 	//setvect(8, MyISR8);
+	
+	for (i=0; i<ROWS; i++) {
+		for(j=0;j<COLUMNS; j++) {
+			gameMap.currentLevel[i][j] = level_0[i][j];
+		}
+	}
+	
 	resume(uppid = create(refresh_map,INITSTK,INITPRIO,"refresh_map",0));
 	resume(receiver_pid);
 	
