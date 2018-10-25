@@ -60,7 +60,7 @@ void draw_bag(unsigned int i,unsigned int j);
 void draw_empty(unsigned int i,unsigned int j);
 void draw_nobbins(Nobbin n[NOBBIN_COUNT]);
 void draw_area(int y, int x);
-int move_is_possible(int x,int y, char direction, int i_can_dig);
+int move_is_possible(int x,int y, int direction, int i_can_dig);
 void draw_dig(unsigned int i,unsigned int j);
 void refresh_map(Digger *player);
 
