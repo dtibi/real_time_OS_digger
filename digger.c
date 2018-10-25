@@ -33,9 +33,7 @@ void move(Digger *player,int direction)
 		(*player).direction = direction; //chane direction
 		(*player).x -=  XYchanges[0]; //update x
 		(*player).y -=  XYchanges[1]; //update y
-	}
-	
-	else{
+	} else {
 		switch (direction)
 		{
 			case LEFT_ARROW:

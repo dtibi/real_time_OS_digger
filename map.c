@@ -1,11 +1,13 @@
 #include <conf.h>
 #include "map.h"
 #include "digger.h"
+#include "nobin.h"
 #include "myints.h"
 
 
 char current_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
 volatile Digger player;
+volatile Nobbin enemys[NOBBIN_COUNT];
 
 void clean_screen(){
 	asm{
@@ -95,20 +97,55 @@ void draw_dirt(unsigned int i,unsigned int j){
 		}
 }
 
+void clean_nobbin(unsigned int i,unsigned int j){
+	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j), k, l;
+		for (k=0;k<HEIGHT;k++)
+			for (l=0;l<WIDTH;l++) {
+				draw_pixel(row_pixel+k,column_pixel+l,BROWN_BG);
+			}
+}
+
 void draw_empty(unsigned int i,unsigned int j){
 	int row = row_2_pixel(i), col= column_2_pixel(j),k,l;
 	for (k=0;k<HEIGHT;k++)
 		for (l=0;l<WIDTH;l++)
 			draw_pixel(row+k,col+l,BLACK_BG);
 }
-/* void draw_nobbin(Nobbin n){
-	int i=n.x,j=n.y;
+/* 
+nobbin should look like:
+    _   _
+   |_|_|_|
+     |_|
+	/   \
+
+ */
+void draw_nobbins(Nobbin n[NOBBIN_COUNT]){
+	int i,j,x,y;
+	for(i=0;i<NOBBIN_COUNT;i++){
+		if(n[i].is_alive) {
+			x = n[i].x;
+			y = n[i].y;
+			//printf("x = %d , y = %d",x,y);
+			if(!n[i].is_hobbin){
+				draw_dig(y,x);
+				current_map[y][x][0] = ' ';
+				current_map[y][x][1] =  GREEN_BG;
+				current_map[y-1][x-1][0] = '0';
+				current_map[y-1][x-1][1] =  BROWN_BG;
+				current_map[y-1][x+1][0] = '0';
+				current_map[y-1][x+1][1] =  BROWN_BG;
+				current_map[y+1][x-1][0] = '/';
+				current_map[y+1][x-1][1] =  RED;
+				current_map[y+1][x+1][0] = '\\';
+				current_map[y+1][x+1][1] =  RED;
+			} else {
+				
+			}
+			draw_area(y,x);
+		}
+	}
 	
-	draw_pixel_with_char(i,j,RED_ON_BLACK,'<');
-	draw_pixel_with_char(i,j-1,RED_BG,'o');
-	draw_pixel_with_char(i,j-2,BROWN_BG,'E');
-	
-} */
+}
 
 void draw_dig(unsigned int i,unsigned int j){
 	int row = i-1, col= j-3,k,l;
@@ -241,11 +278,11 @@ void create_map(){
 
 void refresh_map(){
 	create_map();
-	//printf("x = %d , y = %d , dir = %d", (*player).x, (*player).y, (*player).direction);
-	player = create_digger();
+	//printf("x = %d , y = %d , dir = %c", (*player).x, (*player).y, (*player).direction);
 	draw_digger(player);
 	while(1) {
 		draw_digger(player);
+		draw_nobbins(&enemys);
 	}
 }
 
