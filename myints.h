@@ -10,7 +10,7 @@
 extern volatile unsigned char scan;
 extern volatile unsigned char ascii;
 extern volatile unsigned char timer;
-extern volatile unsigned int receiver_pid;
+extern volatile unsigned int map_move_digger_pid, digger_move_pid, map_debug_pid, terminate_xinu_pid;
 
 void set_new_int9_newisr();
 extern void interrupt (*Int9Save) (void);

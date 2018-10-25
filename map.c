@@ -8,6 +8,16 @@
 char current_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
 volatile Digger player;
 volatile Nobbin enemys[NOBBIN_COUNT];
+char* debug_str;
+
+void draw_debug_line(char *str){
+	int i,str_len;
+	str_len = (strlen(str)>COLUMNS_PIXELS) ? COLUMNS_PIXELS : strlen(str);
+	//printf("draw_debug_line");
+	for (i=0;i<str_len;i++){
+		draw_pixel_with_char(0,i,2,str[i]);
+	}
+}
 
 void clean_screen(){
 	asm{
@@ -281,8 +291,15 @@ void refresh_map(){
 	//printf("x = %d , y = %d , dir = %c", (*player).x, (*player).y, (*player).direction);
 	draw_digger(player);
 	while(1) {
+		receive();
 		draw_digger(player);
-		draw_nobbins(&enemys);
+		//draw_nobbins(&enemys);
+	}
+}
+
+void refresh_debug_map(){
+	while(1){
+		draw_debug_line((char*)receive());
 	}
 }
 

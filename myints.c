@@ -8,9 +8,8 @@
 #include "map.h"
 
 volatile unsigned char scan;
-volatile unsigned char ascii;
 volatile unsigned char timer;
-volatile unsigned int receiver_pid;
+volatile unsigned int map_move_digger_pid, digger_move_pid, map_debug_pid, terminate_xinu_pid;
 
 void interrupt (*Int9Save) (void);
 void interrupt (*Int8Save) (void);
@@ -18,10 +17,7 @@ void interrupt (*Int8Save) (void);
 
 INTPROC MyISR9(int mdevno)
 {
-	char result = 0;
 	int scan = 0;
-	int ascii = 0;
-
 	asm {
 	  MOV AH,1
 	  INT 16h
@@ -29,14 +25,13 @@ INTPROC MyISR9(int mdevno)
 	  MOV AH,0
 	  INT 16h
 	  MOV BYTE PTR scan,AH
-	  MOV BYTE PTR ascii,AL
 	} //asm
 	if (scan==46) {
 		clean_screen();
-		xdone();
+		send(terminate_xinu_pid,0);
 	}
 
-	send(receiver_pid, scan); 
+	send(digger_move_pid, scan); 
 
 	Skip1:
 
@@ -55,32 +50,6 @@ void set_new_int9_newisr()
 
 } // set_new_int9_newisr
 
-void interrupt MyISR9a_old(void)
-{
-	asm{
-		//PUSHF
-		//CALL DWORD PTR Int9Save
-		
-		in al, 60h    //input
-		mov scan, al  // scan code
-		
-		in al, 61h
-		or al, 80h
-		out 61h, al
-		and al, 7Fh
-		out 61h, al
-		mov al, 20h //end int
-		out 20h, al
-	}
-	
-	if (scan==46) {
-		clean_screen();
-		xdone();
-	}
-	
-	else
-		move_digger(&player);
-}
 
 void interrupt MyISR8(void)
 {
