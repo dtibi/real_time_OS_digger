@@ -3,6 +3,7 @@
 #include "map.h"
 #include "digger.h"
 #include "myints.h"
+#include "nobin.h"
 
 int sched_arr_pid[5] = {-1};
 int sched_arr_int[5] = {-1};
@@ -42,8 +43,11 @@ SYSCALL schedule(int no_of_pids, int cycle_length, int pid1, ...)
  */
 xmain()
 {
-	int uppid, recvpid;
-	
+	int uppid, recvpid,i;
+	player = create_digger();
+	for(i=0;i<NOBBIN_COUNT;i++)
+		enemys[i]= create_nobbin(&player);
+	enemys[0].is_alive = 1;
 	Int9Save = getvect(0x09);
 	Int8Save = getvect(0x08);
 	
@@ -53,6 +57,7 @@ xmain()
 	set_new_int9_newisr();
 	//setvect(8, MyISR8);
 	resume(uppid = create(refresh_map,INITSTK,INITPRIO,"refresh_map",0));
+	resume(uppid = create(move_nobbins,INITSTK,INITPRIO,"refresh_map",0));
 	resume(receiver_pid);
 	
 	
