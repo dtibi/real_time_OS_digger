@@ -1,0 +1,5 @@
+#ignore all exectable files and object files
+/*.EXE
+/*.OBJ
+/*.exe
+/*.obj

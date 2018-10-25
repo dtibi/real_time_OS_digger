@@ -4,43 +4,143 @@
 #include "map.h"
 #include "myints.h"
 
-void create_digger(Digger *player)
+//Create digger
+Digger create_digger()
 {
-	(*player).x = 7;
-	(*player).y = 7;
-	(*player).direction = 'l';
+	Digger player;
+	player.x = 40;
+	player.y = 22;
+	player.direction = LEFT_ARROW;
+	
+	return player;
 }
 
-void move(Digger *player)
+void move(Digger *player,int direction)
 {
-	switch (scan)
+	int *XYchanges;
+	
+	if (!move_is_possible((*player).x,(*player).y,direction, 1)) return;
+	
+	if (getNextPixelType((*player).x, (*player).y, direction, level_0) == 2) //TODO: change this so the function will get the level
+		printf("D ");//dimond found - del dimond from the map and add score
+	
+	else if (getNextPixelType((*player).x, (*player).y, direction, level_0) == 3) //TODO: change this so the function will get the level
+		printf("GS ");//found gold sack - move the gold sack in the direction of the movment
+	
+	if(direction != (*player).direction) //check if the wanted move direction is diffrent from the current
 	{
-		case 80: //down
-			if((*player).direction != 'd')
-				(*player).direction = 'd';
-			else if((*player).y != ROWS)
-				(*player).y--;
+		XYchanges = directionChanged((*player).direction, direction); //check what are the changes in x and y according to the prev direction and the next direction
+		(*player).direction = direction; //chane direction
+		(*player).x -=  XYchanges[0]; //update x
+		(*player).y -=  XYchanges[1]; //update y
+	}
+	
+	else{
+		switch (direction)
+		{
+			case LEFT_ARROW:
+					(*player).x --;
+				break;
+			case RIGHT_ARROW:
+					(*player).x ++;
+				break;
+			case DOWN_ARROW:
+					(*player).y ++;
+				break;
+			case UP_ARROW:
+					(*player).y --;
+				break;
+		}
+	}
+}
+
+//calculating the change in x and y that need to be done when the direction is changed
+int* directionChanged (int prevDirection, int nextDirection)
+{
+	int XYchanges[2] = {0, 0};
+	switch (prevDirection)
+	{
+		case LEFT_ARROW:
+			switch(nextDirection)
+			{	
+				case RIGHT_ARROW:
+					XYchanges[0] = -3;
+					break;
+					
+				case DOWN_ARROW:
+					XYchanges[0] = -2;
+					XYchanges[1] = -1;
+					break;
+					
+				case UP_ARROW:
+					XYchanges[0] = -2;
+					XYchanges[1] = 1;
+					break;
+			}
 			break;
 		
-		case 72: //up
-			if((*player).direction != 'u')
-				(*player).direction = 'u';
-			if((*player).y != 0)
-				(*player).y++;
+		case RIGHT_ARROW:
+			switch(nextDirection)
+			{
+				case LEFT_ARROW:
+					XYchanges[0] = 3;
+					break;
+					
+				case DOWN_ARROW:
+					XYchanges[0] = 2;
+					XYchanges[1] = -1;
+					break;
+					
+				case UP_ARROW:
+					XYchanges[0] = 2;
+					XYchanges[1] = 1;
+					break;
+			}
 			break;
 		
-		case 75: //left
-			if((*player).direction != 'l')
-				(*player).direction = 'l';
-			if((*player).x != 0)
-				(*player).x--;
+		case DOWN_ARROW:
+			switch(nextDirection)
+			{
+				case LEFT_ARROW:
+					XYchanges[0] = 2;
+					XYchanges[1] = 1;
+					break;
+					
+				case RIGHT_ARROW:
+					XYchanges[0] = -2;
+					XYchanges[1] = 1;
+					break;
+					
+				case UP_ARROW:
+					XYchanges[1] = 2;
+					break;
+			}
 			break;
 		
-		case 77: //right
-			if((*player).direction != 'r')
-				(*player).direction = 'r';
-			if((*player).x != COLUMNS)
-				(*player).x++;
+		case UP_ARROW:
+			switch(nextDirection)
+			{
+				case LEFT_ARROW:
+					XYchanges[0] = 2;
+					XYchanges[1] = -1;
+					break;
+					
+				case RIGHT_ARROW:
+					XYchanges[0] = -2;
+					XYchanges[1] = -1;
+					break;
+					
+				case DOWN_ARROW:
+					XYchanges[1] = -2;
+					break;
+			}
 			break;
 	}
+	return XYchanges;
+}
+
+void move_digger(Digger *player){	
+	while(1){
+		move(player,receive());
+	  }
 }

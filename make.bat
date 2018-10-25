@@ -1,1 +1,1 @@
-tcc -I.. myints.c main.c map.c digger.c  ../xinu.lib
+tcc -I.. main.c myints.c map.c digger.c nobin.c ../xinu.lib
