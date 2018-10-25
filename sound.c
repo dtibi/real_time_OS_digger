@@ -1,28 +1,23 @@
 #include <dos.h>
 #include <stdio.h>
 #include "sound.h"
+#include "myints.h"
 
-#pragma comment(lib,"winmm.lib")
-
-volatile int count;
-
-void interrupt newint8(void)
-{
-    count++;
-    asm {
-        MOV AL,20h
-        OUT 20h,AL
-    }
-
-} // newint8(void)
-
-void interrupt (*int8save)(void);
 
 void my_delay(int n, int type)
 {
 	int long_delay = 22;
 	int short_delay = 1;
 	int delay;
+	
+	count = 0;
+	
+	if(type == 0)				
+		delay = short_delay;  // delay between two same notes
+	else
+		delay = long_delay;   // delay between two different notes
+	
+    delay_timer = n*delay;
 	
     asm {
         CLI
@@ -36,36 +31,28 @@ void my_delay(int n, int type)
         POP AX
     } // asm
 
-    int8save = getvect(8);
-    setvect(8,newint8);
+    Int8Save = getvect(8);
+    setvect(8,MyISR8);
     asm  { STI
 	};
 	
-    count = 0;
+   receive();
+
+	asm {
+	  CLI
+	  PUSH AX
+	  MOV AL,036h
+	  OUT 43h,AL
+	  MOV AX,0
+	  OUT 40h,AL
+	  MOV AL,AH
+	  OUT 40h,AL 
+	  POP AX
+	} // asm
+
+
+    setvect(8,Int8Save);
 	
-	if(type == 0)				
-		delay = short_delay;  // delay between two same notes
-	else
-		delay = long_delay;   // delay between two different notes
-	
-    while(count <= n*delay)
-        ;
-
-        asm {
-          CLI
-          PUSH AX
-          MOV AL,036h
-          OUT 43h,AL
-          MOV AX,0
-          OUT 40h,AL
-          MOV AL,AH
-          OUT 40h,AL 
-          POP AX
-        } // asm
-
-
-    setvect(8,int8save);
-
 
 } //mydelay
 
@@ -147,8 +134,9 @@ void background_music(){
 	
 	int i;
 	
-	while(1){
+	while(keep_playing){
 		
+		my_delay(1,0);
 		sound(A4S);
 		my_delay(2,1);
 		
@@ -208,16 +196,14 @@ void background_music(){
 		my_delay(1,1);
 		
 		no_sound();
-		my_delay(1,0);
-		
-		
+				
 	}
-	
-    no_sound();
+	//beethoven();
+    //no_sound();
 }
 
 void beethoven(){
-	while(1){
+	while(keep_playing){
 		sound(E4);
 		my_delay(1,1);
 		no_sound();

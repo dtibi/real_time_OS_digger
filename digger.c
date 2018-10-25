@@ -8,8 +8,8 @@
 Digger create_digger()
 {
 	Digger player;
-	player.x = 40;
-	player.y = 22;
+	player.x = 42;
+	player.y = 23;
 	player.direction = LEFT_ARROW;
 	
 	return player;
@@ -19,122 +19,35 @@ void move(Digger *player,int direction)
 {
 	int *XYchanges;
 	
+	if(direction != (*player).direction) //check if the wanted move direction is diffrent from the current
+		(*player).direction = direction; //TODO: add here call the redraw digger
+	
 	if (!move_is_possible((*player).x,(*player).y,direction, 1)) return;
 	
-	//if (getNextPixelType((*player).x, (*player).y, direction, level_0) == 2) //TODO: change this so the function will get the level
+	else{
 		
+		if (getNextPixelType((*player).x, (*player).y, direction) == 2) //TODO: change this so the function will get the level
+		{}
 	
-	//else if (getNextPixelType((*player).x, (*player).y, direction, level_0) == 3) //TODO: change this so the function will get the level
+		else if (getNextPixelType((*player).x, (*player).y, direction) == 3) //TODO: change this so the function will get the level
+		{}//
 		
-	
-	if(direction != (*player).direction) //check if the wanted move direction is diffrent from the current
-	{
-		XYchanges = directionChanged((*player).direction, direction); //check what are the changes in x and y according to the prev direction and the next direction
-		(*player).direction = direction; //chane direction
-		(*player).x -=  XYchanges[0]; //update x
-		(*player).y -=  XYchanges[1]; //update y
-	} else {
 		switch (direction)
 		{
 			case LEFT_ARROW:
-					(*player).x --;
+					(*player).x -= WIDTH;
 				break;
 			case RIGHT_ARROW:
-					(*player).x ++;
+					(*player).x += WIDTH;
 				break;
 			case DOWN_ARROW:
-					(*player).y ++;
+					(*player).y +=HEIGHT;
 				break;
 			case UP_ARROW:
-					(*player).y --;
+					(*player).y -=HEIGHT;
 				break;
 		}
 	}
-}
-
-//calculating the change in x and y that need to be done when the direction is changed
-int* directionChanged (int prevDirection, int nextDirection)
-{
-	int XYchanges[2] = {0, 0};
-	switch (prevDirection)
-	{
-		case LEFT_ARROW:
-			switch(nextDirection)
-			{	
-				case RIGHT_ARROW:
-					XYchanges[0] = -3;
-					break;
-					
-				case DOWN_ARROW:
-					XYchanges[0] = -2;
-					XYchanges[1] = -1;
-					break;
-					
-				case UP_ARROW:
-					XYchanges[0] = -2;
-					XYchanges[1] = 1;
-					break;
-			}
-			break;
-		
-		case RIGHT_ARROW:
-			switch(nextDirection)
-			{
-				case LEFT_ARROW:
-					XYchanges[0] = 3;
-					break;
-					
-				case DOWN_ARROW:
-					XYchanges[0] = 2;
-					XYchanges[1] = -1;
-					break;
-					
-				case UP_ARROW:
-					XYchanges[0] = 2;
-					XYchanges[1] = 1;
-					break;
-			}
-			break;
-		
-		case DOWN_ARROW:
-			switch(nextDirection)
-			{
-				case LEFT_ARROW:
-					XYchanges[0] = 2;
-					XYchanges[1] = 1;
-					break;
-					
-				case RIGHT_ARROW:
-					XYchanges[0] = -2;
-					XYchanges[1] = 1;
-					break;
-					
-				case UP_ARROW:
-					XYchanges[1] = 2;
-					break;
-			}
-			break;
-		
-		case UP_ARROW:
-			switch(nextDirection)
-			{
-				case LEFT_ARROW:
-					XYchanges[0] = 2;
-					XYchanges[1] = -1;
-					break;
-					
-				case RIGHT_ARROW:
-					XYchanges[0] = -2;
-					XYchanges[1] = -1;
-					break;
-					
-				case DOWN_ARROW:
-					XYchanges[1] = -2;
-					break;
-			}
-			break;
-	}
-	return XYchanges;
 }
 
 void move_digger(Digger *player){	
@@ -142,7 +55,7 @@ void move_digger(Digger *player){
 	while(1){
 		scanned = receive();
 		sprintf(debug_str,"scanned value is - %d",scanned);
-		//send(map_debug_pid,debug_str);
+		//send(debug,debug_str);
 		move(player,scanned);
 		send(map_moves_pid,0);
 	  }
