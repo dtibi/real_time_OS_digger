@@ -51,7 +51,12 @@ void move(Digger *player,int direction)
 }
 
 void move_digger(Digger *player){	
+	int scanned=0;
 	while(1){
-		move(player,receive());
+		scanned = receive();
+		sprintf(debug_str,"scanned value is - %d",scanned);
+		//send(map_debug_pid,debug_str);
+		move(player,scanned);
+		send(map_move_digger_pid,0);
 	  }
 }

@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include "sound.h"
 
+#pragma comment(lib,"winmm.lib")
+
 volatile int count;
 
 void interrupt newint8(void)
@@ -16,8 +18,12 @@ void interrupt newint8(void)
 
 void interrupt (*int8save)(void);
 
-void my_delay(int n)
+void my_delay(int n, int type)
 {
+	int long_delay = 22;
+	int short_delay = 1;
+	int delay;
+	
     asm {
         CLI
         PUSH AX
@@ -34,8 +40,15 @@ void my_delay(int n)
     setvect(8,newint8);
     asm  { STI
 	};
+	
     count = 0;
-    while(count <= n*110)
+	
+	if(type == 0)				
+		delay = short_delay;  // delay between two same notes
+	else
+		delay = long_delay;   // delay between two different notes
+	
+    while(count <= n*delay)
         ;
 
         asm {
@@ -75,8 +88,8 @@ void change_speaker(int status)
 
     if ( status==ON )
      portval |= 0x03;
-      else
-       portval &=~ 0x03;
+    else
+     portval &=~ 0x03;
         // outportb( 0x61, portval );
         asm {
           PUSH AX
@@ -132,20 +145,175 @@ void no_sound()
 
 void background_music(){
 	
-//	PlaySound("C:\\XINU4WIN\\NEWSRC\\digger\\Gold_Digger.wav", NULL, SND_ASYNC);
+	int i;
 	
-	sound( 355 );
-    my_delay( 2 );
-    sound( 533 );
-    my_delay( 2 );
-    sound( 755 );
-    my_delay( 2 );
-    sound( 355 );
-    my_delay( 2 );
-	sound( 533 );
-    my_delay( 2 );
-	sound( 755 );
-    my_delay( 2 );
+	while(1){
+		
+		sound(A4S);
+		my_delay(2,1);
+		
+		for(i = 0; i < 2; i++){
+			no_sound();
+			my_delay(2,1);
+			sound(A4S);
+			my_delay(1,1);
+			no_sound();
+			my_delay(2,0);
+			sound(A4S);
+			my_delay(1,1);
+			no_sound();
+			my_delay(1,0);
+			sound(A4S);
+			my_delay(1,1);
+			sound(G4S);
+			my_delay(1,1);
+			sound(A4S);
+			my_delay(1,1);
+			no_sound();
+			my_delay(2,0);
+			sound(A4S);
+			my_delay(2,1);
+		}
+		
+		no_sound();
+		my_delay(2,1);
+		
+		sound(C5S);
+		my_delay(2,1);
+		sound(A4S);
+		my_delay(1,1);
+		no_sound();
+		my_delay(1,1);
+		sound(G4S);
+		my_delay(2,1);
+		sound(F4S);
+		my_delay(1,1);
+		
+		no_sound();
+		my_delay(1,1);
+		
+		sound(D4S);
+		my_delay(1,1);
+		no_sound();
+		my_delay(2,0);
+		sound(D4S);
+		my_delay(1,1);
+		sound(F4);
+		my_delay(1,1);
+		sound(F4S);
+		my_delay(1,1);
+		no_sound();
+		my_delay(1,0);
+		sound(D4S);
+		my_delay(1,1);
+		
+		no_sound();
+		my_delay(1,0);
+		
+		
+	}
 	
     no_sound();
+}
+
+void beethoven(){
+	while(1){
+		sound(E4);
+		my_delay(1,1);
+		no_sound();
+		my_delay(1,0);
+		sound(E4);
+		my_delay(1,1);
+		sound(F4);
+		my_delay(1,1);
+		sound(G4);
+		my_delay(1,1);
+		no_sound();
+		my_delay(1,0);
+		sound(G4);
+		my_delay(1,1);
+		sound(F4);
+		my_delay(1,1);
+		sound(E4);
+		my_delay(1,1);
+		sound(D4);
+		my_delay(1,1);
+		sound(C4);
+		my_delay(1,1);
+		no_sound();
+		my_delay(1,0);
+		sound(C4);
+		my_delay(1,1);
+		sound(D4);
+		my_delay(1,1);
+		sound(E4);
+		my_delay(1,1);
+		no_sound();
+		my_delay(1,0);
+		sound(E4);
+		my_delay(1,1);
+		sound(D4);
+		my_delay(1,1);
+		no_sound();
+		my_delay(1,0);
+		sound(D4);
+		my_delay(1,1);
+		no_sound();
+		my_delay(1,1);
+		
+		sound(E4);
+		my_delay(1,1);
+		no_sound();
+		my_delay(1,0);
+		sound(E4);
+		my_delay(1,1);
+		sound(F4);
+		my_delay(1,1);
+		sound(G4);
+		my_delay(1,1);
+		no_sound();
+		my_delay(1,0);
+		sound(G4);
+		my_delay(1,1);
+		sound(F4);
+		my_delay(1,1);
+		sound(E4);
+		my_delay(1,1);
+		sound(D4);
+		my_delay(1,1);
+		sound(C4);
+		my_delay(1,1);
+		no_sound();
+		my_delay(1,0);
+		sound(C4);
+		my_delay(1,1);
+		sound(D4);
+		my_delay(1,1);
+		sound(E4);
+		my_delay(1,1);
+		sound(D4);
+		my_delay(1,1);
+		no_sound();
+		my_delay(1,0);
+		sound(C4);
+		my_delay(1,1);
+		no_sound();
+		my_delay(1,0);
+		sound(C4);
+		my_delay(1,1);
+		no_sound();
+		my_delay(1,1);
+	}
+}
+
+void diamond_collect_sound(){
+	
+}
+
+void death_sound(){
+	
+}
+
+void fireball_sound(){
+	
 }

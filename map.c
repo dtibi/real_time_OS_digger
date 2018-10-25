@@ -1,10 +1,22 @@
 #include <conf.h>
 #include "map.h"
 #include "digger.h"
+#include "nobin.h"
 #include "myints.h"
 
 volatile Digger player;
 volatile Map gameMap;
+volatile Nobbin enemys[NOBBIN_COUNT];
+char* debug_str;
+
+void draw_debug_line(char *str){
+	int i,str_len;
+	str_len = (strlen(str)>COLUMNS_PIXELS) ? COLUMNS_PIXELS : strlen(str);
+	//printf("draw_debug_line");
+	for (i=0;i<str_len;i++){
+		draw_pixel_with_char(0,i,2,str[i]);
+	}
+}
 
 void clean_screen(){
 	asm{
@@ -95,20 +107,55 @@ void draw_dirt(unsigned int i,unsigned int j){
 		}
 }
 
+void clean_nobbin(unsigned int i,unsigned int j){
+	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j), k, l;
+		for (k=0;k<HEIGHT;k++)
+			for (l=0;l<WIDTH;l++) {
+				draw_pixel(row_pixel+k,column_pixel+l,BROWN_BG);
+			}
+}
+
 void draw_empty(unsigned int i,unsigned int j){
 	int row = row_2_pixel(i), col= column_2_pixel(j),k,l;
 	for (k=0;k<HEIGHT;k++)
 		for (l=0;l<WIDTH;l++)
 			draw_pixel(row+k,col+l,BLACK_BG);
 }
-/* void draw_nobbin(Nobbin n){
-	int i=n.x,j=n.y;
+/* 
+nobbin should look like:
+    _   _
+   |_|_|_|
+     |_|
+	/   \
+
+ */
+void draw_nobbins(Nobbin n[NOBBIN_COUNT]){
+	int i,j,x,y;
+	for(i=0;i<NOBBIN_COUNT;i++){
+		if(n[i].is_alive) {
+			x = n[i].x;
+			y = n[i].y;
+			//printf("x = %d , y = %d",x,y);
+			if(!n[i].is_hobbin){
+				draw_dig(y,x);
+				gameMap.current_map[y][x][0] = ' ';
+				gameMap.current_map[y][x][1] =  GREEN_BG;
+				gameMap.current_map[y-1][x-1][0] = '0';
+				gameMap.current_map[y-1][x-1][1] =  BROWN_BG;
+				gameMap.current_map[y-1][x+1][0] = '0';
+				gameMap.current_map[y-1][x+1][1] =  BROWN_BG;
+				gameMap.current_map[y+1][x-1][0] = '/';
+				gameMap.current_map[y+1][x-1][1] =  RED;
+				gameMap.current_map[y+1][x+1][0] = '\\';
+				gameMap.current_map[y+1][x+1][1] =  RED;
+			} else {
+				
+			}
+			draw_area(y,x);
+		}
+	}
 	
-	draw_pixel_with_char(i,j,RED_ON_BLACK,'<');
-	draw_pixel_with_char(i,j-1,RED_BG,'o');
-	draw_pixel_with_char(i,j-2,BROWN_BG,'E');
-	
-} */
+}
 
 void draw_dig(unsigned int i,unsigned int j){
 	int row = i-(HEIGHT/2), col= j-(WIDTH/2),k,l;
@@ -244,7 +291,15 @@ void refresh_map(){
 	player = create_digger();
 	draw_digger(player);
 	while(1) {
+		receive();
 		draw_digger(player);
+		//draw_nobbins(&enemys);
+	}
+}
+
+void refresh_debug_map(){
+	while(1){
+		draw_debug_line((char*)receive());
 	}
 }
 

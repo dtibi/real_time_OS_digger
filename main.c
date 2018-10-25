@@ -3,6 +3,7 @@
 #include "map.h"
 #include "digger.h"
 #include "myints.h"
+#include "nobin.h"
 
 int sched_arr_pid[5] = {-1};
 int sched_arr_int[5] = {-1};
@@ -36,23 +37,37 @@ SYSCALL schedule(int no_of_pids, int cycle_length, int pid1, ...)
 
 } // schedule 
 
+
+void kill_xinu(){
+	receive();
+	xdone();
+}
+
 /*------------------------------------------------------------------------
  *----------------------   Main Digger Program ---------------------------
  *------------------------------------------------------------------------
  */
 xmain()
 {
-	int uppid, recvpid;
 	int i, j;
-	
+	player = create_digger();
+	for(i=0;i<NOBBIN_COUNT;i++)
+		enemys[i] = create_nobbin(&player);
+	enemys[0].is_alive = 1;
 	Int9Save = getvect(0x09);
-	Int8Save = getvect(0x08);
+
+	map_move_digger_pid = create(refresh_map,INITSTK,INITPRIO,"refresh_map",0);
+	digger_move_pid = create(move_digger,INITSTK,INITPRIO,"move_digger",1,&player);
+	map_debug_pid = create(refresh_debug_map,INITSTK,INITPRIO,"refresh_debug_map",0);
+	terminate_xinu_pid = create(kill_xinu,INITSTK,INITPRIO,"refresh_debug_map",0);
 	
-	recvpid = create(move_digger,INITSTK,INITPRIO,"move_digger",1,&player);
-	receiver_pid = recvpid;
+
+	resume(map_move_digger_pid);
+	resume(digger_move_pid);
+	resume(map_debug_pid);
+	resume(terminate_xinu_pid);
 	
 	set_new_int9_newisr();
-	//setvect(8, MyISR8);
 	
 	for (i=0; i<ROWS; i++) {
 		for(j=0;j<COLUMNS; j++) {
@@ -60,9 +75,7 @@ xmain()
 		}
 	}
 	
-	resume(uppid = create(refresh_map,INITSTK,INITPRIO,"refresh_map",0));
-	resume(receiver_pid);
-	
-	
-    schedule(2,57, recvpid, 0,  uppid, 29);
-} // xmain
+    schedule(3,57, map_move_digger_pid, 0,  digger_move_pid, 29, map_debug_pid, 29 );
+} 
+
+
