@@ -8,10 +8,12 @@ void move_nobbins(){
 	int i,timer;
 	char direction;
 	while(1) {
-		for(timer=0;timer<5000;timer++);
+		sleep(2);
 		for(i=0;i<NOBBIN_COUNT;i++){
 			if(enemys[i].is_alive){
 				direction = find_direction_to_digger(enemys[i]);
+				sprintf(debug_str,"nobbin direction: %d",direction);
+				send(debug,debug_str);
 				switch (direction)
 				{
 					case LEFT_ARROW:
@@ -29,6 +31,7 @@ void move_nobbins(){
 				}
 			}
 		}
+		draw_nobbins(enemys);
 	}
 }
 char find_direction_to_digger(Nobbin n){
@@ -68,7 +71,7 @@ char find_direction_to_digger(Nobbin n){
 
 Nobbin create_nobbin(Digger *d){ 
 	Nobbin n;
-	n.x = 73;
+	n.x = 72;
 	n.y = 2;
 	n.direction = LEFT_ARROW;
 	n.digger = d;
