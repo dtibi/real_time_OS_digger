@@ -9,7 +9,7 @@
 
 volatile unsigned char scan;
 volatile unsigned char timer;
-volatile unsigned int map_move_digger_pid, digger_move_pid, map_debug_pid, terminate_xinu_pid;
+volatile unsigned int map_moves_pid, digger_move_pid, map_debug_pid, terminate_xinu_pid;
 
 void interrupt (*Int9Save) (void);
 void interrupt (*Int8Save) (void);

@@ -144,6 +144,6 @@ void move_digger(Digger *player){
 		sprintf(debug_str,"scanned value is - %d",scanned);
 		//send(map_debug_pid,debug_str);
 		move(player,scanned);
-		send(map_move_digger_pid,0);
+		send(map_moves_pid,0);
 	  }
 }

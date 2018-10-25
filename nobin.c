@@ -15,16 +15,16 @@ void move_nobbins(){
 				switch (direction)
 				{
 					case LEFT_ARROW:
-						enemys[i].x--;
+						enemys[i].x-= WIDTH;
 						break;
 					case RIGHT_ARROW:
-						enemys[i].x ++;
+						enemys[i].x+= WIDTH;
 						break;
 					case DOWN_ARROW:
-						enemys[i].y ++;
+						enemys[i].y+= HEIGHT;
 						break;
 					case UP_ARROW:
-						enemys[i].y --;
+						enemys[i].y-= HEIGHT;
 						break;
 				}
 			}

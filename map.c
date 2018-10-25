@@ -290,10 +290,11 @@ void refresh_map(){
 	create_map();
 	//printf("x = %d , y = %d , dir = %c", (*player).x, (*player).y, (*player).direction);
 	draw_digger(player);
+	draw_nobbins(&enemys);
 	while(1) {
 		receive();
 		draw_digger(player);
-		//draw_nobbins(&enemys);
+		draw_nobbins(&enemys);
 	}
 }
 
