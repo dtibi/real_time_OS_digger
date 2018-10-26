@@ -15,26 +15,26 @@ extern struct intmap far *sys_imp;
 
 SYSCALL schedule(int no_of_pids, int cycle_length, int pid1, ...)
 {
-  int i;
-  int ps;
-  int *iptr;
+	int i;
+	int ps;
+	int *iptr;
 
-  disable(ps);
+	disable(ps);
 
-  gcycle_length = cycle_length;
-  point_in_cycle = 0;
-  gno_of_pids = no_of_pids;
+	gcycle_length = cycle_length;
+	point_in_cycle = 0;
+	gno_of_pids = no_of_pids;
 
-  iptr = &pid1;
-  for(i=0; i < no_of_pids; i++)
-  {
-    sched_arr_pid[i] = *iptr;
-    iptr++;
-    sched_arr_int[i] = *iptr;
-    iptr++;
-  } // for
-  restore(ps);
-
+	iptr = &pid1;
+	for(i=0; i < no_of_pids; i++)
+	{
+		sched_arr_pid[i] = *iptr;
+		iptr++;
+		sched_arr_int[i] = *iptr;
+		iptr++;
+	} 
+	restore(ps);
+	return;
 } // schedule 
 
 
@@ -46,6 +46,7 @@ void kill_xinu(){
 	sleep(sec);
 	clean_screen();
 	xdone();
+	return;
 }
 
 /*------------------------------------------------------------------------
@@ -83,6 +84,7 @@ xmain()
 	}
 	
     schedule(3,57, map_moves_pid, 0,  digger_move_pid, 29, debug, 29 ,terminate_xinu_pid , 29);
+	return;
 } 
 
 

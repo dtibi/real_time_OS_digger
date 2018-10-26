@@ -115,10 +115,11 @@ void clean_nobbin(unsigned int i,unsigned int j){
 }
 
 void draw_empty(unsigned int i,unsigned int j){
-	int row = row_2_pixel(i), col= column_2_pixel(j),k,l;
-	for (k=0;k<HEIGHT;k++)
+	int k,l;
+	for (k=0;k<HEIGHT;k++){
 		for (l=0;l<WIDTH;l++)
-			draw_pixel(row+k,col+l,BLACK_BG);
+			draw_pixel(i+k,j+l,BLACK_BG);
+	}
 }
 /* 
 nobbin should look like:
@@ -164,9 +165,9 @@ void draw_dig(unsigned int i,unsigned int j){
 		} */
 	gameMap.currentLevel[pixel_2_row(i)][pixel_2_column(j)] = 0;
 	//draw_empty(pixel_2_row(i),pixel_2_column(j));
-	if (row==1) area_row=1;
+	if (row==1) area_row=1; //if(i == 1 +(HEIGHT/2))
 	else area_row = row - HEIGHT;
-	if (col==(WIDTH/2)) area_col = (WIDTH/2);
+	if (col==(WIDTH/2)) area_col = (WIDTH/2); //if(j == WIDTH)
 	else area_col = col - WIDTH;
 	
 	for (k=area_row;k<area_row+(3*HEIGHT) && k<ROWS_PIXELS ; k=k+HEIGHT)
@@ -174,22 +175,20 @@ void draw_dig(unsigned int i,unsigned int j){
 			if (gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==1) draw_dirt(pixel_2_row(k),pixel_2_column(l));
 			else if(gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==2) draw_diamond(pixel_2_row(k),pixel_2_column(l));
 			else if (gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==3) draw_bag(pixel_2_row(k),pixel_2_column(l));
-			else if (gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==0) draw_empty(pixel_2_row(k),pixel_2_column(l));
+			else if (gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==0) draw_empty(k, l);
 		}
 	
 }
 
 void draw_area(int y, int x){
 	int i,j;
-	sprintf(debug_str,"x - %d , y %d" ,x , y );
-	//send(debug,debug_str);
 	for(i=y-2;i>=0 && i<y+2 && i<ROWS_PIXELS;i++)
 		for(j=x-4;j>=0 && j<x+4 && j<COLUMNS_PIXELS;j++)
 			draw_pixel_with_char(i,j,gameMap.current_map[i][j][1],gameMap.current_map[i][j][0]);
 }
 
 void draw_digger(Digger player){
-	int x=player.x,y=player.y,i,j;
+	int x=player.x,y=player.y;
 	int direction = player.direction;
 	
 	switch (direction) {
@@ -294,7 +293,7 @@ Map create_map(){
 			if (gameMap.currentLevel[i][j]==1) draw_dirt(i,j);
 			else if(gameMap.currentLevel[i][j]==2) draw_diamond(i,j);
 			else if (gameMap.currentLevel[i][j]==3) draw_bag(i,j);
-			else if (gameMap.currentLevel[i][j]==0) draw_empty(i,j);
+			else if (gameMap.currentLevel[i][j]==0) draw_empty(pixel_2_row(i),pixel_2_column(j));
 		}
 	}
 	

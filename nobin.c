@@ -12,8 +12,8 @@ void move_nobbins(){
 		for(i=0;i<NOBBIN_COUNT;i++){
 			if(enemys[i].is_alive){
 				direction = find_direction_to_digger(enemys[i]);
-				sprintf(debug_str,"nobbin direction: %d",direction);
-				send(debug,debug_str);
+				//sprintf(debug_str,"nobbin direction: %d",direction);
+				//send(debug,debug_str);
 				switch (direction)
 				{
 					case LEFT_ARROW:

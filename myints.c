@@ -15,7 +15,7 @@ void interrupt (*Int9Save) (void);
 void interrupt (*Int8Save) (void);
 
 
-INTPROC MyISR9(int mdevno)
+INTPROC MyISR9()
 {
 	int scan = 0;
 	asm {
@@ -34,7 +34,7 @@ INTPROC MyISR9(int mdevno)
 	send(digger_move_pid, scan); 
 
 	Skip1:
-
+	return;
 } // new_int9
 
 

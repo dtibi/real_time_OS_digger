@@ -15,7 +15,7 @@ extern volatile unsigned int map_moves_pid, digger_move_pid, debug, terminate_xi
 void set_new_int9_newisr();
 extern void interrupt (*Int9Save) (void);
 extern void interrupt (*Int8Save) (void);
-INTPROC MyISR9(int mdevno);
+INTPROC MyISR9();
 void interrupt MyISR8(void);
 
 

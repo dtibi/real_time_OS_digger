@@ -9,8 +9,8 @@
 #define ROWS_PIXELS 25
 #define COLUMNS_PIXELS 80
 
-#define WIDTH 5 //note WIDTH = floor(COLUMNS_PIXELS/COLUMNS)
-#define HEIGHT 3 //note HEIGHT = floor(ROWS_PIXELS/ ROWS)
+#define WIDTH 5
+#define HEIGHT 3 
 
 #define RED 4
 #define BLACK_BG 7
