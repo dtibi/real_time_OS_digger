@@ -184,8 +184,10 @@ void draw_area(int y, int x){
 	sprintf(debug_str,"x - %d , y %d" ,x , y );
 	//send(debug,debug_str);
 	for(i=y-2;i>=0 && i<y+2 && i<ROWS_PIXELS;i++)
-		for(j=x-4;j>=0 && j<x+4 && j<COLUMNS_PIXELS;j++)
+		for(j=x-4;j<x+4 && j<COLUMNS_PIXELS;j++){
+			if(j<0) continue;
 			draw_pixel_with_char(i,j,gameMap.current_map[i][j][1],gameMap.current_map[i][j][0]);
+		}
 }
 
 void draw_digger(Digger player){
