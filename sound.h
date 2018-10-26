@@ -22,6 +22,7 @@
 #define C5 	523
 #define C5S 554
 
+
 void my_delay(int n,int type);
 void change_speaker(int status);
 void sound(int hertz);

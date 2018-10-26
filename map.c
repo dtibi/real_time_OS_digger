@@ -183,8 +183,10 @@ void draw_dig(unsigned int i,unsigned int j){
 void draw_area(int y, int x){
 	int i,j;
 	for(i=y-2;i>=0 && i<y+2 && i<ROWS_PIXELS;i++)
-		for(j=x-4;j>=0 && j<x+4 && j<COLUMNS_PIXELS;j++)
+		for(j=x-4;j<x+4 && j<COLUMNS_PIXELS;j++){
+			if(j<0) continue;
 			draw_pixel_with_char(i,j,gameMap.current_map[i][j][1],gameMap.current_map[i][j][0]);
+		}
 }
 
 void draw_digger(Digger player){
@@ -236,6 +238,8 @@ void draw_digger(Digger player){
 } */
 
 int move_is_possible(int x,int y, int direction, int i_can_dig){
+	sprintf(debug_str,"move_is_possible(x=%d,y=%d,direction=%d,can_dog=%d",x,y,direction,i_can_dig);
+	send(debug,debug_str);
 	
 	if((direction==UP_ARROW    && (y/HEIGHT)-1 < 0	  	 )||
 	   (direction==DOWN_ARROW  && (y/HEIGHT)+2 > ROWS	 )||
@@ -248,10 +252,10 @@ int move_is_possible(int x,int y, int direction, int i_can_dig){
 		return 1;
 	
 	else{
-		if(		 direction==UP_ARROW    && gameMap.currentLevel[(y-HEIGHT)/HEIGHT][x/WIDTH]==0) return 1;
-		else if (direction==DOWN_ARROW  && gameMap.currentLevel[(y+HEIGHT)/HEIGHT][x/WIDTH]==0) return 1;
-		else if (direction==RIGHT_ARROW && gameMap.currentLevel[y/HEIGHT][(x+WIDTH)/WIDTH]==0) return 1;
-		else if (direction==LEFT_ARROW  && gameMap.currentLevel[y/HEIGHT][(x-WIDTH)/WIDTH]==0) return 1;
+		if(		 direction==UP_ARROW    && gameMap.currentLevel[pixel_2_row(y)-1][pixel_2_column(x)]==0) return 1;
+		else if (direction==DOWN_ARROW  && gameMap.currentLevel[pixel_2_row(y)+1][pixel_2_column(x)]==0) return 1;
+		else if (direction==RIGHT_ARROW && gameMap.currentLevel[pixel_2_row(y)][pixel_2_column(x)+1]==0) return 1;
+		else if (direction==LEFT_ARROW  && gameMap.currentLevel[pixel_2_row(y)][pixel_2_column(x)-1]==0) return 1;
 	}
 	
 	return 0;

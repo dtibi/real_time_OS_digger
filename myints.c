@@ -3,13 +3,15 @@
 #include <conf.h>
 #include <kernel.h>
 #include <io.h>
-#include <bios.h>
 #include "myints.h"
 #include "map.h"
 
+
+volatile int count,delay_timer;
 volatile unsigned char scan;
-volatile unsigned char timer;
-volatile unsigned int map_moves_pid, digger_move_pid, debug, terminate_xinu_pid, move_enemys_pid;
+volatile unsigned int map_moves_pid, digger_move_pid, debug, terminate_xinu_pid, move_enemys_pid,bg_sound_pid;
+volatile int keep_playing=1;
+
 
 void interrupt (*Int9Save) (void);
 void interrupt (*Int8Save) (void);
@@ -38,6 +40,19 @@ INTPROC MyISR9()
 } // new_int9
 
 
+void interrupt MyISR8(void)
+{
+    count++;
+    asm {
+        MOV AL,20h
+        OUT 20h,AL
+    }
+	
+	if (count>=delay_timer) send(bg_sound_pid,0);
+
+} // newint8(void)
+
+
 void set_new_int9_newisr()
 {
   int i;
@@ -49,11 +64,3 @@ void set_new_int9_newisr()
     }
 
 } // set_new_int9_newisr
-
-
-void interrupt MyISR8(void)
-{
-	Int8Save();
-	timer++;
-	if(timer%180)timer=0;
-}
