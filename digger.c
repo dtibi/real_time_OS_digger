@@ -26,10 +26,12 @@ void move(Digger *player,int direction)
 		return;
 	}
 	if (!move_is_possible(x,y,direction, 1)) return;
+	
 	if (getNextPixelType(x, y, direction) == 2) //diamond found
 	{
 		//add point to score;
 	}
+	
 	else if (getNextPixelType(x, y, direction) == 3) //gold sack found
 	{
 		if(direction==UP_ARROW || direction==DOWN_ARROW) 
@@ -37,28 +39,23 @@ void move(Digger *player,int direction)
 		
 		else if(direction==RIGHT_ARROW && move_is_possible(x + WIDTH,y, RIGHT_ARROW, 1)) 
 		{
-			//draw empty
 			draw_bag(pixel_2_row(y), pixel_2_column(x)+2);
 			draw_empty(pixel_2_row(y), pixel_2_column(x)+1);
 			if(move_is_possible(x + WIDTH*2,y, DOWN_ARROW, 0))//check if there is no dirt under
-			{
-				draw_empty(pixel_2_row(y), pixel_2_column(x)+1);
 				goldFalling(x + WIDTH*2, y);
-			}
 		}
 		
 		else if(direction==LEFT_ARROW && move_is_possible(x - WIDTH,y, LEFT_ARROW, 1)) 
 		{
-			//draw empty
 			draw_bag(pixel_2_row(y), pixel_2_column(x)-2);
 			draw_empty(pixel_2_row(y), pixel_2_column(x)-1);
 			if(move_is_possible(x - WIDTH*2,y, DOWN_ARROW, 0))//check if there is no dirt under
-			{
-				draw_empty(pixel_2_row(y), pixel_2_column(x)-1);
 				goldFalling(x - WIDTH*2, y);
-			}
-		} else {
-			
+		} 
+		
+		else 
+		{
+		
 		}
 	}
 	
@@ -83,15 +80,12 @@ void move(Digger *player,int direction)
 void goldFalling(int x, int y)
 {
 	int k, l;
-	
-	draw_bag(pixel_2_row(y), pixel_2_column(x));
 	while(move_is_possible(x, y, DOWN_ARROW, 0))
 	{	
-		sleep(1);
+		sleep(3);
 		y = y + HEIGHT;
 		draw_bag(pixel_2_row(y), pixel_2_column(x));
 		draw_empty(pixel_2_row(y)-1, pixel_2_column(x));
-		
 	}
 	
 	
