@@ -6,20 +6,18 @@
 
 void my_delay(int n, int type)
 {
-	int long_delay = 22;
-	int short_delay = 1;
 	int delay;
 	
 	count = 0;
 	
 	if(type == 0)				
-		delay = short_delay;  // delay between two same notes
+		delay = SHORT_DELAY;  // delay between two same notes
 	else
-		delay = long_delay;   // delay between two different notes
+		delay = LONG_DELAY;   // delay between two different notes
 	
-    delay_timer = n*delay;
+    delay_timer = count+n*delay;
 	
-    asm {
+    /* asm {
         CLI
         PUSH AX
         MOV AL,036h
@@ -34,11 +32,11 @@ void my_delay(int n, int type)
     Int8Save = getvect(8);
     setvect(8,MyISR8);
     asm  { STI
-	};
+	}; */
 	
    receive();
 
-	asm {
+	/* asm {
 	  CLI
 	  PUSH AX
 	  MOV AL,036h
@@ -53,7 +51,8 @@ void my_delay(int n, int type)
 
     setvect(8,Int8Save);
 	
-
+	asm  { STI
+	}; */
 } //mydelay
 
 
@@ -130,11 +129,22 @@ void no_sound()
 
 } /*--NoSound( )------*/
 
+
+void background_music_test(){
+	
+	//int i;
+	
+	my_delay(1,0);
+	//sound(A4S);
+	//my_delay(2,1);
+    //no_sound();
+}
+
 void background_music(){
 	
 	int i;
 	
-	while(keep_playing){
+	while(1){
 		
 		my_delay(1,0);
 		sound(A4S);
@@ -198,12 +208,10 @@ void background_music(){
 		no_sound();
 				
 	}
-	//beethoven();
-    //no_sound();
 }
 
 void beethoven(){
-	while(keep_playing){
+	while(1){
 		sound(E4);
 		my_delay(1,1);
 		no_sound();

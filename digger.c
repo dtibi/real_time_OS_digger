@@ -47,16 +47,22 @@ void move(Digger *player,int direction)
 					(*player).y -=HEIGHT;
 				break;
 		}
+		gameMap.currentLevel[pixel_2_row((*player).y)][pixel_2_column((*player).x)] = 99;
 	}
 }
 
 void move_digger(Digger *player){	
-	int scanned=0;
+	int input=0;
 	while(1){
-		scanned = receive();
-		sprintf(debug_str,"scanned value is - %d",scanned);
+		while(input!=TIME_TIK){
+			input = receive();
+		}
+		while (input!=RIGHT_ARROW && input!=LEFT_ARROW && input!=UP_ARROW && input!=DOWN_ARROW){
+			input = receive();
+		}
+		//sprintf(debug_str,"scanned value is - %d",input);
 		//send(debug,debug_str);
-		move(player,scanned);
-		send(map_moves_pid,0);
+		move(player,input);
+		draw_digger(*player);
 	  }
 }

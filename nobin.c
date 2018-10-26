@@ -8,12 +8,13 @@ void move_nobbins(){
 	int i,timer;
 	char direction;
 	while(1) {
-		sleep(1);
+		receive();
 		for(i=0;i<NOBBIN_COUNT;i++){
 			if(enemys[i].is_alive){
 				direction = find_direction_to_digger(enemys[i]);
 				sprintf(debug_str,"nobbin direction: %d | LEFT=%d , RIGHT=%d , UP=%d , DOWN=%d",direction, LEFT_ARROW,RIGHT_ARROW,UP_ARROW,DOWN_ARROW);
 				//send(debug,debug_str);
+				gameMap.currentLevel[pixel_2_row(enemys[i].y)][pixel_2_column(enemys[i].x)]=0;
 				switch (direction)
 				{
 					case LEFT_ARROW:
@@ -30,9 +31,10 @@ void move_nobbins(){
 						break;
 				}
 				enemys[i].direction=direction;
+				draw_nobbin(enemys[i]);
 			}
 		}
-		draw_nobbins(enemys);
+		
 	}
 }
 char find_direction_to_digger(Nobbin n){

@@ -34,16 +34,32 @@ void clean_screen(){
 
 	}
 }
+
 void draw_pixel_with_char(int row, int col, char color,char ch){
 	int screen_address = start_address + row*10 , col_2 = col*2;
 	char c = ch;
+	if (screen_address < start_address || screen_address > start_address+999) {
+		printf("illegal address trying to wrote to screen: %x", screen_address);
+		return;
+	}
+	if (col_2 < 0 || col_2 > 160) {
+		printf("illegal offset trying to wrote to screen: %d", col_2);
+		return;
+	}
+	
 	asm{
+		PUSH AX
+		PUSH ES
+		PUSH DI
 		MOV             AX,screen_address
 		MOV             ES,AX
 		MOV             DI,col_2
 		MOV             AL,c
 		MOV             AH,color
 		MOV             ES:[DI], AX
+		POP DI
+		POP ES
+		POP AX
 	}
 	gameMap.current_map[row][col][0] = ch;
 	gameMap.current_map[row][col][1] = color;
@@ -51,14 +67,23 @@ void draw_pixel_with_char(int row, int col, char color,char ch){
 
 void draw_pixel(int row, int col, char color){
 	int screen_address = start_address + row*10 , col_2 = col*2;
-	
+	if (screen_address < start_address || screen_address > start_address+250) {
+		printf("illegal address trying to wrote to screen: %x", screen_address);
+		return;
+	}
 	asm{
+		PUSH AX
+		PUSH ES
+		PUSH DI
 		MOV             AX,screen_address
 		MOV             ES,AX
 		MOV             DI,col_2
 		MOV             AL,' '
 		MOV             AH,color
 		MOV             ES:[DI], AX
+		POP DI
+		POP ES
+		POP AX
 	}
 	
 
@@ -128,66 +153,59 @@ nobbin should look like:
 	/   \
 
  */
-void draw_nobbins(Nobbin n[NOBBIN_COUNT]){
-	int i,j,x,y;
-	for(i=0;i<NOBBIN_COUNT;i++){
-		if(n[i].is_alive) {
-			x = n[i].x;
-			y = n[i].y;
-			if(!n[i].is_hobbin){
-				draw_dig(y,x);
-				gameMap.current_map[y][x][0] = ' ';
-				gameMap.current_map[y][x][1] =  GREEN_BG;
-				gameMap.current_map[y-1][x-1][0] = '0';
-				gameMap.current_map[y-1][x-1][1] =  BROWN_BG;
-				gameMap.current_map[y-1][x+1][0] = '0';
-				gameMap.current_map[y-1][x+1][1] =  BROWN_BG;
-				gameMap.current_map[y+1][x-1][0] = '/';
-				gameMap.current_map[y+1][x-1][1] =  RED;
-				gameMap.current_map[y+1][x+1][0] = '\\';
-				gameMap.current_map[y+1][x+1][1] =  RED;
-			} else {
-				
-			}
-			draw_area(y,x);
+void draw_nobbin(Nobbin n){
+	int i,j,x=n.x,y=n.y;
+	if(n.is_alive) {
+		gameMap.currentLevel[pixel_2_row(y)][pixel_2_column(x)]=88;
+		if(!n.is_hobbin){
+			draw_dig(y,x);
+			gameMap.current_map[y][x][0] = ' ';
+			gameMap.current_map[y][x][1] =  GREEN_BG;
+			gameMap.current_map[y-1][x-1][0] = '0';
+			gameMap.current_map[y-1][x-1][1] =  BROWN_BG;
+			gameMap.current_map[y-1][x+1][0] = '0';
+			gameMap.current_map[y-1][x+1][1] =  BROWN_BG;
+			gameMap.current_map[y+1][x-1][0] = '/';
+			gameMap.current_map[y+1][x-1][1] =  RED;
+			gameMap.current_map[y+1][x+1][0] = '\\';
+			gameMap.current_map[y+1][x+1][1] =  RED;
+		} else {
+			
 		}
+		draw_area(y,x);
 	}
-	
 }
 
 void draw_dig(unsigned int i,unsigned int j){
-	int row = i-(HEIGHT/2), col= j-(WIDTH/2),area_row,area_col,k,l;
-	/* for (k=0;k<HEIGHT;k++)
-		for (l=0;l<WIDTH;l++){
-			gameMap.current_map[row+k][col+l][0] = ' ';
-			gameMap.current_map[row+k][col+l][1] = BLACK_BG;
-		} */
-	gameMap.currentLevel[pixel_2_row(i)][pixel_2_column(j)] = 0;
-	//draw_empty(pixel_2_row(i),pixel_2_column(j));
-	if (row==1) area_row=1;
-	else area_row = row - HEIGHT;
-	if (col==(WIDTH/2)) area_col = (WIDTH/2);
-	else area_col = col - WIDTH;
+	int row = i-(HEIGHT/2), col= j-(WIDTH/2),k,l;
 	
-	for (k=area_row;k<area_row+(3*HEIGHT) && k<ROWS_PIXELS ; k=k+HEIGHT)
-		for (l=area_col;l<area_col+(3*WIDTH) && l<COLUMNS_PIXELS;l=l+WIDTH) {
+	gameMap.currentLevel[pixel_2_row(i)][pixel_2_column(j)] = 0;
+	
+	for (k=row - HEIGHT;k<row+(3*HEIGHT) && k<ROWS_PIXELS ; k=k+HEIGHT){
+		if(k<=0)continue;
+		for (l=col - WIDTH;l<col+(3*WIDTH) && l<COLUMNS_PIXELS;l=l+WIDTH) {
+			if(l<0) continue;
 			if (gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==1) draw_dirt(pixel_2_row(k),pixel_2_column(l));
 			else if(gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==2) draw_diamond(pixel_2_row(k),pixel_2_column(l));
 			else if (gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==3) draw_bag(pixel_2_row(k),pixel_2_column(l));
 			else if (gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==0) draw_empty(pixel_2_row(k),pixel_2_column(l));
+			else if (gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==99) draw_digger(player);
+			else if (gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==88) ;//draw_nobbin(enemys);
 		}
-	
+	}
 }
 
 void draw_area(int y, int x){
 	int i,j;
-	sprintf(debug_str,"x - %d , y %d" ,x , y );
+	//sprintf(debug_str,"x - %d , y %d" ,x , y );
 	//send(debug,debug_str);
-	for(i=y-2;i>=0 && i<y+2 && i<ROWS_PIXELS;i++)
+	for(i=y-2;i<y+2 && i<ROWS_PIXELS;i++){
+		if(i<=0) continue;
 		for(j=x-4;j<x+4 && j<COLUMNS_PIXELS;j++){
 			if(j<0) continue;
 			draw_pixel_with_char(i,j,gameMap.current_map[i][j][1],gameMap.current_map[i][j][0]);
 		}
+	}
 }
 
 void draw_digger(Digger player){
@@ -239,8 +257,8 @@ void draw_digger(Digger player){
 } */
 
 int move_is_possible(int x,int y, int direction, int i_can_dig){
-	sprintf(debug_str,"move_is_possible(x=%d,y=%d,direction=%d,can_dog=%d",x,y,direction,i_can_dig);
-	send(debug,debug_str);
+	//sprintf(debug_str,"move_is_possible(x=%d,y=%d,direction=%d,can_dog=%d",x,y,direction,i_can_dig);
+	//send(debug,debug_str);
 	
 	if((direction==UP_ARROW    && (y/HEIGHT)-1 < 0	  	 )||
 	   (direction==DOWN_ARROW  && (y/HEIGHT)+2 > ROWS	 )||
@@ -306,14 +324,11 @@ Map create_map(){
 }
 
 void refresh_map(){
-	gameMap = create_map();
-	player = create_digger();
-	draw_digger(player);
-	draw_nobbins(&enemys);
+
 	while(1) {
 		receive();
-		draw_digger(player);
-		draw_nobbins(&enemys);
+		
+		//draw_nobbins(&enemys);
 	}
 }
 
