@@ -80,7 +80,7 @@ char find_direction_to_digger(Nobbin n){
 Nobbin create_nobbin(Digger *d){ 
 	Nobbin n;
 	n.x = 14;
-	n.y = 1;
+	n.y = 0;
 	n.direction = LEFT_ARROW;
 	n.digger = d;
 	n.is_alive=0;

@@ -7,7 +7,7 @@ Digger create_digger()
 {
 	Digger player;
 	player.x = 8;
-	player.y = 8;
+	player.y = 7;
 	player.direction = LEFT_ARROW;
 	
 	return player;
