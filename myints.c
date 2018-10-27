@@ -1,8 +1,3 @@
-#include <stdio.h>
-#include <dos.h>
-#include <conf.h>
-#include <kernel.h>
-#include <io.h>
 #include "myints.h"
 #include "map.h"
 #include "sound.h"
@@ -18,7 +13,7 @@ INTPROC (*Int8Save) (int);
 
 INTPROC MyISR9(int mdevno)
 {	
-	int scan = 0;
+	int scan = mdevno;
 	asm {
 	  PUSH AX
 	  MOV AH,1
@@ -36,14 +31,15 @@ INTPROC MyISR9(int mdevno)
 		send(terminate_xinu_pid,0);
 	}
 	if (scan==1) {	
-		if(bg_sound_pid==-1) {
+		if(bg_sound_pid==0) {
 			resume(bg_sound_pid = create(background_music,INITSTK,INITPRIO-3,"background_sounds",0));
 		} else {
 			kill(bg_sound_pid);
 			no_sound();
-			bg_sound_pid=-1;
+			bg_sound_pid=0;
 		}
 	}
+	
 	send(digger_move_pid, scan); 
 	asm {
 		jmp Skip2
@@ -95,7 +91,7 @@ void restore_ints(){
 }
 
 void setup_interrupts(){
-	//setup latch to LETCH assuming a second is worth 1069 interrupts8
+	//setup latch to LETCH assuming a second is worth ?? interrupts8
 	int i;
 	asm {
 	  CLI

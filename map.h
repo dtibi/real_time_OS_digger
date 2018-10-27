@@ -27,18 +27,19 @@
 #define GRAY_ON_BROWN 103
 
 #define NOBBIN_COUNT 5
+#define start_address 0xB800
 
 typedef struct map {
-	char currentLevel[ROWS][COLUMNS];
-	char current_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
+	char level_map[ROWS][COLUMNS];
+	char pixel_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
 	} Map;
 
-extern volatile Map gameMap;
-extern volatile Digger player;
-extern volatile Nobbin enemys[NOBBIN_COUNT];
+extern Map gameMap;
+extern Digger player;
+extern Nobbin enemys[NOBBIN_COUNT];
 extern char* debug_str;
 
-static int start_address = 47104; //B800h
+//unsigned static int start_address = 0xB800; //B800h
 static char level_1[ROWS_PIXELS][COLUMNS_PIXELS];
 static char level_0[ROWS][COLUMNS] = {
 	0 , 1 , 3 , 1 , 3 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 0 , 0 ,
@@ -53,20 +54,19 @@ static char level_0[ROWS][COLUMNS] = {
 
 	
 void clean_screen();
-Map create_map();
+void create_map();
 
 int getNextPixelType(int x, int y, int direction);
 void draw_pixel(int row, int col, char color);
 void draw_pixel_with_char(int row, int col, char color,char ch);
-void draw_diamond(unsigned int i,unsigned int j);
-void draw_dirt(unsigned int i,unsigned int j);
-void draw_bag(unsigned int i,unsigned int j);
-void draw_empty(unsigned int i,unsigned int j);
+void draw_diamond(int i,int j);
+void draw_dirt(int i,int j);
+void draw_bag(int i,int j);
+void draw_empty(int i,int j,int update_map);
 void draw_nobbin(Nobbin n);
 void draw_area(int y, int x);
 void draw_digger(Digger player);
 int move_is_possible(int x,int y, int direction, int i_can_dig);
-void draw_dig(unsigned int i,unsigned int j);
 void refresh_map();
 void draw_debug_line(char* str);
 void refresh_debug_map();

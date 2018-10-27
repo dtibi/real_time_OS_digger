@@ -1,10 +1,8 @@
-#include <conf.h>
-#include <kernel.h>
-#include "map.h"
-#include "digger.h"
-#include "myints.h"
-#include "nobin.h"
+#include "map.c"
+#include "digger.c"
+#include "nobin.c"
 #include "sound.c"
+#include "myints.c"
 
 int sched_arr_pid[5] = {-1};
 int sched_arr_int[5] = {-1};
@@ -65,20 +63,21 @@ xmain()
 {
 	int i, j;
 	player = create_digger();
-	for(i=0;i<NOBBIN_COUNT;i++)
+	for(i=0;i<NOBBIN_COUNT;i++){
 		enemys[i] = create_nobbin(&player);
-	enemys[0].is_alive = 1;
-	draw_nobbin(enemys[0]);
+	}
+	enemys[0].is_alive = 1; 
+	
 	for (i=0; i<ROWS; i++) {
 		for(j=0;j<COLUMNS; j++) {
-			gameMap.currentLevel[i][j] = level_0[i][j];
+			gameMap.level_map[i][j] = level_0[i][j];
 		}
 	}
-	gameMap = create_map();
-	draw_digger(player);
+	create_map();
+ 	draw_digger(player);
+	draw_nobbin(enemys[0]);
 	
-
-	digger_move_pid = create(move_digger,INITSTK,INITPRIO+2,"move_digger",1,&player);
+	digger_move_pid = create(run_digger,INITSTK,INITPRIO+2,"move_digger",1,&player);
 	debug = create(refresh_debug_map,INITSTK,INITPRIO,"debug_line",0);
 	terminate_xinu_pid = create(kill_xinu,INITSTK,INITPRIO+3,"kill_Xinu",0);
 	move_enemys_pid = create(move_nobbins,INITSTK,INITPRIO+1,"move_nobbins",0);
@@ -93,10 +92,6 @@ xmain()
 
 	setup_interrupts();
 	
-    schedule(5,57,  debug, 29,move_enemys_pid, 29, digger_move_pid, 29, bg_sound_pid, 29,terminate_xinu_pid,29);
-	
+    schedule(5,57,  debug, 29,move_enemys_pid, 29, digger_move_pid, 29, bg_sound_pid, 29,terminate_xinu_pid,29); 
 	return(OK);
-} 
-
-
-
+}

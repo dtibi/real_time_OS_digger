@@ -1,6 +1,11 @@
 #ifndef MYINTS_FILE
 #define MYINTS_FILE
+#include <dos.h>
 #include <kernel.h>
+#include <stdio.h>
+#include <conf.h>
+#include <io.h>
+
 
 #define LEFT_ARROW 75
 #define RIGHT_ARROW 77

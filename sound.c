@@ -1,5 +1,3 @@
-#include <dos.h>
-#include <stdio.h>
 #include "sound.h"
 #include "myints.h"
 
@@ -298,16 +296,4 @@ void beethoven(){
 		no_sound();
 		my_delay(1,1);
 	}
-}
-
-void diamond_collect_sound(){
-	
-}
-
-void death_sound(){
-	
-}
-
-void fireball_sound(){
-	
 }

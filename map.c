@@ -1,18 +1,17 @@
-#include <conf.h>
 #include "map.h"
 #include "digger.h"
 #include "nobin.h"
 #include "myints.h"
 
 volatile Digger player;
-volatile Map gameMap;
+Map gameMap;
 volatile Nobbin enemys[NOBBIN_COUNT];
 char* debug_str;
 
 void draw_debug_line(char *str){
 	int i,str_len;
 	str_len = (strlen(str)>COLUMNS_PIXELS) ? COLUMNS_PIXELS : strlen(str);
-	for (i=0;i<str_len;i++){
+	for (i=0;i<str_len && i<COLUMNS_PIXELS;i++){
 		draw_pixel_with_char(0,i,2,str[i]);
 	}
 	for(i=i;i<COLUMNS_PIXELS;i++){
@@ -39,14 +38,11 @@ void clean_screen(){
 }
 
 void draw_pixel_with_char(int row, int col, char color,char ch){
-	int screen_address = start_address + row*10 , col_2 = col*2;
+	unsigned int screen_address = start_address + row*10; 
+	int col_2 = col*2;
 	char c = ch;
-	if (screen_address < start_address || screen_address > start_address+999) {
-		printf("illegal address trying to wrote to screen: %x", screen_address);
-		return;
-	}
-	if (col_2 < 0 || col_2 > 160) {
-		printf("illegal offset trying to wrote to screen: %d", col_2);
+	if (row<0 || row>=ROWS_PIXELS || col<0 || col>=COLUMNS_PIXELS) {
+		printf("WARNING! skipping illegal screen address  x:%d , y:%d color:%d , char:%c \n", col, row,color,ch);
 		return;
 	}
 	
@@ -63,17 +59,19 @@ void draw_pixel_with_char(int row, int col, char color,char ch){
 		POP DI
 		POP ES
 		POP AX
-	}
-	gameMap.current_map[row][col][0] = ch;
-	gameMap.current_map[row][col][1] = color;
+	} 
+	gameMap.pixel_map[row][col][0] = ch;
+	gameMap.pixel_map[row][col][1] = color;
 }
 
 void draw_pixel(int row, int col, char color){
-	int screen_address = start_address + row*10 , col_2 = col*2;
-	if (screen_address < start_address || screen_address > start_address+250) {
-		printf("illegal address trying to wrote to screen: %x", screen_address);
+	unsigned int screen_address = start_address + row*10 ;
+	int col_2 = col*2;
+	if (row<0 || row>=ROWS_PIXELS || col<0 || col>=COLUMNS_PIXELS) {
+		printf("WARNING! skipping illegal screen address  x:%d , y:%d color:%d \n", col, row,color);
 		return;
 	}
+	//printf("line:%x,os:%d",screen_address,col_2);
 	asm{
 		PUSH AX
 		PUSH ES
@@ -87,22 +85,20 @@ void draw_pixel(int row, int col, char color){
 		POP DI
 		POP ES
 		POP AX
-	}
-	
-
-	gameMap.current_map[row][col][0] = ' ';
-	gameMap.current_map[row][col][1] = color;
+	} 
+	gameMap.pixel_map[row][col][0] = ' ';
+	gameMap.pixel_map[row][col][1] = color;
 }
 
-/*  draw_diamond(unsigned int i,unsigned int j)
+/*  draw_diamond(int i,int j)
 	                       _____
  diamond will look like:  |_   _| and colored (GREEN)
                             |_|
 */
-void draw_diamond(unsigned int i,unsigned int j) {
-	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j);
+void draw_diamond(int i,int j) {
+	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j),k,l;
+	gameMap.level_map[i][j]=2;
 	draw_dirt(i,j);
-	gameMap.currentLevel[i][j]=2;
 	draw_pixel_with_char(row_pixel+1,column_pixel+1,GREEN_BG, ' ');
 	draw_pixel_with_char(row_pixel+1,column_pixel+2,GREEN_BG, ' ');
 	draw_pixel_with_char(row_pixel+1,column_pixel+3,GREEN_BG, ' ');
@@ -114,9 +110,9 @@ void draw_diamond(unsigned int i,unsigned int j) {
 Gold bags will look like:		 / \
 						   		|_$_|
 */
-void draw_bag(unsigned int i,unsigned int j){
-	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j),k, l;
-	gameMap.currentLevel[i][j]=3;
+void draw_bag(int i,int j){
+	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j);
+	gameMap.level_map[i][j]=3;
 	draw_pixel_with_char(row_pixel,column_pixel+2,GRAY_ON_BROWN,'w');
 	draw_pixel_with_char(row_pixel+1,column_pixel+1,GRAY_ON_BROWN,'/');
 	draw_pixel_with_char(row_pixel+1,column_pixel+2,GRAY_BG,' ');
@@ -127,22 +123,20 @@ void draw_bag(unsigned int i,unsigned int j){
 	
 }
 
-void draw_dirt(unsigned int i,unsigned int j){
+void draw_dirt(int i,int j){
 	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j), k, l;
-	gameMap.currentLevel[i][j]=1;
-	for (k=0;k<HEIGHT;k++)
-		for (l=0;l<WIDTH;l++) {
-			draw_pixel(row_pixel+k,column_pixel+l,BROWN_BG);
-		}
+	gameMap.level_map[i][j]=1;
+	for (k=row_pixel;k<row_pixel+HEIGHT && k<ROWS_PIXELS;k++)
+		for (l=column_pixel;l<column_pixel+WIDTH && l<COLUMNS_PIXELS;l++)
+			draw_pixel(k,l,BROWN_BG);
 }
 
-void draw_empty(unsigned int i,unsigned int j){
+void draw_empty(int i,int j,int update_map){
 	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j), k, l;
-	gameMap.currentLevel[i][j]=0;
-	for (k=0;k<HEIGHT;k++){
-		for (l=0;l<WIDTH;l++)
-			draw_pixel(row_pixel+k,column_pixel+l,BLACK_BG);
-	}
+	if(update_map==1)gameMap.level_map[i][j]=0;
+	for (k=row_pixel;k<row_pixel+HEIGHT && k<ROWS_PIXELS;k++)
+		for (l=column_pixel;l<column_pixel+WIDTH && l<COLUMNS_PIXELS;l++)
+			draw_pixel(k,l,BLACK_BG);
 }
 /* 
 nobbin should look like:
@@ -153,100 +147,78 @@ nobbin should look like:
 
  */
 void draw_nobbin(Nobbin n){
-	int i,j,x=n.x,y=n.y;
+	int i,j,x=column_2_pixel(n.x),y=row_2_pixel(n.y);
+	//printf("drawing nobbin\n");
 	if(n.is_alive) {
-		gameMap.currentLevel[pixel_2_row(y)][pixel_2_column(x)]=88;
+		gameMap.level_map[n.y][n.x]=88;
+		draw_empty(n.y,n.x,0);
 		if(!n.is_hobbin){
-			draw_dig(y,x);
-			gameMap.current_map[y][x][0] = ' ';
-			gameMap.current_map[y][x][1] =  GREEN_BG;
-			gameMap.current_map[y-1][x-1][0] = '0';
-			gameMap.current_map[y-1][x-1][1] =  BROWN_BG;
-			gameMap.current_map[y-1][x+1][0] = '0';
-			gameMap.current_map[y-1][x+1][1] =  BROWN_BG;
-			gameMap.current_map[y+1][x-1][0] = '/';
-			gameMap.current_map[y+1][x-1][1] =  RED;
-			gameMap.current_map[y+1][x+1][0] = '\\';
-			gameMap.current_map[y+1][x+1][1] =  RED;
+			gameMap.pixel_map[y+1][x+2][0] = ' ';
+			gameMap.pixel_map[y+1][x+2][1] =  GREEN_BG;
+			gameMap.pixel_map[y][x+1][0] = '0';
+			gameMap.pixel_map[y][x+1][1] =  BROWN_BG;
+			gameMap.pixel_map[y][x+3][0] = '0';
+			gameMap.pixel_map[y][x+3][1] =  BROWN_BG;
+			gameMap.pixel_map[y+2][x+1][0] = '/';
+			gameMap.pixel_map[y+2][x+1][1] =  RED;
+			gameMap.pixel_map[y+2][x+3][0] = '\\';
+			gameMap.pixel_map[y+2][x+3][1] =  RED;
 		} else {
 			
 		}
-		draw_area(y,x);
 	}
-}
-
-void draw_dig(unsigned int i,unsigned int j){
-	int row = i-(HEIGHT/2), col= j-(WIDTH/2),k,l;
-	
-	gameMap.currentLevel[pixel_2_row(i)][pixel_2_column(j)] = 0;
-	
-	for (k=row - HEIGHT;k<row+(3*HEIGHT) && k<ROWS_PIXELS ; k=k+HEIGHT){
-		if(k<=0)continue;
-		for (l=col - WIDTH;l<col+(3*WIDTH) && l<COLUMNS_PIXELS;l=l+WIDTH) {
-			if(l<0) continue;
-			if (gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==1) draw_dirt(pixel_2_row(k),pixel_2_column(l));
-			else if(gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==2) draw_diamond(pixel_2_row(k),pixel_2_column(l));
-			else if (gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==3) draw_bag(pixel_2_row(k),pixel_2_column(l));
-			else if (gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==0) draw_empty(pixel_2_row(k),pixel_2_column(l));
-			else if (gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==99) draw_digger(player);
-			else if (gameMap.currentLevel[pixel_2_row(k)][pixel_2_column(l)]==88) ;//draw_nobbin(enemys);
-		}
-	}
+	draw_area(y,x);
 }
 
 void draw_area(int y, int x){
 	int i,j;
-	for(i=y-HEIGHT;i<y+HEIGHT && i<ROWS_PIXELS;i++){
+	for(i=row_2_pixel(y)-HEIGHT;i<row_2_pixel(y)+HEIGHT && i<ROWS_PIXELS;i++){
 		if(i<=0) continue;
-		for(j=x-WIDTH;j<x+WIDTH && j<COLUMNS_PIXELS;j++){
+		for(j=column_2_pixel(x)-WIDTH;j<column_2_pixel(x)+WIDTH && j<COLUMNS_PIXELS;j++){
 			if(j<0) continue;
-			draw_pixel_with_char(i,j,gameMap.current_map[i][j][1],gameMap.current_map[i][j][0]);
+			draw_pixel_with_char(i,j,gameMap.pixel_map[i][j][1],gameMap.pixel_map[i][j][0]);
 		}
 	}
+	
 }
 
 void draw_digger(Digger player){
-	int x=player.x,y=player.y;
+	int x=column_2_pixel(player.x),y=row_2_pixel(player.y);
 	int direction = player.direction;
-	gameMap.currentLevel[pixel_2_row(y)][pixel_2_column(x)] = 99;
+	if(direction!=RIGHT_ARROW && direction!=LEFT_ARROW && direction!=UP_ARROW && direction!=DOWN_ARROW) return;
+	draw_empty(player.y,player.x,0);
 	switch (direction) {
 		case RIGHT_ARROW:
-			draw_dig(y,x);
-			gameMap.current_map[y][x+2][0] = '<';
-			gameMap.current_map[y][x+1][0] = 'o';
-			gameMap.current_map[y][x][0] = 'o';
-			gameMap.current_map[y][x+2][1] = GREEN_ON_BLACK;
-			gameMap.current_map[y][x+1][1] = BROWN_ON_RED;
-			gameMap.current_map[y][x][1] = BROWN_ON_RED;
-			draw_area(y,x);
+			gameMap.pixel_map[y+1][x+4][0] = '<';
+			gameMap.pixel_map[y+1][x+3][0] = 'o';
+			gameMap.pixel_map[y+1][x+2][0] = 'o';
+			gameMap.pixel_map[y+1][x+4][1] = GREEN_ON_BLACK;
+			gameMap.pixel_map[y+1][x+3][1] = BROWN_ON_RED;
+			gameMap.pixel_map[y+1][x+2][1] = BROWN_ON_RED;
 			break;
 		case LEFT_ARROW:
-			draw_dig(y,x);
-			gameMap.current_map[y][x-2][0] = '>';
-			gameMap.current_map[y][x-1][0] = 'o';
-			gameMap.current_map[y][x][0] = 'o';
-			gameMap.current_map[y][x-2][1] = GREEN_ON_BLACK;
-			gameMap.current_map[y][x-1][1] = BROWN_ON_RED;
-			gameMap.current_map[y][x][1] = BROWN_ON_RED;
-			draw_area(y,x);
+			gameMap.pixel_map[y+1][x][0] = '>';
+			gameMap.pixel_map[y+1][x+1][0] = 'o';
+			gameMap.pixel_map[y+1][x+2][0] = 'o';
+			gameMap.pixel_map[y+1][x][1] = GREEN_ON_BLACK;
+			gameMap.pixel_map[y+1][x+1][1] = BROWN_ON_RED;
+			gameMap.pixel_map[y+1][x+2][1] = BROWN_ON_RED;
 			break;
 		case UP_ARROW:
-			draw_dig(y,x);
-			gameMap.current_map[y-1][x][0] = 'V';
-			gameMap.current_map[y][x][0] = '8';
-			gameMap.current_map[y-1][x][1] = GREEN_ON_BLACK;
-			gameMap.current_map[y][x][1] = BROWN_ON_RED;
-			draw_area(y,x);
+			gameMap.pixel_map[y][x+2][0] = 'V';
+			gameMap.pixel_map[y+1][x+2][0] = '8';
+			gameMap.pixel_map[y][x+2][1] = GREEN_ON_BLACK;
+			gameMap.pixel_map[y+1][x+2][1] = BROWN_ON_RED;
 			break;
 		case DOWN_ARROW:
-			draw_dig(y,x);
-			gameMap.current_map[y+1][x][0] = '^';
-			gameMap.current_map[y][x][0] = '8';
-			gameMap.current_map[y+1][x][1] = GREEN_ON_BLACK;
-			gameMap.current_map[y][x][1] = BROWN_ON_RED;
-			draw_area(y,x);
+			gameMap.pixel_map[y+2][x+2][0] = '^';
+			gameMap.pixel_map[y+1][x+2][0] = '8';
+			gameMap.pixel_map[y+2][x+2][1] = GREEN_ON_BLACK;
+			gameMap.pixel_map[y+1][x+2][1] = BROWN_ON_RED;
 			break;
 	}
+	gameMap.level_map[player.y][player.x] = 99;
+	draw_area(player.y,player.x);
 }
 
 /* void draw_fire_ball(FireBall fb){
@@ -257,10 +229,10 @@ int move_is_possible(int x,int y, int direction, int i_can_dig){
 	//sprintf(debug_str,"move_is_possible(x=%d,y=%d,direction=%d,can_dog=%d",x,y,direction,i_can_dig);
 	//send(debug,debug_str);
 	
-	if((direction==UP_ARROW    && (y/HEIGHT)-1 < 0	  	 ) ||
-	   (direction==DOWN_ARROW  && (y/HEIGHT)+2 > ROWS	 ) ||
-	   (direction==RIGHT_ARROW && (x/WIDTH)+2  > COLUMNS ) ||
-	   (direction==LEFT_ARROW  && (x/WIDTH)-1  < 0		 ) ) return 0;
+	if((direction==UP_ARROW    && y-1 < 0	  	 ) ||
+	   (direction==DOWN_ARROW  && y+1 >= ROWS	 ) ||
+	   (direction==RIGHT_ARROW && x+1 >= COLUMNS ) ||
+	   (direction==LEFT_ARROW  && x-1 < 0		 ) ) return 0;
 	
 	if (direction!=UP_ARROW && direction!=DOWN_ARROW && direction!=RIGHT_ARROW && direction!=LEFT_ARROW) return 0;
 	
@@ -268,56 +240,65 @@ int move_is_possible(int x,int y, int direction, int i_can_dig){
 		return 1;
 	
 	else{
-		if		(direction==UP_ARROW    && gameMap.currentLevel[pixel_2_row(y)-1][pixel_2_column(x)]==0) return 1;
-		else if (direction==DOWN_ARROW  && gameMap.currentLevel[pixel_2_row(y)+1][pixel_2_column(x)]==0) return 1;
-		else if (direction==RIGHT_ARROW && gameMap.currentLevel[pixel_2_row(y)][pixel_2_column(x)+1]==0) return 1;
-		else if (direction==LEFT_ARROW  && gameMap.currentLevel[pixel_2_row(y)][pixel_2_column(x)-1]==0) return 1;
+		if		(direction==UP_ARROW    && gameMap.level_map[y-1][x]==0) return 1;
+		else if (direction==DOWN_ARROW  && gameMap.level_map[y+1][x]==0) return 1;
+		else if (direction==RIGHT_ARROW && gameMap.level_map[y][x+1]==0) return 1;
+		else if (direction==LEFT_ARROW  && gameMap.level_map[y][x-1]==0) return 1;
 	}
 	
 	return 0;
 }
 
-int pixel_2_row( unsigned int pixel_index ) {
-	if (pixel_index==0) return 0;
+int pixel_2_row(int pixel_index ) {
+	if(pixel_index<=0) return 0;
+	if(pixel_index>=ROWS_PIXELS)return ROWS-1;
 	return ((pixel_index-1)/HEIGHT);
 }
 
-int pixel_2_column(unsigned int pixel_index) {
+int pixel_2_column(int pixel_index) {
+	if(pixel_index<=0) return 0;
+	if( pixel_index>=COLUMNS_PIXELS) return COLUMNS-1;
 	return (pixel_index/WIDTH);
 }
 
 // row of screen
-int row_2_pixel( unsigned int row_index ) {
+int row_2_pixel( int row_index ) {
+	if(row_index<0) return 0;
+	if(row_index>=ROWS) return ROWS_PIXELS-1;
 	return ((row_index*HEIGHT)+1);
 }
 
 // offset of screen to be used for register DI
-int column_2_pixel(unsigned int column_index) {
+int column_2_pixel(int column_index) {
+	if(column_index<=0) return 0;
+	if(column_index>=COLUMNS) return COLUMNS_PIXELS-1;
 	return (column_index*WIDTH);
 }
 
 //return the color of the pixel (BLACK_BG || GREEN_BG || BROWN_BG || )
 int getNextPixelType(int x, int y, int direction)
 {	
-	if		(direction==UP_ARROW    && (pixel_2_row(y)-1) >= 0) 		return gameMap.currentLevel[pixel_2_row(y)-1][pixel_2_column(x)]; 
-	else if (direction==DOWN_ARROW  && (pixel_2_row(y)+1) < ROWS) 		return gameMap.currentLevel[pixel_2_row(y)+1][pixel_2_column(x)];
-	else if (direction==RIGHT_ARROW && (pixel_2_column(x)+1) < COLUMNS) return gameMap.currentLevel[pixel_2_row(y)][pixel_2_column(x)+1];
-	else if (direction==LEFT_ARROW  && (pixel_2_column(x)-1) < COLUMNS) 	return gameMap.currentLevel[pixel_2_row(y)][pixel_2_column(x)-1];
+	if		(direction==UP_ARROW    && (y-1) >= 0) 		return gameMap.level_map[y-1][x]; 
+	else if (direction==DOWN_ARROW  && (y+1) < ROWS) 	return gameMap.level_map[y+1][x];
+	else if (direction==RIGHT_ARROW && (x+1) < COLUMNS) return gameMap.level_map[y][x+1];
+	else if (direction==LEFT_ARROW  && (x-1) < COLUMNS) return gameMap.level_map[y][x-1];
 	return -1;
 }
 
-Map create_map(){
+void create_map(){
 	int i,j;
 	for (i=0; i<ROWS; i++) {
+		//printf("i:%d-",i);
 		for(j=0;j<COLUMNS; j++) {
-			if (gameMap.currentLevel[i][j]==1) draw_dirt(i,j);
-			else if(gameMap.currentLevel[i][j]==2) draw_diamond(i,j);
-			else if (gameMap.currentLevel[i][j]==3) {draw_dirt(i,j);draw_bag(i,j);}
-			else if (gameMap.currentLevel[i][j]==0) draw_empty(i,j);
+			//printf("j:%d",j);
+			if 		(gameMap.level_map[i][j]==1) draw_dirt(i,j);
+			else if (gameMap.level_map[i][j]==2) draw_diamond(i,j);
+			else if (gameMap.level_map[i][j]==3) {draw_dirt(i,j);draw_bag(i,j);}
+			else if (gameMap.level_map[i][j]==0) {draw_empty(i,j,1);} 
 		}
+		//printf("|\n");
 	}
-	
-	return gameMap;
+	return;
 }
 
 void refresh_debug_map(){
