@@ -122,6 +122,21 @@ void draw_bag(int i,int j){
 	draw_pixel_with_char(row_pixel+2,column_pixel+3,GRAY_BG,' ');
 	
 }
+/* 								  _  _  _
+open bag will look like this:    |_||_||_|
+								 |*||*||*|
+ */
+void draw_open_bag(int i,int j, int num){
+	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j);
+	gameMap.level_map[i][j]=6;
+	draw_empty(i,j,0);
+	if(num==3){
+		draw_pixel(row_pixel+2,column_pixel,GRAY_BG);
+		draw_pixel(row_pixel+2,column_pixel+2,GRAY_BG);
+		draw_pixel(row_pixel+2,column_pixel+4,GRAY_BG);
+	}
+	
+}
 
 void draw_dirt(int i,int j){
 	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j), k, l;
@@ -276,7 +291,7 @@ int column_2_pixel(int column_index) {
 }
 
 //return the color of the pixel (BLACK_BG || GREEN_BG || BROWN_BG || )
-int getNextPixelType(int x, int y, int direction)
+int get_object_in_direction(int x, int y, int direction)
 {	
 	if		(direction==UP_ARROW    && (y-1) >= 0) 		return gameMap.level_map[y-1][x]; 
 	else if (direction==DOWN_ARROW  && (y+1) < ROWS) 	return gameMap.level_map[y+1][x];
@@ -300,6 +315,42 @@ void create_map(){
 	}
 	return;
 }
+
+void gold_falling(){
+	int i,j,x,y,counter;
+	while(1){
+		
+		receive();//maybe semaphore is better here.
+		for(i=0;i<ROWS;i++){
+			for(j=0;j<COLUMNS;j++){
+				if(gameMap.level_map[i][j]==3){
+					if(gameMap.level_map[i+1][j]==0){
+						counter=0;
+						y=i;
+						x=j;
+						while(move_is_possible(x, y, DOWN_ARROW, 0)){	
+							counter++;
+							sleep(1);
+							y = y + 1;
+							draw_bag(y, x);
+							draw_empty(y-1, x,1);
+						}
+						if(counter>1)draw_open_bag(y,x,3);
+						else draw_bag(y,x);
+					}
+				}
+			}
+		}
+		
+		//sprintf(debug_str,"falling finished");
+		//send(debug,debug_str);
+		
+		//check if fall on someone
+			//yes- kill it
+		//drop money
+	}
+}
+
 
 void refresh_debug_map(){
 	while(1){

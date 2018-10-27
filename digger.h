@@ -11,7 +11,6 @@ void move_digger(Digger *player,int direction);
 void run_digger(Digger *player);
 void fire(Digger* player);
 Digger create_digger();
-int* directionChanged (int prevDirection, int nextDirection);
-void goldFalling(int x, int y);
+
 
 #endif

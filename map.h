@@ -56,7 +56,7 @@ static char level_0[ROWS][COLUMNS] = {
 void clean_screen();
 void create_map();
 
-int getNextPixelType(int x, int y, int direction);
+int get_object_in_direction(int x, int y, int direction);
 void draw_pixel(int row, int col, char color);
 void draw_pixel_with_char(int row, int col, char color,char ch);
 void draw_diamond(int i,int j);
@@ -67,6 +67,7 @@ void draw_nobbin(Nobbin n);
 void draw_area(int y, int x);
 void draw_digger(Digger player);
 int move_is_possible(int x,int y, int direction, int i_can_dig);
+void gold_falling(int x, int y);
 void refresh_map();
 void draw_debug_line(char* str);
 void refresh_debug_map();

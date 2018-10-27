@@ -15,19 +15,19 @@ Digger create_digger()
 
 void move_digger(Digger *player,int direction)
 {	
-	int x=(*player).x,y=(*player).y,p_direction=(*player).direction;
-	sprintf(debug_str,"x - %d , y %d , direction %d - %d" ,x , y ,direction , getNextPixelType(x, y, direction));
+	int x=(*player).x,y=(*player).y,p_direction=(*player).direction,coords[2];
+	sprintf(debug_str,"x - %d , y %d , direction %d - %d" ,x , y ,direction , get_object_in_direction(x, y, direction));
 	send(debug,debug_str);
 	if(direction != p_direction) {//check if the wanted move direction is diffrent from the current
 		(*player).direction = direction; //TODO: add here call the redraw digger
 		draw_digger(*player);
 	}
 	if (!move_is_possible(x,y,direction, 1)) return;
-	if (getNextPixelType(x, y, direction) == 2) //diamond found
+	if (get_object_in_direction(x, y, direction) == 2) //diamond found
 	{
 		//add point to score;
 	}
-	else if (getNextPixelType(x, y, direction) == 3) //gold sack found
+	else if (get_object_in_direction(x, y, direction) == 3) //gold sack found
 	{
 		if(direction==UP_ARROW || direction==DOWN_ARROW) 
 			return;
@@ -40,7 +40,8 @@ void move_digger(Digger *player,int direction)
 			if(move_is_possible(x + 2,y, DOWN_ARROW, 0))//check if there is no dirt under
 			{
 				draw_empty(y, x+1,1);
-				goldFalling(x + 2, y);
+				coords[0]=x+2;coords[1]=y;
+				send(gold_falling_pid);
 			}
 		}
 		
@@ -52,7 +53,8 @@ void move_digger(Digger *player,int direction)
 			if(move_is_possible(x - 2,y, DOWN_ARROW, 0))//check if there is no dirt under
 			{
 				draw_empty(y, x-1,1);
-				goldFalling(x - 2, y);
+				coords[0]=x-2;coords[1]=y;
+				send(gold_falling_pid);
 			}
 		} else {
 			
@@ -74,33 +76,11 @@ void move_digger(Digger *player,int direction)
 				(*player).y --;
 			break;
 	}
+	send(gold_falling_pid);
 	if(x!=(*player).x || y!=(*player).y) draw_empty(y,x,1);
 }
 
-void goldFalling(int x, int y)
-{
-	int k, l;
-	
-	draw_bag(y, x);
-	while(move_is_possible(x, y, DOWN_ARROW, 0))
-	{	
-		sleep(1);
-		y = y + 1;
-		draw_bag(y, x);
-		draw_empty(y-1, x,1);
-		
-	}
-	
-	
-	//sprintf(debug_str,"falling finished");
-	//send(debug,debug_str);
-	
-	//check if fall on someone
-		//yes- kill it
-	//drop money
-		
-	return;
-}
+
 
 void run_digger(Digger *player){	
 	int input=0;

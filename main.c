@@ -4,8 +4,8 @@
 #include "sound.c"
 #include "myints.c"
 
-int sched_arr_pid[5] = {-1};
-int sched_arr_int[5] = {-1};
+int sched_arr_pid[10] = {-1};
+int sched_arr_int[10] = {-1};
 int point_in_cycle;
 int gcycle_length;
 int gno_of_pids;
@@ -81,7 +81,8 @@ xmain()
 	debug = create(refresh_debug_map,INITSTK,INITPRIO,"debug_line",0);
 	terminate_xinu_pid = create(kill_xinu,INITSTK,INITPRIO+3,"kill_Xinu",0);
 	move_enemys_pid = create(move_nobbins,INITSTK,INITPRIO+1,"move_nobbins",0);
-	bg_sound_pid = create(background_music,INITSTK,INITPRIO-3,"background_sounds",0);
+	bg_sound_pid = create(beethoven,INITSTK,INITPRIO-3,"background_sounds",0);
+	gold_falling_pid = create(gold_falling,INITSTK,INITPRIO-1,"falling_gold",0);
 
 
 	resume(digger_move_pid);
@@ -89,9 +90,10 @@ xmain()
 	resume(terminate_xinu_pid);
 	resume(move_enemys_pid);
 	resume(bg_sound_pid);
-
+	resume(gold_falling_pid);
+	
 	setup_interrupts();
 	
-    schedule(5,57,  debug, 29,move_enemys_pid, 29, digger_move_pid, 29, bg_sound_pid, 29,terminate_xinu_pid,29); 
+    schedule(5,57,  debug, 29,move_enemys_pid, 29, digger_move_pid, 29, bg_sound_pid, 29,terminate_xinu_pid,29,gold_falling_pid,29); 
 	return(OK);
 }
