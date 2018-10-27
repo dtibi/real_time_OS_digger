@@ -26,6 +26,15 @@
 #define BROWN_ON_BLACK 6
 #define GRAY_ON_BROWN 103
 
+#define DIGGER 99
+#define EMPTY 0
+#define NOBBIN 88
+#define GOLD_BAG 3
+#define GOLD 6
+#define DIRT 1
+#define DIAMOND 2
+#define HOBBIN 89
+
 #define NOBBIN_COUNT 5
 #define start_address 0xB800
 
@@ -71,5 +80,5 @@ void gold_falling(int x, int y);
 void refresh_map();
 void draw_debug_line(char* str);
 void refresh_debug_map();
-
+void restart_game();
 #endif

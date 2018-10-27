@@ -232,8 +232,71 @@ void draw_digger(Digger player){
 			gameMap.pixel_map[y+1][x+2][1] = BROWN_ON_RED;
 			break;
 	}
-	gameMap.level_map[player.y][player.x] = 99;
+	gameMap.level_map[player.y][player.x] = DIGGER;
 	draw_area(player.y,player.x);
+}
+
+void draw_grave(int y, int x){
+	int column_pixel=column_2_pixel(x),row_pixel=row_2_pixel(y),i,j;
+	draw_empty(y,x,1);
+	draw_pixel(row_pixel+2,column_pixel+1,GRAY_BG);
+	draw_pixel(row_pixel+2,column_pixel+2,GRAY_BG);
+	draw_pixel(row_pixel+2,column_pixel+3,GRAY_BG);
+	sleep(2);
+	draw_pixel(row_pixel+1,column_pixel+1,GRAY_BG);
+	draw_pixel(row_pixel+1,column_pixel+2,GRAY_BG);
+	draw_pixel(row_pixel+1,column_pixel+3,GRAY_BG);
+	
+	draw_pixel(row_pixel+2,column_pixel,GRAY_BG);
+	draw_pixel_with_char(row_pixel+2,column_pixel+1,GRAY_BG,'R');
+	draw_pixel_with_char(row_pixel+2,column_pixel+2,GRAY_BG,'I');
+	draw_pixel_with_char(row_pixel+2,column_pixel+3,GRAY_BG,'P');
+	draw_pixel(row_pixel+2,column_pixel+4,GRAY_BG);
+	sleep(2);
+	
+	draw_pixel(row_pixel,column_pixel+1,GRAY_BG);
+	draw_pixel(row_pixel,column_pixel+2,GRAY_BG);
+	draw_pixel(row_pixel,column_pixel+3,GRAY_BG);
+	
+	draw_pixel(row_pixel+1,column_pixel,GRAY_BG);
+	draw_pixel_with_char(row_pixel+1,column_pixel+1,GRAY_BG,'R');
+	draw_pixel_with_char(row_pixel+1,column_pixel+2,GRAY_BG,'I');
+	draw_pixel_with_char(row_pixel+1,column_pixel+3,GRAY_BG,'P');
+	draw_pixel(row_pixel+1,column_pixel+4,GRAY_BG);
+	
+	draw_pixel(row_pixel+2,column_pixel,GRAY_BG);
+	draw_pixel_with_char(row_pixel+2,column_pixel+1,GRAY_BG,' ');
+	draw_pixel_with_char(row_pixel+2,column_pixel+2,GRAY_BG,' ');
+	draw_pixel_with_char(row_pixel+2,column_pixel+3,GRAY_BG,' ');
+	draw_pixel(row_pixel+2,column_pixel+4,GRAY_BG);
+	sleep(3);
+	
+}
+
+void digger_death_flow(){
+	//need to kill all enemys
+	enemys[0].is_alive=0;
+	draw_empty(enemys[0].y,enemys[0].x,1);
+	
+	player.lives--;
+	if(player.lives==0){restart_game();return;}
+	send(sound_effects_pid,0);
+	draw_grave(player.y,player.x);
+	sleep(25);
+	draw_empty(player.y,player.x,1);
+	player.x=8;
+	player.y=7;
+	player.is_alive=1;
+	
+	
+}
+
+void restart_game(){
+	
+}
+
+void draw_dead_digger(){
+	
 }
 
 /* void draw_fire_ball(FireBall fb){
@@ -255,10 +318,10 @@ int move_is_possible(int x,int y, int direction, int i_can_dig){
 		return 1;
 	
 	else{
-		if		(direction==UP_ARROW    && gameMap.level_map[y-1][x]==0) return 1;
-		else if (direction==DOWN_ARROW  && gameMap.level_map[y+1][x]==0) return 1;
-		else if (direction==RIGHT_ARROW && gameMap.level_map[y][x+1]==0) return 1;
-		else if (direction==LEFT_ARROW  && gameMap.level_map[y][x-1]==0) return 1;
+		if		(direction==UP_ARROW    && gameMap.level_map[y-1][x]==EMPTY) return 1;
+		else if (direction==DOWN_ARROW  && gameMap.level_map[y+1][x]==EMPTY) return 1;
+		else if (direction==RIGHT_ARROW && gameMap.level_map[y][x+1]==EMPTY) return 1;
+		else if (direction==LEFT_ARROW  && gameMap.level_map[y][x-1]==EMPTY) return 1;
 	}
 	
 	return 0;
@@ -306,10 +369,10 @@ void create_map(){
 		//printf("i:%d-",i);
 		for(j=0;j<COLUMNS; j++) {
 			//printf("j:%d",j);
-			if 		(gameMap.level_map[i][j]==1) draw_dirt(i,j);
-			else if (gameMap.level_map[i][j]==2) draw_diamond(i,j);
-			else if (gameMap.level_map[i][j]==3) {draw_dirt(i,j);draw_bag(i,j);}
-			else if (gameMap.level_map[i][j]==0) {draw_empty(i,j,1);} 
+			if 		(gameMap.level_map[i][j]==DIRT) draw_dirt(i,j);
+			else if (gameMap.level_map[i][j]==DIAMOND) draw_diamond(i,j);
+			else if (gameMap.level_map[i][j]==GOLD_BAG) {draw_dirt(i,j);draw_bag(i,j);}
+			else if (gameMap.level_map[i][j]==EMPTY) {draw_empty(i,j,1);} 
 		}
 		//printf("|\n");
 	}
@@ -321,14 +384,23 @@ void gold_falling(){
 	while(1){
 		
 		receive();//maybe semaphore is better here.
-		for(i=0;i<ROWS;i++){
+		for(i=0;i<ROWS-1;i++){
 			for(j=0;j<COLUMNS;j++){
-				if(gameMap.level_map[i][j]==3){
-					if(gameMap.level_map[i+1][j]==0){
+				if(gameMap.level_map[i][j]==GOLD_BAG){
+					sprintf(debug_str,"below gold: %d  ",gameMap.level_map[i+1][j]);
+					send(debug,debug_str);
+					if(gameMap.level_map[i+1][j]==EMPTY){
 						counter=0;
 						y=i;
 						x=j;
+						
 						while(move_is_possible(x, y, DOWN_ARROW, 0)){	
+							if(get_object_in_direction(x,y+1,DOWN_ARROW)==DIGGER){
+								draw_empty(y,x,1);
+								player.is_alive=0;
+								sleep(0);
+								continue;
+							}
 							counter++;
 							sleep(1);
 							y = y + 1;

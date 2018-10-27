@@ -297,3 +297,72 @@ void beethoven(){
 		my_delay(1,1);
 	}
 }
+
+void play_death(){
+	//1
+	sound(C4);
+	my_delay(3,1);
+	no_sound();
+	my_delay(0,0);
+	//2
+	sound(C4);
+	my_delay(2,1);
+	no_sound();
+	my_delay(0,0);
+	//3
+	sound(C4);
+	my_delay(1,1);
+	no_sound();
+	my_delay(0,0);
+	//4
+	sound(C4);
+	my_delay(3,1);
+	no_sound();
+	my_delay(0,0);
+	//5
+	sound(D4S);
+	my_delay(2,1);
+	no_sound();
+	my_delay(0,1);
+	//6
+	sound(D4);
+	my_delay(1,1);
+	no_sound();
+	my_delay(0,0);
+	//7
+	sound(D4);
+	my_delay(2,1);
+	no_sound();
+	my_delay(0,0);
+	//8
+	sound(C4);
+	my_delay(1,1);
+	no_sound();
+	my_delay(0,0);
+	//9
+	sound(C4);
+	my_delay(2,1);
+	no_sound();
+	my_delay(0,0);
+	//10
+	sound(BB4);
+	my_delay(1,1);
+	no_sound();
+	my_delay(0,0);
+	//11
+	sound(C4);
+	my_delay(2,1);
+	no_sound();
+	my_delay(1,1);
+}
+
+void sound_effects(){
+	int sound_id;
+	while(1){
+		sound_id = -1;
+		sound_id = receive();
+		
+		if(sound_id==0) play_death();
+		
+	}
+}

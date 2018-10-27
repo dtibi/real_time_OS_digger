@@ -9,15 +9,16 @@ Digger create_digger()
 	player.x = 8;
 	player.y = 7;
 	player.direction = LEFT_ARROW;
-	
+	player.is_alive=1;
+	player.lives=3;
 	return player;
 }
 
 void move_digger(Digger *player,int direction)
 {	
 	int x=(*player).x,y=(*player).y,p_direction=(*player).direction,coords[2];
-	sprintf(debug_str,"x - %d , y %d , direction %d - %d" ,x , y ,direction , get_object_in_direction(x, y, direction));
-	send(debug,debug_str);
+	//sprintf(debug_str,"x - %d , y %d , direction %d - %d" ,x , y ,direction , get_object_in_direction(x, y, direction));
+	//send(debug,debug_str);
 	if(direction != p_direction) {//check if the wanted move direction is diffrent from the current
 		(*player).direction = direction; //TODO: add here call the redraw digger
 		draw_digger(*player);
@@ -85,12 +86,13 @@ void move_digger(Digger *player,int direction)
 void run_digger(Digger *player){	
 	int input=0;
 	while(1){
-		while(input!=TIME_TIK){
+		while(input!=TIME_TIK && (*player).is_alive){
 			input = receive();
 		}
-		while (input!=RIGHT_ARROW && input!=LEFT_ARROW && input!=UP_ARROW && input!=DOWN_ARROW){
+		while (input!=RIGHT_ARROW && input!=LEFT_ARROW && input!=UP_ARROW && input!=DOWN_ARROW && (*player).is_alive){
 			input = receive();
 		}
+		if(!(*player).is_alive) {digger_death_flow();}
 		//sprintf(debug_str,"scanned value is - %d",input);
 		//send(debug,debug_str);
 		move_digger(player,input);

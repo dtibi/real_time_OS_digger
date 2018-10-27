@@ -6,6 +6,7 @@
 #define SHORT 0
 #define LONG 1
 
+#define BB4 247
 #define C4 	262
 #define C4S 277
 #define D4 	294

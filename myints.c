@@ -4,7 +4,7 @@
 
 
 volatile unsigned long count,delay_timer;
-volatile unsigned int map_moves_pid, digger_move_pid, debug, terminate_xinu_pid, move_enemys_pid,bg_sound_pid, gold_falling_pid;
+volatile unsigned int map_moves_pid, digger_move_pid, debug, terminate_xinu_pid, move_enemys_pid,bg_sound_pid, gold_falling_pid,sound_effects_pid;
 
 
 INTPROC (*Int9Save)(int);
@@ -39,7 +39,7 @@ INTPROC MyISR9(int mdevno)
 			bg_sound_pid=0;
 		}
 	}
-	
+	if(scan==3)send(sound_effects_pid,0);
 	send(digger_move_pid, scan); 
 	asm {
 		jmp Skip2
@@ -66,7 +66,7 @@ INTPROC MyISR8(int mdevno)
 	if(count%TIME_TIK==0)send(move_enemys_pid,TIME_TIK);
 	if(count>=delay_timer){
 		delay_timer=count+LETCH;
-		send(bg_sound_pid);
+		send(sound_effects_pid);
 	}
 	
 	if (count>=LETCH){
