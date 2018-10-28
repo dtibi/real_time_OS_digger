@@ -10,7 +10,6 @@ typedef struct digger {
 	} Digger;
 
 void move_digger(Digger *player,int direction);
-void run_digger(Digger *player);
 void fire(Digger* player);
 Digger create_digger();
 

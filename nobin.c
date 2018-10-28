@@ -30,9 +30,8 @@ void move_nobbins(){
 						enemys[i].y--;
 						break;
 				}
-				enemys[i].direction=direction;
+				if(direction!=0)enemys[i].direction=direction;
 				draw_nobbin(enemys[i]);
-				draw_area(enemys[i].y,enemys[i].x);
 			}
 		}
 		
@@ -40,18 +39,17 @@ void move_nobbins(){
 }
 char find_direction_to_digger(Nobbin n){
 	//char dir[4] = { UP_ARROW , RIGHT_ARROW , DOWN_ARROW , LEFT_ARROW };
-	int diff_x = n.x-(*(n.digger)).x, diff_y=n.y-(*(n.digger)).y,abs_diff_x,abs_diff_y,can_right,can_left,can_up,can_down;
+	int diff_x = (*(n.digger)).x-n.x, diff_y=(*(n.digger)).y-n.y,abs_diff_x,abs_diff_y,can_right,can_left,can_up,can_down;
 	if(diff_x<0) abs_diff_x = -1*diff_x;
 	if(diff_y<0) abs_diff_y = -1*diff_y;
-	if(move_is_possible(n.x,n.y, n.direction, n.is_hobbin)) return n.direction;
 	can_right = move_is_possible(n.x,n.y, RIGHT_ARROW, n.is_hobbin);
 	can_left = move_is_possible(n.x,n.y, LEFT_ARROW, n.is_hobbin);
 	can_up = move_is_possible(n.x,n.y, UP_ARROW, n.is_hobbin);
 	can_down = move_is_possible(n.x,n.y, DOWN_ARROW, n.is_hobbin);
-	if(n.direction==RIGHT_ARROW)can_left=0;
-	if(n.direction==LEFT_ARROW)can_right=0;
-	if(n.direction==UP_ARROW)can_down=0;
-	if(n.direction==DOWN_ARROW)can_up=0;
+	sprintf(debug_str,"move_is_possible(x=%d,y=%d), right=%d left=%d up=%d down=%d",n.x,n.y, can_right,can_left,can_up,can_down);
+	send(debug,debug_str);
+	if(can_down+can_left+can_right+can_up<=2)
+		if(move_is_possible(n.x,n.y, n.direction, n.is_hobbin)) return n.direction;
 	
 	if(abs_diff_x > abs_diff_y) {
 		if (diff_x>0) {
@@ -62,10 +60,10 @@ char find_direction_to_digger(Nobbin n){
 		}
 	} else {
 		if (diff_y>0) {
-			if(can_up) return UP_ARROW;
+			if(can_down) return DOWN_ARROW;
 		}
 		else {
-			if(can_down) return DOWN_ARROW;
+			if(can_up) return UP_ARROW;
 		}
 	}
 	
@@ -76,6 +74,7 @@ char find_direction_to_digger(Nobbin n){
 	
 	return 0;
 }
+
 
 Nobbin create_nobbin(Digger *d){ 
 	Nobbin n;

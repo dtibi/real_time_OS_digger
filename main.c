@@ -4,15 +4,30 @@
 #include "sound.c"
 #include "myints.c"
 
-int sched_arr_pid[10] = {-1};
-int sched_arr_int[10] = {-1};
+
+int sched_arr_pid[10];
+int sched_arr_int[10];
 int point_in_cycle;
 int gcycle_length;
 int gno_of_pids;
 extern SYSCALL  sleept(int);
 extern struct intmap far *sys_imp;
+int uppid, dispid, recvpid;
 
-SYSCALL schedule(int no_of_pids, int cycle_length, int pid1, ...)
+int update_buffer[20][2];
+int front_buf = -1;
+int rear_buf = -1;
+
+char ch_arr[2048];
+int front = -1;
+int rear = -1;
+ 
+int point_in_cycle;
+int gcycle_length;
+int gno_of_pids;
+
+ 
+ SYSCALL schedule(int no_of_pids, int cycle_length, int pid1, ...)
 {
   int i;
   int ps;
@@ -33,69 +48,126 @@ SYSCALL schedule(int no_of_pids, int cycle_length, int pid1, ...)
     iptr++;
   } // for
   restore(ps);
-  return(OK);
-
+	return (OK);
 } // schedule 
 
 
-void kill_xinu(){
-	int sec = 1,i;
-	receive();
-	for(i=0; i < 4; i++){
-		kill(sched_arr_pid[i]);
-	} 
-	restore_ints();
-	no_sound();
-	clean_screen();
-	printf("terminating program in %d second/s", sec);
-	//sleep(sec);
-	clean_screen();
-	
-	xdone();
-	return;
-}
-
-/*------------------------------------------------------------------------
- *----------------------   Main Digger Program ---------------------------
- *------------------------------------------------------------------------
- */
-xmain()
+void displayer( void )
 {
-	int i, j;
-	player = create_digger();
-	for(i=0;i<NOBBIN_COUNT;i++){
-		enemys[i] = create_nobbin(&player);
-	}
-	enemys[0].is_alive = 1; 
-	
+	int x,y,i,j;
 	for (i=0; i<ROWS; i++) {
 		for(j=0;j<COLUMNS; j++) {
 			gameMap.level_map[i][j] = level_0[i][j];
 		}
 	}
-	create_map();
- 	draw_digger(player);
+	draw_digger(player);
 	draw_nobbin(enemys[0]);
-	
-	digger_move_pid = create(run_digger,INITSTK,INITPRIO+2,"move_digger",1,&player);
-	debug = create(refresh_debug_map,INITSTK,INITPRIO,"debug_line",0);
-	terminate_xinu_pid = create(kill_xinu,INITSTK,INITPRIO+3,"kill_Xinu",0);
-	move_enemys_pid = create(move_nobbins,INITSTK,INITPRIO+1,"move_nobbins",0);
-	//bg_sound_pid = create(beethoven,INITSTK,INITPRIO-3,"background_sounds",0);
-	gold_falling_pid = create(gold_falling,INITSTK,INITPRIO-1,"falling_gold",0);
-	sound_effects_pid = create(sound_effects,INITSTK,INITPRIO-1,"sounds",0);
+	draw_map();
+	while (1){
+		
+		receive();
+		
+		draw_pixel(0,70,GRAY_BG);
+		for (i=0; i<ROWS; i++) {
+			for(j=0;j<COLUMNS; j++) {
+				draw_area(i,j);
+			}
+		}
+		draw_pixel(0,70,BLACK_BG);
+		
+	 } //while
+} // prntr
+
+void receiver(){
+	char temp;
+	while(1){
+    temp = receive();
+	draw_pixel(0,71,BLACK_BG);
+    rear++;
+    ch_arr[rear] = temp;
+    if (front == -1)
+       front = 0;
+  } // while
+
+} //  receiver
 
 
-	resume(digger_move_pid);
-	resume(debug);
-	resume(terminate_xinu_pid);
-	resume(move_enemys_pid);
-	//resume(bg_sound_pid);
-	resume(gold_falling_pid);
-	resume(sound_effects_pid);
+void updater() {
+	int i, j,counter=1,direction,button_sc;
+
+	enemys[0].is_alive = 1; 
 	
+	
+	
+
+	while(1){
+
+	receive();
+	draw_pixel(0,68,GREEN_BG);
+	counter++;
+	
+	while(front != -1)
+   {
+		button_sc = ch_arr[front];
+		if(front != rear)
+		   front++;
+		else
+			front = rear = -1;
+		//if(!player.is_alive) {digger_death_flow();}
+		move_digger((Digger*)&player,button_sc);
+	} // while(front_ch != -1)
+	
+
+	//when buffer is empty we get here 
+	//start moving nobbins 
+	if(counter%5>0){
+		for(i=0;i<NOBBIN_COUNT;i++){
+			if(enemys[i].is_alive==1) {
+				direction = find_direction_to_digger(enemys[i]);
+				//sprintf(debug_str,"nobbin direction: %d | LEFT=%d , RIGHT=%d , UP=%d , DOWN=%d",direction, LEFT_ARROW,RIGHT_ARROW,UP_ARROW,DOWN_ARROW);
+				//send(debug,debug_str);
+				draw_empty(enemys[i].y,enemys[i].x,1);
+				switch (direction)
+				{
+					case LEFT_ARROW:
+						enemys[i].x--;
+						break;
+					case RIGHT_ARROW:
+						enemys[i].x++;
+						break;
+					case DOWN_ARROW:
+						enemys[i].y++;
+						break;
+					case UP_ARROW:
+						enemys[i].y--;
+						break;
+				}
+				if(direction!=0) enemys[i].direction=direction;
+				draw_nobbin(enemys[i]);
+			}
+		}
+	} else counter=1;
+	
+	//sleept(1);
+	draw_pixel(0,68,BLACK_BG);
+  } // while(1)
+
+} // updater 
+
+
+xmain() {
+	int i;
+	player = create_digger();
+	for(i=0;i<NOBBIN_COUNT;i++)
+		enemys[i] = create_nobbin((Digger*)&player);
+	enemys[0].is_alive=1;
+	setup_clean_screen();
+	resume( dispid = create(displayer, INITSTK, INITPRIO, "DISPLAYER", 0) );
+	resume( recvpid = create(receiver, INITSTK, INITPRIO, "RECIVEVER", 0) );
+	resume( uppid = create(updater, INITSTK, INITPRIO, "UPDATER", 0) );
+	resume( debug = create(refresh_debug_map,INITSTK,INITPRIO+3,"debug_line",0));
+	receiver_pid =recvpid;
 	setup_interrupts();
-	
-    schedule(7,57,  debug, 29,move_enemys_pid, 29, digger_move_pid, 29, bg_sound_pid, 29,terminate_xinu_pid,29,gold_falling_pid,29, sound_effects_pid,29); 
-	return(OK);
-}
+    schedule(2,60, dispid, 5,  uppid, 30);
+	return (OK);
+} // xmain

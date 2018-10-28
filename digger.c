@@ -16,7 +16,7 @@ Digger create_digger()
 
 void move_digger(Digger *player,int direction)
 {	
-	int x=(*player).x,y=(*player).y,p_direction=(*player).direction,coords[2];
+	int x=(*player).x,y=(*player).y,p_direction=(*player).direction;
 	//sprintf(debug_str,"x - %d , y %d , direction %d - %d" ,x , y ,direction , get_object_in_direction(x, y, direction));
 	//send(debug,debug_str);
 	if(direction != p_direction) {//check if the wanted move direction is diffrent from the current
@@ -41,8 +41,6 @@ void move_digger(Digger *player,int direction)
 			if(move_is_possible(x + 2,y, DOWN_ARROW, 0))//check if there is no dirt under
 			{
 				draw_empty(y, x+1,1);
-				coords[0]=x+2;coords[1]=y;
-				send(gold_falling_pid);
 			}
 		}
 		
@@ -53,9 +51,8 @@ void move_digger(Digger *player,int direction)
 			draw_empty(y, x-1,1);
 			if(move_is_possible(x - 2,y, DOWN_ARROW, 0))//check if there is no dirt under
 			{
+				
 				draw_empty(y, x-1,1);
-				coords[0]=x-2;coords[1]=y;
-				send(gold_falling_pid);
 			}
 		} else {
 			
@@ -77,25 +74,10 @@ void move_digger(Digger *player,int direction)
 				(*player).y --;
 			break;
 	}
-	send(gold_falling_pid);
-	if(x!=(*player).x || y!=(*player).y) draw_empty(y,x,1);
-}
-
-
-
-void run_digger(Digger *player){	
-	int input=0;
-	while(1){
-		while(input!=TIME_TIK && (*player).is_alive){
-			input = receive();
-		}
-		while (input!=RIGHT_ARROW && input!=LEFT_ARROW && input!=UP_ARROW && input!=DOWN_ARROW && (*player).is_alive){
-			input = receive();
-		}
-		if(!(*player).is_alive) {digger_death_flow();}
-		//sprintf(debug_str,"scanned value is - %d",input);
+	if(x!=(*player).x || y!=(*player).y) {
+		draw_empty(y,x,1);
+		//sprintf(debug_str,"diger moved from(%d,%d) to (%d,%d)",x,y,(*player).x,(*player).y);
 		//send(debug,debug_str);
-		move_digger(player,input);
-		draw_digger(*player);
-	  }
+	}
+	draw_digger(*player);
 }

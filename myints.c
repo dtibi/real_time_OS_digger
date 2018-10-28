@@ -5,6 +5,8 @@
 
 volatile unsigned long count,delay_timer;
 volatile unsigned int map_moves_pid, digger_move_pid, debug, terminate_xinu_pid, move_enemys_pid,bg_sound_pid, gold_falling_pid,sound_effects_pid;
+int receiver_pid;
+
 
 
 INTPROC (*Int9Save)(int);
@@ -13,7 +15,8 @@ INTPROC (*Int8Save) (int);
 
 INTPROC MyISR9(int mdevno)
 {	
-	int scan = mdevno;
+	int scan = mdevno,ascii,result;
+	draw_pixel(0,71,RED_BG);
 	asm {
 	  PUSH AX
 	  MOV AH,1
@@ -22,40 +25,31 @@ INTPROC MyISR9(int mdevno)
 	  MOV AH,0
 	  INT 16h
 	  MOV BYTE PTR scan,AH
+	  MOV BYTE PTR ascii,AL
 	  POP AX
 	} //asm
 	//sprintf(debug_str,"scan= %d ,",scan);
 	//send(debug,debug_str);
-	if (scan==46) {	
-		clean_screen();
-		send(terminate_xinu_pid,0);
+	if (scan == LEFT_ARROW) result = LEFT_ARROW;
+	else if (scan == UP_ARROW) result = UP_ARROW;
+	else if (scan == RIGHT_ARROW) result = RIGHT_ARROW;
+	else if (scan == DOWN_ARROW) result = DOWN_ARROW;
+	else if (scan == SPACE_BAR) result = SPACE_BAR;
+	else result = 0;
+	if (scan == 46 && ascii==3) {
+		setup_clean_screen();
+		asm INT 27; // terminate xinu
 	}
-	if (scan==1) {	
-		if(bg_sound_pid==0) {
-			resume(bg_sound_pid = create(background_music,INITSTK,INITPRIO-3,"background_sounds",0));
-		} else {
-			kill(bg_sound_pid);
-			no_sound();
-			bg_sound_pid=0;
-		}
-	}
-	if(scan==3)send(sound_effects_pid,0);
-	send(digger_move_pid, scan); 
-	asm {
-		jmp Skip2
-	}
-	Skip1:
-	asm {
-		POP AX
-	}
-	Skip2:
 	
+	if(result!=0)send(receiver_pid, result); 
+	//if(scan==3)send(sound_effects_pid,0);
+	Skip1:
 	return (OK);
 
 } // new_int9
 
 
-INTPROC MyISR8(int mdevno)
+/* INTPROC MyISR8(int mdevno)
 {
     Int8Save(mdevno);
 	count++;
@@ -63,7 +57,7 @@ INTPROC MyISR8(int mdevno)
 	//if (count>=delay_timer) send(bg_sound_pid);
 	
 	if(count%((TIME_TIK*7)/10)==0)send(digger_move_pid,TIME_TIK);
-	if(count%TIME_TIK==0)send(move_enemys_pid,TIME_TIK);
+	if(count%TIME_TIK==0){send(move_enemys_pid,TIME_TIK);send(gold_falling_pid);}
 	if(count>=delay_timer){
 		delay_timer=count+LETCH;
 		send(sound_effects_pid);
@@ -77,15 +71,13 @@ INTPROC MyISR8(int mdevno)
 	//send(debug,debug_str);
 	return(OK);
 } // newint8(void)
-
+ */
 void restore_ints(){
 	int i;
 	for(i=0; i < 32; i++){
 		if (sys_imp[i].ivec == 9){
 			sys_imp[i].newisr = Int9Save;
-		}
-		if (sys_imp[i].ivec == 8){
-			sys_imp[i].newisr = Int8Save;
+			return;
 		}
 	}
 }
@@ -93,7 +85,7 @@ void restore_ints(){
 void setup_interrupts(){
 	//setup latch to LETCH assuming a second is worth ?? interrupts8
 	int i;
-	asm {
+	/* asm {
 	  CLI
 	  PUSH AX
 	  MOV AL,036h
@@ -104,16 +96,13 @@ void setup_interrupts(){
 	  OUT 40h,AL 
 	  POP AX
 	  STI
-	} // asm
+	} // asm */
 	
 	for(i=0; i < 32; i++){
 		if (sys_imp[i].ivec == 9){
 			Int9Save = sys_imp[i].newisr;
 			sys_imp[i].newisr = MyISR9;
-		}
-		if (sys_imp[i].ivec == 8){
-			Int8Save = sys_imp[i].newisr;
-			sys_imp[i].newisr = MyISR8;
+			return;
 		}
 	}
 	
