@@ -168,6 +168,6 @@ xmain() {
 	resume( debug = create(refresh_debug_map,INITSTK,INITPRIO+3,"debug_line",0));
 	receiver_pid =recvpid;
 	setup_interrupts();
-    schedule(2,60, dispid, 5,  uppid, 30);
+    schedule(2,4, dispid, 3,  uppid, 2);
 	return (OK);
 } // xmain
