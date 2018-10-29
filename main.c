@@ -60,20 +60,20 @@ void displayer( void )
 			gameMap.level_map[i][j] = level_0[i][j];
 		}
 	}
-	draw_digger(player);
-	draw_nobbin(enemys[0].y,enemys[0].x);
-	draw_map();
+	upd_draw_digger(player);
+	upd_draw_nobbin(enemys[0].y,enemys[0].x);
+	disp_draw_map();
 	while (1){
 		
 		receive();
 		
-		draw_pixel(0,70,GRAY_BG);
+		disp_draw_pixel(0,70,GRAY_BG);
 		for (i=0; i<ROWS; i++) {
 			for(j=0;j<COLUMNS; j++) {
-				if(gameMap.refresh_map[i][j]==1)draw_area(i,j);
+				if(gameMap.refresh_map[i][j]==1)disp_draw_area(i,j);
 			}
 		}
-		draw_pixel(0,70,BLACK_BG);
+		disp_draw_pixel(0,70,BLACK_BG);
 		
 	 } //while
 } // prntr
@@ -82,7 +82,7 @@ void receiver(){
 	char temp;
 	while(1){
     temp = receive();
-	draw_pixel(0,71,BLACK_BG);
+	disp_draw_pixel(0,71,BLACK_BG);
     rear++;
     ch_arr[rear] = temp;
     if (front == -1)
@@ -103,7 +103,7 @@ void updater() {
 	while(1){
 
 	receive();
-	draw_pixel(0,68,GREEN_BG);
+	disp_draw_pixel(0,68,GREEN_BG);
 	counter++;
 	
 	while(front != -1)
@@ -126,7 +126,7 @@ void updater() {
 				direction = find_direction_to_digger(enemys[i]);
 				//sprintf(debug_str,"nobbin direction: %d | LEFT=%d , RIGHT=%d , UP=%d , DOWN=%d",direction, LEFT_ARROW,RIGHT_ARROW,UP_ARROW,DOWN_ARROW);
 				//send(debug,debug_str);
-				draw_empty(enemys[i].y,enemys[i].x,1);
+				upd_draw_empty(enemys[i].y,enemys[i].x,1);
 				switch (direction)
 				{
 					case LEFT_ARROW:
@@ -143,13 +143,13 @@ void updater() {
 						break;
 				}
 				if(direction!=0) enemys[i].direction=direction;
-				draw_nobbin(enemys[i].y,enemys[i].x);
+				upd_draw_nobbin(enemys[i].y,enemys[i].x);
 			}
 		}
 	} else counter=1;
 	
 	//sleept(1);
-	draw_pixel(0,68,BLACK_BG);
+	disp_draw_pixel(0,68,BLACK_BG);
   } // while(1)
 
 } // updater 
@@ -170,6 +170,6 @@ xmain() {
 	resume( debug = create(refresh_debug_map,INITSTK,INITPRIO+3,"debug_line",0));
 	receiver_pid =recvpid;
 	setup_interrupts();
-    schedule(2,4, dispid, 3,  uppid, 2);
+    schedule(2,2, dispid, 1,  uppid, 0);
 	return (OK);
 } // xmain

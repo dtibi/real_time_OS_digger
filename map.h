@@ -66,20 +66,20 @@ static char level_0[ROWS][COLUMNS] = {
 
 	
 void setup_clean_screen();
-void draw_map();
+void disp_draw_map();
 
 int get_object_in_direction(int x, int y, int direction);
-void draw_pixel(int row, int col, char color);
-void draw_pixel_with_char(int row, int col, char color,char ch);
-void draw_diamond(int i,int j);
-void draw_dirt(int i,int j);
-void draw_bag(int i,int j);
-void draw_bag_moving(int i,int j,int direction);
-void draw_empty(int i,int j,int update_map);
-void draw_nobbin(int i, int j);
-void draw_area(int y, int x);
-void draw_digger(Digger player);
-void draw_cube_area(int i,int j);
+void disp_draw_pixel(int row, int col, char color);
+void disp_draw_pixel_with_char(int row, int col, char color,char ch);
+void upd_draw_diamond(int i,int j);
+void upd_draw_dirt(int i,int j);
+void upd_draw_bag(int i,int j);
+void disp_upd_draw_bag_moving(int i,int j,int direction);
+void upd_draw_empty(int i,int j,int update_map);
+void upd_draw_nobbin(int i, int j);
+void disp_draw_area(int y, int x);
+void upd_draw_digger(Digger player);
+void disp_draw_cube_area(int i,int j);
 int move_is_possible(int x,int y, int direction, int i_can_dig);
 void gold_falling(int x, int y);
 void refresh_map();

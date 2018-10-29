@@ -19,7 +19,7 @@ void move_digger(Digger *player,int direction)
 	int x=(*player).x,y=(*player).y,p_direction=(*player).direction;
 	if(direction != p_direction) {//check if the wanted move direction is diffrent from the current
 		(*player).direction = direction; //TODO: add here call the redraw digger
-		draw_digger(*player);
+		upd_draw_digger(*player);
 	}
 	if (!move_is_possible(x,y,direction, 1)) return;
 	if (get_object_in_direction(x, y, direction) == DIAMOND) //diamond found
@@ -36,23 +36,23 @@ void move_digger(Digger *player,int direction)
 		{
 			//draw empty
 			
-			draw_bag(y, x+2);
-			draw_empty(y, x+1,1);
+			upd_draw_bag(y, x+2);
+			upd_draw_empty(y, x+1,1);
 			if(move_is_possible(x + 2,y, DOWN_ARROW, 0))//check if there is no dirt under
 			{
-				draw_empty(y, x+1,1);
+				upd_draw_empty(y, x+1,1);
 			}
 		}
 		
 		else if(direction==LEFT_ARROW && move_is_possible(x - 1,y, LEFT_ARROW, 1)) 
 		{
 			//draw empty
-			draw_bag(y, x-2);
-			draw_empty(y, x-1,1);
+			upd_draw_bag(y, x-2);
+			upd_draw_empty(y, x-1,1);
 			if(move_is_possible(x - 2,y, DOWN_ARROW, 0))//check if there is no dirt under
 			{
 				
-				draw_empty(y, x-1,1);
+				upd_draw_empty(y, x-1,1);
 			}
 		} else {
 			
@@ -75,7 +75,7 @@ void move_digger(Digger *player,int direction)
 			break;
 	}
 	if(x!=(*player).x || y!=(*player).y) {
-		draw_empty(y,x,1);
+		upd_draw_empty(y,x,1);
 		//sprintf(debug_str,"diger moved from(%d,%d) to (%d,%d)",x,y,(*player).x,(*player).y);
 		//send(debug,debug_str);
 	}
@@ -83,5 +83,5 @@ void move_digger(Digger *player,int direction)
 	y=(*player).y;
 	sprintf(debug_str,"x - %d , y %d , up:%d down:%d right:%d left:%d" ,x , y , get_object_in_direction(x, y, UP_ARROW),get_object_in_direction(x, y, DOWN_ARROW),get_object_in_direction(x, y, RIGHT_ARROW),get_object_in_direction(x, y, LEFT_ARROW));
 	send(debug,debug_str);
-	draw_digger(*player);
+	upd_draw_digger(*player);
 }

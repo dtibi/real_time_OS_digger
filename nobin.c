@@ -14,7 +14,7 @@ void move_nobbins(){
 				direction = find_direction_to_digger(enemys[i]);
 				//sprintf(debug_str,"nobbin direction: %d | LEFT=%d , RIGHT=%d , UP=%d , DOWN=%d",direction, LEFT_ARROW,RIGHT_ARROW,UP_ARROW,DOWN_ARROW);
 				//send(debug,debug_str);
-				draw_empty(enemys[i].y,enemys[i].x,1);
+				upd_draw_empty(enemys[i].y,enemys[i].x,1);
 				switch (direction)
 				{
 					case LEFT_ARROW:
@@ -31,7 +31,7 @@ void move_nobbins(){
 						break;
 				}
 				if(direction!=0)enemys[i].direction=direction;
-				draw_nobbin(enemys[i].y,enemys[i].x);
+				upd_draw_nobbin(enemys[i].y,enemys[i].x);
 			}
 		}
 		
