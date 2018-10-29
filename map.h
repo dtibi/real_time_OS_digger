@@ -42,6 +42,7 @@
 typedef struct map {
 	volatile char level_map[ROWS][COLUMNS];
 	volatile char pixel_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
+	char refresh_map[ROWS][COLUMNS];
 	} Map;
 
 extern Map gameMap;
@@ -75,7 +76,7 @@ void draw_dirt(int i,int j);
 void draw_bag(int i,int j);
 void draw_bag_moving(int i,int j,int direction);
 void draw_empty(int i,int j,int update_map);
-void draw_nobbin(Nobbin n);
+void draw_nobbin(int i, int j);
 void draw_area(int y, int x);
 void draw_digger(Digger player);
 void draw_cube_area(int i,int j);

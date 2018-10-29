@@ -61,7 +61,7 @@ void displayer( void )
 		}
 	}
 	draw_digger(player);
-	draw_nobbin(enemys[0]);
+	draw_nobbin(enemys[0].y,enemys[0].x);
 	draw_map();
 	while (1){
 		
@@ -70,7 +70,7 @@ void displayer( void )
 		draw_pixel(0,70,GRAY_BG);
 		for (i=0; i<ROWS; i++) {
 			for(j=0;j<COLUMNS; j++) {
-				draw_area(i,j);
+				if(gameMap.refresh_map[i][j]==1)draw_area(i,j);
 			}
 		}
 		draw_pixel(0,70,BLACK_BG);
@@ -143,7 +143,7 @@ void updater() {
 						break;
 				}
 				if(direction!=0) enemys[i].direction=direction;
-				draw_nobbin(enemys[i]);
+				draw_nobbin(enemys[i].y,enemys[i].x);
 			}
 		}
 	} else counter=1;
@@ -161,6 +161,8 @@ xmain() {
 	for(i=0;i<NOBBIN_COUNT;i++)
 		enemys[i] = create_nobbin((Digger*)&player);
 	enemys[0].is_alive=1;
+	enemys[1].is_alive=1;
+	enemys[2].is_alive=1;
 	setup_clean_screen();
 	resume( dispid = create(displayer, INITSTK, INITPRIO, "DISPLAYER", 0) );
 	resume( recvpid = create(receiver, INITSTK, INITPRIO, "RECIVEVER", 0) );
