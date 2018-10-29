@@ -266,52 +266,52 @@ void play_death(){
 	sound(C4);
 	my_delay(3,1);
 	no_sound();
-	my_delay(0,0);
+	my_delay(1,0);
 	//2
 	sound(C4);
 	my_delay(2,1);
 	no_sound();
-	my_delay(0,0);
+	my_delay(1,0);
 	//3
 	sound(C4);
 	my_delay(1,1);
 	no_sound();
-	my_delay(0,0);
+	my_delay(1,0);
 	//4
 	sound(C4);
 	my_delay(3,1);
 	no_sound();
-	my_delay(0,0);
+	my_delay(1,0);
 	//5
 	sound(D4S);
 	my_delay(2,1);
 	no_sound();
-	my_delay(0,1);
+	my_delay(1,0);
 	//6
 	sound(D4);
 	my_delay(1,1);
 	no_sound();
-	my_delay(0,0);
+	my_delay(1,0);
 	//7
 	sound(D4);
 	my_delay(2,1);
 	no_sound();
-	my_delay(0,0);
+	my_delay(1,0);
 	//8
 	sound(C4);
 	my_delay(1,1);
 	no_sound();
-	my_delay(0,0);
+	my_delay(1,0);
 	//9
 	sound(C4);
 	my_delay(2,1);
 	no_sound();
-	my_delay(0,0);
+	my_delay(1,0);
 	//10
 	sound(BB4);
 	my_delay(1,1);
 	no_sound();
-	my_delay(0,0);
+	my_delay(1,0);
 	//11
 	sound(C4);
 	my_delay(2,1);
