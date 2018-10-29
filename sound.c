@@ -6,51 +6,14 @@ void my_delay(int n, int type)
 {
 	int delay;
 	
-	count = 0;
-	
 	if(type == 0)				
 		delay = SHORT_DELAY;  // delay between two same notes
 	else
 		delay = LONG_DELAY;   // delay between two different notes
 	
-    delay_timer = count+n*delay;
+    sleept(n*delay);
 	
-    /* asm {
-        CLI
-        PUSH AX
-        MOV AL,036h
-        OUT 43h,AL
-        MOV AX,9700
-        OUT 40h,AL
-        MOV AL,AH
-        OUT 40h,AL 
-        POP AX
-    } // asm
 
-    Int8Save = getvect(8);
-    setvect(8,MyISR8);
-    asm  { STI
-	}; */
-	
-   receive();
-
-	/* asm {
-	  CLI
-	  PUSH AX
-	  MOV AL,036h
-	  OUT 43h,AL
-	  MOV AX,0
-	  OUT 40h,AL
-	  MOV AL,AH
-	  OUT 40h,AL 
-	  POP AX
-	} // asm
-
-
-    setvect(8,Int8Save);
-	
-	asm  { STI
-	}; */
 } //mydelay
 
 

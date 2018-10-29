@@ -13,8 +13,7 @@ int gno_of_pids;
 
 extern SYSCALL  sleept(int);
 extern struct intmap far *sys_imp;
-
-int uppid, dispid, recvpid;
+int uppid, dispid, recvpid, debug, gold_falling_pid, sound_effects_pid;
 
 char ch_arr[2048];
 int front = -1;
@@ -45,6 +44,7 @@ SYSCALL schedule(int no_of_pids, int cycle_length, int pid1, ...) {
 
 void displayer() {
 	int x, y, i, j;
+	char c;
 	for (i = 0; i < ROWS; i++) {
 		for(j = 0; j < COLUMNS; j++)
 			gameMap.level_map[i][j] = level_0[i][j];
@@ -53,7 +53,6 @@ void displayer() {
 	upd_draw_nobbin(enemys[0].y, enemys[0].x);
 	disp_draw_map();
 	while (1) {
-		
 		receive();
 		
 		disp_draw_pixel_with_char(0, 70, GRAY_BG, ' ');
@@ -63,8 +62,15 @@ void displayer() {
 					disp_draw_area(i, j);
 			}
 		}
-		disp_draw_pixel_with_char(0, 70, BLACK_BG, ' ');
 		
+		for (i=0; i<ROWS; i++) {
+			for(j=0;j<COLUMNS; j++) {
+				c = gameMap.level_map[i][j] + '0';
+				disp_draw_pixel_with_char(row_2_pixel(i)+(HEIGHT/2),column_2_pixel(j)+(WIDTH/2),BLACK_BG,c);
+			}
+		}
+		
+		disp_draw_pixel_with_char(0, 70, BLACK_BG, ' ');
 	 }
 }
 
@@ -97,10 +103,10 @@ void updater() {
 			   front++;
 			else
 				front = rear = -1;
-			//if(!player.is_alive) {digger_death_flow();}
+			
 			move_digger((Digger*)&player,button_sc);
 		}
-		
+		if(!player.is_alive) digger_death_flow();
 
 		//after buffer is empty we get here 
 		//start moving nobbins 
@@ -140,7 +146,7 @@ void updater() {
 }
 
 xmain() {
-	int i;
+	int i,j;
 	player = create_digger();
 	for(i=0;i<NOBBIN_COUNT;i++)
 		enemys[i] = create_nobbin((Digger*)&player);
@@ -149,13 +155,25 @@ xmain() {
 	enemys[2].is_alive=1;
 	
 	setup_clean_screen();
+
+	for (i=0; i<ROWS; i++) {
+		for(j=0;j<COLUMNS; j++) {
+			gameMap.level_map[i][j] = level_0[i][j];
+		}
+	}
+	upd_draw_digger(player);
+	upd_draw_nobbin(enemys[0].y,enemys[0].x);
+	disp_draw_map();
+	
 	resume(dispid = create(displayer, INITSTK, INITPRIO, "DISPLAYER", 0));
 	resume(recvpid = create(receiver, INITSTK, INITPRIO, "RECIVEVER", 0));
 	resume(uppid = create(updater, INITSTK, INITPRIO, "UPDATER", 0));
 	resume(debug = create(refresh_debug_map, INITSTK, INITPRIO + 3, "debug_line",0));
+	resume( gold_falling_pid = create(gold_falling,INITSTK,INITPRIO,"gold_falling",0));
+	resume( sound_effects_pid = create(sound_effects,INITSTK,INITPRIO+1,"sound_effects_pid",0));
 	receiver_pid = recvpid;
 	setup_interrupts();
-    schedule(2, 2, dispid, 1, uppid, 0);
+    schedule(3,3, dispid, 1,  uppid, 0, dispid, 0);
 	
 	return (OK);
 }

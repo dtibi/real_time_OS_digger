@@ -20,7 +20,7 @@
 #define RED_BG 64
 #define PURPLE_BG 80
 #define BROWN_BG 96
-#define GRAY_BG 112
+#define GRAY_BG 0x70
 #define BROWN_ON_RED 70
 #define GREEN_ON_BLACK 2
 #define BROWN_ON_BLACK 6
@@ -35,13 +35,14 @@
 #define DIRT 1
 #define DIAMOND 2
 #define HOBBIN 89
+#define DEAD_DIGGER 100
 
 #define NOBBIN_COUNT 5
 #define start_address 0xB800
 
 typedef struct map {
-	volatile char level_map[ROWS][COLUMNS];
-	volatile char pixel_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
+	char level_map[ROWS][COLUMNS];
+	char pixel_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
 	char refresh_map[ROWS][COLUMNS];
 	} Map;
 
@@ -73,7 +74,7 @@ void disp_draw_pixel_with_char(int row, int col, char color,char ch);
 void upd_draw_diamond(int i,int j);
 void upd_draw_dirt(int i,int j);
 void upd_draw_bag(int i,int j);
-void disp_upd_draw_bag_moving(int i,int j,int direction);
+void upd_draw_bag_moving(int i,int j,int direction);
 void upd_draw_empty(int i,int j,int update_map);
 void upd_draw_nobbin(int i, int j);
 void disp_draw_area(int y, int x);
