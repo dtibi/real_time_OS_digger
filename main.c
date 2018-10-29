@@ -67,12 +67,12 @@ void displayer( void )
 			}
 		}
 		
-		/* for (i=0; i<ROWS; i++) {
+		for (i=0; i<ROWS; i++) {
 			for(j=0;j<COLUMNS; j++) {
 				c = gameMap.level_map[i][j] + '0';
 				disp_draw_pixel_with_char(row_2_pixel(i)+(HEIGHT/2),column_2_pixel(j)+(WIDTH/2),BLACK_BG,c);
 			}
-		} */
+		}
 		
 		disp_draw_pixel(0,70,BLACK_BG);
 		
@@ -114,11 +114,10 @@ void updater() {
 		   front++;
 		else
 			front = rear = -1;
-		//if(!player.is_alive) {digger_death_flow();}
 		move_digger((Digger*)&player,button_sc);
 	} // while(front_ch != -1)
 	
-
+	if(!player.is_alive) {digger_death_flow();continue;}
 	//when buffer is empty we get here 
 	//start moving nobbins 
 	if(counter%5>0){
@@ -179,8 +178,8 @@ xmain() {
 	resume( uppid = create(updater, INITSTK, INITPRIO, "UPDATER", 0) );
 	resume( debug = create(refresh_debug_map,INITSTK,INITPRIO+3,"debug_line",0));
 	resume( gold_falling_pid = create(gold_falling,INITSTK,INITPRIO,"gold_falling",0));
-	resume( sound_effects_pid = create(sound_effects,INITSTK,INITPRIO,"sound_effects_pid",0));
-	
+	resume( sound_effects_pid = create(sound_effects,INITSTK,INITPRIO+1,"sound_effects_pid",0));
+	sound(200);
 	receiver_pid =recvpid;
 	setup_interrupts();
     schedule(3,3, dispid, 1,  uppid, 0, dispid, 0);

@@ -167,7 +167,7 @@ void disp_upd_draw_bag_moving(int i,int j,int direction){
 				gameMap.pixel_map[row_pixel][column_pixel+1][1] = BLACK_BG;
 				gameMap.pixel_map[row_pixel][column_pixel+3][1] = BLACK_BG;
 			}
-			sleep(1);
+			sleept(5);
 			row_pixel++;
 		}
 	} else {
@@ -293,40 +293,74 @@ void upd_draw_digger(Digger player){
 	gameMap.level_map[player.y][player.x] = DIGGER;
 }
 
-void draw_grave(int y, int x){
+void upd_draw_grave(int y, int x){
 	int column_pixel=column_2_pixel(x),row_pixel=row_2_pixel(y),i,j;
-	upd_draw_empty(y,x,1);
-	disp_draw_pixel(row_pixel+2,column_pixel+1,GRAY_BG);
-	disp_draw_pixel(row_pixel+2,column_pixel+2,GRAY_BG);
-	disp_draw_pixel(row_pixel+2,column_pixel+3,GRAY_BG);
-	sleep(2);
-	disp_draw_pixel(row_pixel+1,column_pixel+1,GRAY_BG);
-	disp_draw_pixel(row_pixel+1,column_pixel+2,GRAY_BG);
-	disp_draw_pixel(row_pixel+1,column_pixel+3,GRAY_BG);
 	
-	disp_draw_pixel(row_pixel+2,column_pixel,GRAY_BG);
-	disp_draw_pixel_with_char(row_pixel+2,column_pixel+1,GRAY_BG,'R');
-	disp_draw_pixel_with_char(row_pixel+2,column_pixel+2,GRAY_BG,'I');
-	disp_draw_pixel_with_char(row_pixel+2,column_pixel+3,GRAY_BG,'P');
-	disp_draw_pixel(row_pixel+2,column_pixel+4,GRAY_BG);
-	sleep(2);
+	upd_draw_empty(y,x,0);
+	gameMap.level_map[player.y][player.x] = DEAD_DIGGER;
 	
-	disp_draw_pixel(row_pixel,column_pixel+1,GRAY_BG);
-	disp_draw_pixel(row_pixel,column_pixel+2,GRAY_BG);
-	disp_draw_pixel(row_pixel,column_pixel+3,GRAY_BG);
+	gameMap.pixel_map[row_pixel+2][column_pixel+3][0] = ' ';
+	gameMap.pixel_map[row_pixel+2][column_pixel+1][0] = ' ';
+	gameMap.pixel_map[row_pixel+2][column_pixel+2][0] = ' ';
+	gameMap.pixel_map[row_pixel+2][column_pixel+3][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel+2][column_pixel+1][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel+2][column_pixel+2][1] = GRAY_BG;
 	
-	disp_draw_pixel(row_pixel+1,column_pixel,GRAY_BG);
-	disp_draw_pixel_with_char(row_pixel+1,column_pixel+1,GRAY_BG,'R');
-	disp_draw_pixel_with_char(row_pixel+1,column_pixel+2,GRAY_BG,'I');
-	disp_draw_pixel_with_char(row_pixel+1,column_pixel+3,GRAY_BG,'P');
-	disp_draw_pixel(row_pixel+1,column_pixel+4,GRAY_BG);
+	sleept(8);
 	
-	disp_draw_pixel(row_pixel+2,column_pixel,GRAY_BG);
-	disp_draw_pixel_with_char(row_pixel+2,column_pixel+1,GRAY_BG,' ');
-	disp_draw_pixel_with_char(row_pixel+2,column_pixel+2,GRAY_BG,' ');
-	disp_draw_pixel_with_char(row_pixel+2,column_pixel+3,GRAY_BG,' ');
-	disp_draw_pixel(row_pixel+2,column_pixel+4,GRAY_BG);
-	sleep(3);
+	gameMap.pixel_map[row_pixel+1][column_pixel+3][0] = ' ';
+	gameMap.pixel_map[row_pixel+1][column_pixel+1][0] = ' ';
+	gameMap.pixel_map[row_pixel+1][column_pixel+2][0] = ' ';
+	gameMap.pixel_map[row_pixel+1][column_pixel+3][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel+1][column_pixel+1][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel+1][column_pixel+2][1] = GRAY_BG;
+	
+	
+	gameMap.pixel_map[row_pixel+2][column_pixel+4][0] = ' ';
+	gameMap.pixel_map[row_pixel+2][column_pixel+1][0] = 'R';
+	gameMap.pixel_map[row_pixel+2][column_pixel+2][0] = 'I';
+	gameMap.pixel_map[row_pixel+2][column_pixel+3][0] = 'P';
+	gameMap.pixel_map[row_pixel+2][column_pixel+3][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel+2][column_pixel+4][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel+2][column_pixel+1][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel+2][column_pixel+2][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel+2][column_pixel][0] = ' ';
+	gameMap.pixel_map[row_pixel+2][column_pixel][1] = GRAY_BG;
+	
+	sleept(8);
+	
+	gameMap.pixel_map[row_pixel][column_pixel+3][0] = ' ';
+	gameMap.pixel_map[row_pixel][column_pixel+1][0] = ' ';
+	gameMap.pixel_map[row_pixel][column_pixel+2][0] = ' ';
+	gameMap.pixel_map[row_pixel][column_pixel+3][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel][column_pixel+1][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel][column_pixel+2][1] = GRAY_BG;
+	
+	
+	gameMap.pixel_map[row_pixel+1][column_pixel+4][0] = ' ';
+	gameMap.pixel_map[row_pixel+1][column_pixel+1][0] = 'R';
+	gameMap.pixel_map[row_pixel+1][column_pixel+2][0] = 'I';
+	gameMap.pixel_map[row_pixel+1][column_pixel+3][0] = 'P';
+	gameMap.pixel_map[row_pixel+1][column_pixel+3][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel+1][column_pixel+4][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel+1][column_pixel+1][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel+1][column_pixel+2][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel+1][column_pixel][0] = ' ';
+	gameMap.pixel_map[row_pixel+1][column_pixel][1] = GRAY_BG;
+	
+	gameMap.pixel_map[row_pixel+2][column_pixel+4][0] = ' ';
+	gameMap.pixel_map[row_pixel+2][column_pixel+1][0] = ' ';
+	gameMap.pixel_map[row_pixel+2][column_pixel+2][0] = ' ';
+	gameMap.pixel_map[row_pixel+2][column_pixel+3][0] = ' ';
+	gameMap.pixel_map[row_pixel+2][column_pixel+3][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel+2][column_pixel+4][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel+2][column_pixel+1][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel+2][column_pixel+2][1] = GRAY_BG;
+	gameMap.pixel_map[row_pixel+2][column_pixel][0] = ' ';
+	gameMap.pixel_map[row_pixel+2][column_pixel][1] = GRAY_BG;
+	sleept(16);
+	
+	gameMap.level_map[player.y][player.x] = EMPTY;
 	
 }
 

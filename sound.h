@@ -3,8 +3,8 @@
 #define ON (1)
 #define OFF (0)
 
-#define SHORT 0
-#define LONG 1
+#define SHORT 2
+#define LONG 7
 
 #define BB4 247
 #define C4 	262

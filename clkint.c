@@ -1,10 +1,7 @@
 /* clkint.c - clkint */
 
-#include <conf.h>
-#include <kernel.h>
-#include <sleep.h>
-#include <io.h>
-#include <proc.h>
+
+#include "myints.h"
 
 extern int sched_arr_pid[];
 extern int sched_arr_int[];
@@ -50,7 +47,7 @@ int mdevno;				/* minor device number		*/
 
         
 	tod++;
-
+	if(delay_timer>=tod) {send(sound_effects_pid,0);delay_timer=tod-1;}
         resched_flag = 0;
 	if (slnempty)
 		if ( (--*sltop) <= 0 )

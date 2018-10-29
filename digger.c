@@ -93,8 +93,7 @@ void digger_death_flow(){
 	player.lives--;
 	if(player.lives==0){restart_game();return;}
 	send(sound_effects_pid,0);
-	draw_grave(player.y,player.x);
-	sleep(25);
+	upd_draw_grave(player.y,player.x);
 	upd_draw_empty(player.y,player.x,1);
 	player.x=8;
 	player.y=7;
@@ -102,5 +101,7 @@ void digger_death_flow(){
 	
 	//need to delete all enemys from map and respon them with time.
 	upd_draw_empty(enemys[0].y,enemys[0].x,1);
+	upd_draw_empty(enemys[1].y,enemys[1].x,1);
+	upd_draw_empty(enemys[2].y,enemys[2].x,1);
 	
 }

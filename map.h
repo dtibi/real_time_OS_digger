@@ -20,7 +20,7 @@
 #define RED_BG 64
 #define PURPLE_BG 80
 #define BROWN_BG 96
-#define GRAY_BG 112
+#define GRAY_BG 0x70
 #define BROWN_ON_RED 70
 #define GREEN_ON_BLACK 2
 #define BROWN_ON_BLACK 6
@@ -35,6 +35,7 @@
 #define DIRT 1
 #define DIAMOND 2
 #define HOBBIN 89
+#define DEAD_DIGGER 100
 
 #define NOBBIN_COUNT 5
 #define start_address 0xB800

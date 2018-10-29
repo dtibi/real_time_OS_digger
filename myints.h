@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <conf.h>
 #include <io.h>
-
-
+#include <sleep.h>
+#include <proc.h>
 
 #define LEFT_ARROW 75
 #define RIGHT_ARROW 77
