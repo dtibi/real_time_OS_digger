@@ -1,12 +1,12 @@
 #ifndef SOUND_FILE
 #define SOUND_FILE
-
 #define ON (1)
 #define OFF (0)
 
 #define SHORT 0
 #define LONG 1
 
+#define BB4 247
 #define C4 	262
 #define C4S 277
 #define D4 	294
@@ -31,9 +31,5 @@ void no_sound(void);
 void beethoven(void);
 
 void background_music(void);
-void background_music_test(void);
-void diamond_collect_sound(void);
-void death_sound(void);
-void fireball_sound(void);
 
 #endif

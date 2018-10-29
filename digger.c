@@ -1,116 +1,79 @@
-#include <stdio.h>
-#include <dos.h>
 #include "digger.h"
 #include "map.h"
 #include "myints.h"
 
 //Create digger
-Digger create_digger()
-{
+Digger create_digger() {
 	Digger player;
-	player.x = 42;
-	player.y = 23;
+	
+	player.x = 8;
+	player.y = 7;
 	player.direction = LEFT_ARROW;
+	player.is_alive = 1;
+	player.lives = 3;
 	
 	return player;
 }
 
-void move(Digger *player,int direction)
-{	
-	int x=(*player).x,y=(*player).y,p_direction=(*player).direction;
-	sprintf(debug_str,"x - %d , y %d , direction %d - %d" ,x , y ,direction , getNextPixelType(x, y, direction));
-	send(debug,debug_str);
-	if(direction != p_direction) {//check if the wanted move direction is diffrent from the current
-		(*player).direction = direction; //TODO: add here call the redraw digger
-		draw_digger(*player);
-		return;
+void move_digger(Digger *player, int direction) {	
+	int x = (*player).x, y = (*player).y, p_direction = (*player).direction;
+	if(direction != p_direction) { //check if the wanted move direction is diffrent from the current
+		(*player).direction = direction;
+		upd_draw_digger(*player);
 	}
-	if (!move_is_possible(x,y,direction, 1)) return;
 	
-	if (getNextPixelType(x, y, direction) == 2) //diamond found
-	{
+	if (!move_is_possible(x, y, direction, 1))
+		return;
+
+	if (get_object_in_direction(x, y, direction) == DIAMOND) { //diamond found
 		//add point to score;
 	}
 	
-	else if (getNextPixelType(x, y, direction) == 3) //gold sack found
+	else if (get_object_in_direction(x, y, direction) == GOLD_BAG) //gold sack found
 	{
-		if(direction==UP_ARROW || direction==DOWN_ARROW) 
+		if(direction == UP_ARROW || direction == DOWN_ARROW) 
 			return;
 		
-		else if(direction==RIGHT_ARROW && move_is_possible(x + WIDTH,y, RIGHT_ARROW, 1)) 
-		{
-			draw_bag(pixel_2_row(y), pixel_2_column(x)+2);
-			draw_empty(pixel_2_row(y), pixel_2_column(x)+1);
-			if(move_is_possible(x + WIDTH*2,y, DOWN_ARROW, 0))//check if there is no dirt under
-				goldFalling(x + WIDTH*2, y);
+		else if(direction == RIGHT_ARROW && move_is_possible(x + 1, y, RIGHT_ARROW, 1)) {
+			upd_draw_bag(y, x+2);
+			upd_draw_empty(y, x+1,1);
+			if(move_is_possible(x + 2,y, DOWN_ARROW, 0)) //check if there is no dirt under
+				upd_draw_empty(y, x+1,1);
 		}
 		
-		else if(direction==LEFT_ARROW && move_is_possible(x - WIDTH,y, LEFT_ARROW, 1)) 
-		{
-			draw_bag(pixel_2_row(y), pixel_2_column(x)-2);
-			draw_empty(pixel_2_row(y), pixel_2_column(x)-1);
-			if(move_is_possible(x - WIDTH*2,y, DOWN_ARROW, 0))//check if there is no dirt under
-				goldFalling(x - WIDTH*2, y);
+		else if(direction == LEFT_ARROW && move_is_possible(x - 1, y, LEFT_ARROW, 1))  {
+			//draw empty
+			upd_draw_bag(y, x-2);
+			upd_draw_empty(y, x-1,1);
+			if(move_is_possible(x - 2,y, DOWN_ARROW, 0))//check if there is no dirt under
+				upd_draw_empty(y, x-1, 1);
 		} 
-		
-		else 
-		{
-		
+		else {
+			
 		}
 	}
 	
-	switch (direction)
-	{
+	switch (direction) {
 		case LEFT_ARROW:
-				(*player).x -= WIDTH;
+				(*player).x --;
 			break;
 		case RIGHT_ARROW:
-				(*player).x += WIDTH;
+				(*player).x ++;
 			break;
 		case DOWN_ARROW:
-				(*player).y +=HEIGHT;
+				(*player).y ++;
 			break;
 		case UP_ARROW:
-				(*player).y -=HEIGHT;
+				(*player).y --;
 			break;
 	}
-	gameMap.currentLevel[pixel_2_row((*player).y)][pixel_2_column((*player).x)] = 99;
-}
-
-void goldFalling(int x, int y)
-{
-	int k, l;
-	while(move_is_possible(x, y, DOWN_ARROW, 0))
-	{	
-		sleep(3);
-		y = y + HEIGHT;
-		draw_bag(pixel_2_row(y), pixel_2_column(x));
-		draw_empty(pixel_2_row(y)-1, pixel_2_column(x));
-	}
 	
+	if(x != (*player).x || y != (*player).y)
+		upd_draw_empty(y,x,1);
 	
-	//sprintf(debug_str,"falling finished");
-	//send(debug,debug_str);
-	
-	//check if fall on someone
-		//yes- kill it
-	//drop money
-		
-	return;
-}
-
-void move_digger(Digger *player){	
-	int input=0;
-	while(1){
-		while(input!=TIME_TIK){
-			input = receive();
-		}
-		while (input!=RIGHT_ARROW && input!=LEFT_ARROW && input!=UP_ARROW && input!=DOWN_ARROW){
-			input = receive();
-		}
-		//sprintf(debug_str,"scanned value is - %d",input);
-		//send(debug,debug_str);
-		move(player,input);
-		draw_digger(*player);
-	  }
+	x = (*player).x;
+	y = (*player).y;
+	sprintf(debug_str,"x - %d , y %d , up:%d down:%d right:%d left:%d" ,x , y , get_object_in_direction(x, y, UP_ARROW), get_object_in_direction(x, y, DOWN_ARROW), get_object_in_direction(x, y, RIGHT_ARROW), get_object_in_direction(x, y, LEFT_ARROW));
+	send(debug,debug_str);
+	upd_draw_digger(*player);
 }

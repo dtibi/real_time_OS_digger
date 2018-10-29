@@ -1,1 +1,3 @@
-tcc -I.. main.c myints.c map.c digger.c nobin.c ../xinu.lib
+tcc -I.. -c -DTURBOC clkint.C
+tlib ..\XINU.LIB -+ clkint.obj
+tcc -I.. -emain.exe main.c ..\XINU.LIB
