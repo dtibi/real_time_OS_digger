@@ -135,7 +135,7 @@ void upd_draw_bag(int i,int j){
 	gameMap.refresh_map[i][j]=1;
 }
 
-void disp_upd_draw_bag_moving(int i,int j,int direction){
+void upd_draw_bag_moving(int i,int j,int direction){
 	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j);
 	if(direction==DOWN_ARROW){
 		gameMap.level_map[i+1][j]=MOVING_GOLD_BAG;
@@ -490,7 +490,7 @@ void gold_falling(){
 							}
 							counter++;
 							sleep(0);
-							disp_upd_draw_bag_moving(y, x,DOWN_ARROW);
+							upd_draw_bag_moving(y, x,DOWN_ARROW);
 							y = y + 1;
 							upd_draw_empty(y-1, x,1);
 							obj = get_object_in_direction(x,y,DOWN_ARROW);

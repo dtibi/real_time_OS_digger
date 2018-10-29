@@ -75,7 +75,7 @@ void disp_draw_pixel_with_char(int row, int col, char color,char ch);
 void upd_draw_diamond(int i,int j);
 void upd_draw_dirt(int i,int j);
 void upd_draw_bag(int i,int j);
-void disp_upd_draw_bag_moving(int i,int j,int direction);
+void upd_draw_bag_moving(int i,int j,int direction);
 void upd_draw_empty(int i,int j,int update_map);
 void upd_draw_nobbin(int i, int j);
 void disp_draw_area(int y, int x);
