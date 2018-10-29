@@ -50,8 +50,8 @@ void move_digger(Digger *player,int direction)
 			upd_draw_empty(y, x-1,1);
 			if(move_is_possible(x - 2,y, DOWN_ARROW, 0))//check if there is no dirt under
 			{
-				
 				upd_draw_empty(y, x-1,1);
+				send(gold_falling_pid);
 			}
 		} else {
 			
@@ -76,11 +76,31 @@ void move_digger(Digger *player,int direction)
 	if(x!=(*player).x || y!=(*player).y) {
 		upd_draw_empty(y,x,1);
 		//sprintf(debug_str,"diger moved from(%d,%d) to (%d,%d)",x,y,(*player).x,(*player).y);
-		//send(debug,debug_str);
+		send(gold_falling_pid);
 	}
 	x=(*player).x;
 	y=(*player).y;
 	sprintf(debug_str,"x - %d , y %d , up:%d down:%d right:%d left:%d" ,x , y , get_object_in_direction(x, y, UP_ARROW),get_object_in_direction(x, y, DOWN_ARROW),get_object_in_direction(x, y, RIGHT_ARROW),get_object_in_direction(x, y, LEFT_ARROW));
 	//send(debug,debug_str);
 	upd_draw_digger(*player);
+}
+
+
+void digger_death_flow(){
+	//need to kill all enemys so they stop moving
+	enemys[0].is_alive=0;
+	
+	player.lives--;
+	if(player.lives==0){restart_game();return;}
+	send(sound_effects_pid,0);
+	draw_grave(player.y,player.x);
+	sleep(25);
+	upd_draw_empty(player.y,player.x,1);
+	player.x=8;
+	player.y=7;
+	player.is_alive=1;
+	
+	//need to delete all enemys from map and respon them with time.
+	upd_draw_empty(enemys[0].y,enemys[0].x,1);
+	
 }

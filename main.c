@@ -12,7 +12,7 @@ int gcycle_length;
 int gno_of_pids;
 extern SYSCALL  sleept(int);
 extern struct intmap far *sys_imp;
-int uppid, dispid, recvpid;
+int uppid, dispid, recvpid, debug,gold_falling_pid,sound_effects_pid;
 
 int update_buffer[20][2];
 int front_buf = -1;
@@ -178,6 +178,9 @@ xmain() {
 	resume( recvpid = create(receiver, INITSTK, INITPRIO, "RECIVEVER", 0) );
 	resume( uppid = create(updater, INITSTK, INITPRIO, "UPDATER", 0) );
 	resume( debug = create(refresh_debug_map,INITSTK,INITPRIO+3,"debug_line",0));
+	resume( gold_falling_pid = create(gold_falling,INITSTK,INITPRIO,"gold_falling",0));
+	resume( sound_effects_pid = create(sound_effects,INITSTK,INITPRIO,"sound_effects_pid",0));
+	
 	receiver_pid =recvpid;
 	setup_interrupts();
     schedule(3,3, dispid, 1,  uppid, 0, dispid, 0);
