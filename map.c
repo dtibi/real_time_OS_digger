@@ -95,8 +95,8 @@ void disp_draw_pixel(int row, int col, char color){
 */
 void upd_draw_diamond(int i,int j) {
 	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j),k,l;
-	gameMap.level_map[i][j]=DIAMOND;
 	upd_draw_dirt(i,j);
+	gameMap.level_map[i][j]=DIAMOND;
 	gameMap.pixel_map[row_pixel+1][column_pixel+1][0] = ' ';
 	gameMap.pixel_map[row_pixel+1][column_pixel+2][0] = ' ';
 	gameMap.pixel_map[row_pixel+1][column_pixel+3][0] = ' ';
@@ -233,9 +233,9 @@ void upd_draw_nobbin(int i, int j){
 
 void disp_draw_area(int y, int x){
 	int i,j;
-	for(i=row_2_pixel(y-1);i<row_2_pixel(y+1) && i<ROWS_PIXELS;i++){
+	for(i=row_2_pixel(y-1);i<row_2_pixel(y+1)+1 && i<ROWS_PIXELS;i++){
 		if(i<=0) continue;
-		for(j=column_2_pixel(x-1);j<column_2_pixel(x+1) && j<COLUMNS_PIXELS;j++){
+		for(j=column_2_pixel(x-1);j<column_2_pixel(x+1)+1 && j<COLUMNS_PIXELS;j++){
 			if(j<0) continue;
 			disp_draw_pixel_with_char(i,j,gameMap.pixel_map[i][j][1],gameMap.pixel_map[i][j][0]);
 		}
@@ -427,7 +427,6 @@ void disp_draw_map(){
 
 void disp_draw_cube_area(int i,int j){
 	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j), k, l;
-	gameMap.level_map[i][j]=DIRT;
 	for (k=row_pixel;k<row_pixel+HEIGHT && k<ROWS_PIXELS;k++){
 		for (l=column_pixel;l<column_pixel+WIDTH && l<COLUMNS_PIXELS;l++){
 			//printf("(%d,%c)",gameMap.pixel_map[k][l][0],gameMap.pixel_map[k][l][1]);

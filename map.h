@@ -40,8 +40,8 @@
 #define start_address 0xB800
 
 typedef struct map {
-	volatile char level_map[ROWS][COLUMNS];
-	volatile char pixel_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
+	char level_map[ROWS][COLUMNS];
+	char pixel_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
 	char refresh_map[ROWS][COLUMNS];
 	} Map;
 

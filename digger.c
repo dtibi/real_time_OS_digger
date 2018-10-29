@@ -28,7 +28,6 @@ void move_digger(Digger *player,int direction)
 	}
 	else if (get_object_in_direction(x, y, direction) == GOLD_BAG) //gold sack found
 	{
-		printf("bag");
 		if(direction==UP_ARROW || direction==DOWN_ARROW) 
 			return;
 		
@@ -82,6 +81,6 @@ void move_digger(Digger *player,int direction)
 	x=(*player).x;
 	y=(*player).y;
 	sprintf(debug_str,"x - %d , y %d , up:%d down:%d right:%d left:%d" ,x , y , get_object_in_direction(x, y, UP_ARROW),get_object_in_direction(x, y, DOWN_ARROW),get_object_in_direction(x, y, RIGHT_ARROW),get_object_in_direction(x, y, LEFT_ARROW));
-	send(debug,debug_str);
+	//send(debug,debug_str);
 	upd_draw_digger(*player);
 }
