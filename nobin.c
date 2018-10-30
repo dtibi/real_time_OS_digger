@@ -5,36 +5,34 @@
 
 
 void move_nobbins(){
-	int i,j,timer;
+	int i;
 	char direction;
-	while(1) {
-		receive();
-		for(i=0;i<NOBBIN_COUNT;i++){
-			if(enemys[i].is_alive){
-				direction = find_direction_to_digger(enemys[i]);
-				//sprintf(debug_str,"nobbin direction: %d | LEFT=%d , RIGHT=%d , UP=%d , DOWN=%d",direction, LEFT_ARROW,RIGHT_ARROW,UP_ARROW,DOWN_ARROW);
-				//send(debug,debug_str);
-				upd_draw_empty(enemys[i].y,enemys[i].x,1);
-				switch (direction)
-				{
-					case LEFT_ARROW:
-						enemys[i].x--;
-						break;
-					case RIGHT_ARROW:
-						enemys[i].x++;
-						break;
-					case DOWN_ARROW:
-						enemys[i].y++;
-						break;
-					case UP_ARROW:
-						enemys[i].y--;
-						break;
-				}
-				if(direction!=0)enemys[i].direction=direction;
-				upd_draw_nobbin(enemys[i].y,enemys[i].x);
+	for(i=0; i<NOBBIN_COUNT; i++) {
+		if(enemys[i].is_alive == 1) {
+			direction = find_direction_to_digger(enemys[i]);
+			
+			upd_draw_empty(enemys[i].y, enemys[i].x, 1);
+			switch (direction) {
+				case LEFT_ARROW:
+					enemys[i].x--;
+					break;
+				case RIGHT_ARROW:
+					enemys[i].x++;
+					break;
+				case DOWN_ARROW:
+					enemys[i].y++;
+					break;
+				case UP_ARROW:
+					enemys[i].y--;
+					break;
 			}
+			
+			if(direction!=0)
+				enemys[i].direction=direction;
+			
+			upd_draw_nobbin(enemys[i].y,enemys[i].x);
+			if (gameMap.level_map[enemys[i].y][enemys[i].x]==DIGGER) player.is_alive=0;
 		}
-		
 	}
 }
 char find_direction_to_digger(Nobbin n){

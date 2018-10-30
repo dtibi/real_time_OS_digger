@@ -37,8 +37,11 @@ void move_digger(Digger *player, int direction) {
 		else if(direction == RIGHT_ARROW && move_is_possible(x + 1, y, RIGHT_ARROW, 1)) {
 			upd_draw_bag(y, x+2);
 			upd_draw_empty(y, x+1,1);
-			if(move_is_possible(x + 2,y, DOWN_ARROW, 0)) //check if there is no dirt under
+			if(move_is_possible(x + 2,y, DOWN_ARROW, 0)) {//check if there is no dirt under
 				upd_draw_empty(y, x+1,1);
+				gameMap.level_map[y][x+2]=MOVING_GOLD_BAG;//this is done to prevent digger from pushing the bag any more
+				resume(create(gold_falling, INITSTK, INITPRIO+1, "gold_falling", 2,y,x+2));
+			}
 		}
 		
 		else if(direction == LEFT_ARROW && move_is_possible(x - 1, y, LEFT_ARROW, 1))  {
@@ -47,7 +50,8 @@ void move_digger(Digger *player, int direction) {
 			upd_draw_empty(y, x-1,1);
 			if(move_is_possible(x - 2,y, DOWN_ARROW, 0)) { //check if there is no dirt under
 				upd_draw_empty(y, x-1, 1);
-				send(gold_falling_pid);
+				gameMap.level_map[y][x-2]=MOVING_GOLD_BAG;//this is done to prevent digger from pushing the bag any more
+				resume(create(gold_falling, INITSTK, INITPRIO+1, "gold_falling", 2,y,x-2));
 			}
 		} 
 		else {
@@ -72,13 +76,16 @@ void move_digger(Digger *player, int direction) {
 	
 	if(x != (*player).x || y != (*player).y) {
 		upd_draw_empty(y,x,1);
-		send(gold_falling_pid);
+		if(get_object_in_direction(x,y,UP_ARROW)==GOLD_BAG) {
+			//upd_draw_dirt(y-1,x);
+			resume(create(gold_falling, INITSTK, INITPRIO+1, "gold_falling", 2,y-1,x));
+		}
 	}
 
 	x = (*player).x;
 	y = (*player).y;
 	
-	sprintf(debug_str,"x - %d , y %d , up:%d down:%d right:%d left:%d" ,x , y , get_object_in_direction(x, y, UP_ARROW), get_object_in_direction(x, y, DOWN_ARROW), get_object_in_direction(x, y, RIGHT_ARROW), get_object_in_direction(x, y, LEFT_ARROW));
+	//sprintf(debug_str,"x - %d , y %d , up:%d down:%d right:%d left:%d" ,x , y , get_object_in_direction(x, y, UP_ARROW), get_object_in_direction(x, y, DOWN_ARROW), get_object_in_direction(x, y, RIGHT_ARROW), get_object_in_direction(x, y, LEFT_ARROW));
 	//send(debug,debug_str);
 	upd_draw_digger(*player);
 }

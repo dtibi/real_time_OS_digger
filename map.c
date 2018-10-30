@@ -112,9 +112,12 @@ void upd_draw_bag(int i, int j) {
 
 void upd_draw_bag_moving(int i,int j,int direction){
 	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j);
+	gameMap.level_map[i][j]=MOVING_GOLD_BAG;
 	if(direction==DOWN_ARROW){
 		gameMap.level_map[i+1][j]=MOVING_GOLD_BAG;
 		while(row_pixel<=row_2_pixel(i)+HEIGHT){
+			gameMap.refresh_map[i][j] = 1;
+			gameMap.refresh_map[i+1][j] = 1;
 			gameMap.pixel_map[row_pixel][column_pixel+2][0] = 'w';
 			gameMap.pixel_map[row_pixel+1][column_pixel+1][0] = '/';
 			gameMap.pixel_map[row_pixel+1][column_pixel+2][0] = ' ';
@@ -164,6 +167,31 @@ void upd_draw_open_bag(int i, int j, int num){
 		gameMap.pixel_map[row_pixel + 2][column_pixel][0] = ' ';
 		gameMap.pixel_map[row_pixel + 2][column_pixel + 2][0] = ' ';
 		gameMap.pixel_map[row_pixel + 2][column_pixel + 4][0] = ' ';
+		gameMap.pixel_map[row_pixel + 2][column_pixel][1] = GRAY_BG;
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 2][1] = GRAY_BG;
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 4][1] = GRAY_BG;
+	} else if(num==2) {
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 1][0] = ' ';
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 3][0] = ' ';
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 1][1] = GRAY_BG;
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 3][1] = GRAY_BG;
+	} else if(num==4) {
+		gameMap.pixel_map[row_pixel + 2][column_pixel][0] = ' ';
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 2][0] = ' ';
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 4][0] = ' ';
+		gameMap.pixel_map[row_pixel + 1][column_pixel + 1][0] = ' ';
+		gameMap.pixel_map[row_pixel + 1][column_pixel + 1][1] = GRAY_BG;
+		gameMap.pixel_map[row_pixel + 2][column_pixel][1] = GRAY_BG;
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 2][1] = GRAY_BG;
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 4][1] = GRAY_BG;
+	} else if(num==5) {
+		gameMap.pixel_map[row_pixel + 2][column_pixel][0] = ' ';
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 2][0] = ' ';
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 4][0] = ' ';
+		gameMap.pixel_map[row_pixel + 1][column_pixel + 1][0] = ' ';
+		gameMap.pixel_map[row_pixel + 1][column_pixel + 3][0] = ' ';
+		gameMap.pixel_map[row_pixel + 1][column_pixel + 3][1] = GRAY_BG;
+		gameMap.pixel_map[row_pixel + 1][column_pixel + 1][1] = GRAY_BG;
 		gameMap.pixel_map[row_pixel + 2][column_pixel][1] = GRAY_BG;
 		gameMap.pixel_map[row_pixel + 2][column_pixel + 2][1] = GRAY_BG;
 		gameMap.pixel_map[row_pixel + 2][column_pixel + 4][1] = GRAY_BG;
@@ -225,9 +253,9 @@ void upd_draw_nobbin(int i, int j) {
 
 void disp_draw_area(int y, int x) {
 	int i, j;
-	for(i = row_2_pixel(y - 1); i < row_2_pixel(y + 1) && i < ROWS_PIXELS; i++) {
+	for(i = row_2_pixel(y - 1); i < row_2_pixel(y + 1) + 1 && i < ROWS_PIXELS; i++) {
 		if(i <= 0) continue;
-		for(j = column_2_pixel(x - 1); j < column_2_pixel(x + 1) && j < COLUMNS_PIXELS; j++) {
+		for(j = column_2_pixel(x - 1); j < column_2_pixel(x + 1) + 1 && j < COLUMNS_PIXELS; j++) {
 			if(j < 0) continue;
 			disp_draw_pixel_with_char(i, j, gameMap.pixel_map[i][j][1], gameMap.pixel_map[i][j][0]);
 		}
@@ -446,51 +474,40 @@ void disp_draw_cube(int i,int j){
 	}
 }
 
-void gold_falling(){
-	int i,j,x,y,counter,obj;
-	while(1){
-		
-		receive();//maybe semaphore is better here.
-		for(i=0;i<ROWS-1;i++){
-			for(j=0;j<COLUMNS;j++){
-				if(gameMap.level_map[i][j]==GOLD_BAG){
-					//sprintf(debug_str,"below gold: %d  ",gameMap.level_map[i+1][j]);
-					//send(debug,debug_str);
-					if(gameMap.level_map[i+1][j]==EMPTY){
-						gameMap.level_map[i][j]=MOVING_GOLD_BAG;
-						counter=0;
-						y=i;
-						x=j;
-						obj = get_object_in_direction(x,y,DOWN_ARROW);
-						while(obj==EMPTY || obj==DIGGER || obj==NOBBIN || obj==HOBBIN){	
-							if(obj==DIGGER){
-								upd_draw_empty(y,x,1);
-								player.is_alive=0;
-								sleep(0);
-								break;
-							} else if (obj==NOBBIN || obj==HOBBIN) {
-								//kill enemy
-							}
-							counter++;
-							sleep(0);
-							upd_draw_bag_moving(y, x,DOWN_ARROW);
-							y = y + 1;
-							upd_draw_empty(y-1, x,1);
-							obj = get_object_in_direction(x,y,DOWN_ARROW);
-						}
-						if(counter>1)upd_draw_open_bag(y,x,3);
-						else upd_draw_bag(y,x);
+void gold_falling(int i,int j){
+	int x,y,counter,obj,gold_chunks;		
+	
+	if(gameMap.level_map[i+1][j]==EMPTY){
+		gameMap.level_map[i][j]=MOVING_GOLD_BAG;
+		counter=0;
+		y=i;
+		x=j;
+		obj = get_object_in_direction(x,y,DOWN_ARROW);
+		while(obj==EMPTY || obj==DIGGER || obj==NOBBIN || obj==HOBBIN){	
+			if(obj==DIGGER){
+				player.is_alive=0;
+				sleep(0);
+				break;
+			} else if (obj==NOBBIN || obj==HOBBIN) {
+				for(i=0;i<NOBBIN_COUNT;i++)
+					if(enemys[i].x==x && enemys[i].y==y+1){
+						enemys[i].is_alive=0;
+						upd_draw_empty(y+1,x,1);
+						break;
 					}
-				}
 			}
+			counter++;
+			sleep(0);
+			upd_draw_bag_moving(y, x,DOWN_ARROW);
+			upd_draw_empty(y, x,1);
+			y = y + 1;
+			obj = get_object_in_direction(x,y,DOWN_ARROW);
 		}
-		
-		//sprintf(debug_str,"falling finished");
-		//send(debug,debug_str);
-		
-		//check if fall on someone
-			//yes- kill it
-		//drop money
+		if(counter>1){
+			gold_chunks=tod%4+2;
+			upd_draw_open_bag(y,x,gold_chunks);
+		}
+		else upd_draw_bag(y,x);
 	}
 }
 
