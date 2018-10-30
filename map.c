@@ -161,7 +161,7 @@ open bag will look like this:    |_||_||_|
  */
 void upd_draw_open_bag(int i, int j, int num){
 	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j);
-	gameMap.level_map[i][j] = GOLD;
+	gameMap.level_map[i][j] = GOLD+num;
 	upd_draw_empty(i, j, 0);
 	if(num == 3) {
 		gameMap.pixel_map[row_pixel + 2][column_pixel][0] = ' ';
@@ -443,6 +443,59 @@ int get_object_in_direction(int x, int y, int direction)
 	return -1;
 }
 
+void score_lives_updater(){
+	int input;
+	while(1){
+		input = receive();
+		if(input==-1){
+			disp_draw_lives(player.lives);
+		} else {
+			player.score+=input;
+			disp_draw_score(player.score);
+		}
+	}
+	
+}
+
+void disp_draw_lives(int lives){
+	int start_from=22,i;
+	for(i=0;i<COLUMNS_PIXELS-start_from-20;i++)
+		disp_draw_pixel_with_char(0,start_from+i,BLACK_BG,' ');
+	if(lives == 1){
+		disp_draw_pixel_with_char(0,start_from,BROWN_ON_RED,'0');
+		disp_draw_pixel_with_char(0,start_from+1,BROWN_ON_RED,'0');
+		disp_draw_pixel_with_char(0,start_from+2,GREEN_ON_BLACK,'<');
+	} else if(lives == 2) {
+		disp_draw_pixel_with_char(0,start_from,BROWN_ON_RED,'0');
+		disp_draw_pixel_with_char(0,start_from+1,BROWN_ON_RED,'0');
+		disp_draw_pixel_with_char(0,start_from+2,GREEN_ON_BLACK,'<');
+		
+		disp_draw_pixel_with_char(0,start_from+4,BROWN_ON_RED,'0');
+		disp_draw_pixel_with_char(0,start_from+5,BROWN_ON_RED,'0');
+		disp_draw_pixel_with_char(0,start_from+6,GREEN_ON_BLACK,'<');
+	} else if(lives == 3) {
+		disp_draw_pixel_with_char(0,start_from,BROWN_ON_RED,'0');
+		disp_draw_pixel_with_char(0,start_from+1,BROWN_ON_RED,'0');
+		disp_draw_pixel_with_char(0,start_from+2,GREEN_ON_BLACK,'<');
+		
+		disp_draw_pixel_with_char(0,start_from+4,BROWN_ON_RED,'0');
+		disp_draw_pixel_with_char(0,start_from+5,BROWN_ON_RED,'0');
+		disp_draw_pixel_with_char(0,start_from+6,GREEN_ON_BLACK,'<');
+		
+		disp_draw_pixel_with_char(0,start_from+8,BROWN_ON_RED,'0');
+		disp_draw_pixel_with_char(0,start_from+9,BROWN_ON_RED,'0');
+		disp_draw_pixel_with_char(0,start_from+10,GREEN_ON_BLACK,'<');
+	}
+}
+
+void disp_draw_score(int score){
+	int i,str_len;
+	char* ch_score;
+	sprintf(ch_score,"%6d",score);
+	str_len = (strlen(ch_score) > COLUMNS_PIXELS) ? COLUMNS_PIXELS : strlen(ch_score);
+	for (i = 0; i < str_len && i < COLUMNS_PIXELS; i++)
+		disp_draw_pixel_with_char(0, i, 2, ch_score[i]);
+}
 void disp_draw_map(){
 	int i,j;
 	for (i=0; i<ROWS; i++) {

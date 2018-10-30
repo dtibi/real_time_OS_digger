@@ -31,9 +31,11 @@
 #define NOBBIN 88
 #define GOLD_BAG 3
 #define MOVING_GOLD_BAG 4
-#define GOLD 6
+#define GOLD 10
+#define GOLD_NUGGER_SCORE 50
 #define DIRT 1
 #define DIAMOND 2
+#define DIAMOND_SCORE 250
 #define HOBBIN 89
 #define DEAD_DIGGER 100
 
@@ -78,6 +80,9 @@ void upd_draw_bag_moving(int i,int j,int direction);
 void upd_draw_empty(int i,int j,int update_map);
 void upd_draw_nobbin(int i, int j);
 void disp_draw_area(int y, int x);
+void disp_draw_lives(int lives);
+void score_lives_updater();
+void disp_draw_score(int score);
 void upd_draw_digger(Digger player);
 void disp_draw_cube(int i,int j);
 int move_is_possible(int x,int y, int direction, int i_can_dig);

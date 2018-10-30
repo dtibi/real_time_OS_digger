@@ -11,25 +11,27 @@ Digger create_digger() {
 	player.direction = LEFT_ARROW;
 	player.is_alive = 1;
 	player.lives = 3;
+	player.score = 0;
 	
 	return player;
 }
 
 void move_digger(Digger *player, int direction) {	
-	int x = (*player).x, y = (*player).y, p_direction = (*player).direction;
+	int x = (*player).x, y = (*player).y, p_direction = (*player).direction,obj_in_direction;
 	if(direction != p_direction) { //check if the wanted move direction is diffrent from the current
 		(*player).direction = direction;
 		upd_draw_digger(*player);
 	}
+	obj_in_direction = get_object_in_direction(x, y, direction);
+	
 	
 	if (!move_is_possible(x, y, direction, 1))
 		return;
 
-	if (get_object_in_direction(x, y, direction) == DIAMOND) { //diamond found
-		//add point to score;
+	if (obj_in_direction == DIAMOND) { //diamond found
+		send(score_lives_pid,DIAMOND_SCORE);
 	}
-	
-	else if (get_object_in_direction(x, y, direction) == GOLD_BAG) //gold sack found
+	else if (obj_in_direction == GOLD_BAG) //gold sack found
 	{
 		if(direction == UP_ARROW || direction == DOWN_ARROW) 
 			return;
@@ -45,7 +47,6 @@ void move_digger(Digger *player, int direction) {
 		}
 		
 		else if(direction == LEFT_ARROW && move_is_possible(x - 1, y, LEFT_ARROW, 1))  {
-			//draw empty
 			upd_draw_bag(y, x-2);
 			upd_draw_empty(y, x-1,1);
 			if(move_is_possible(x - 2,y, DOWN_ARROW, 0)) { //check if there is no dirt under
@@ -57,6 +58,9 @@ void move_digger(Digger *player, int direction) {
 		else {
 			
 		}
+	}
+	else if (obj_in_direction >= GOLD+2 && obj_in_direction <= GOLD+5) {//gold nugets found
+		send(score_lives_pid,(obj_in_direction-GOLD)*GOLD_NUGGER_SCORE);
 	}
 	
 	switch (direction) {
@@ -94,8 +98,8 @@ void move_digger(Digger *player, int direction) {
 void digger_death_flow(){
 	//need to kill all enemys so they stop moving
 	enemys[0].is_alive=0;
-	
 	player.lives--;
+	send(score_lives_pid,-1);
 	if(player.lives==0) {
 		restart_game();
 		return;

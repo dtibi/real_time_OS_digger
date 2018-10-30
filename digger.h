@@ -7,6 +7,7 @@ typedef struct digger {
 	int direction; //LEFT_ARROW || RIGHT_ARROW || DOWN_ARROW || UP_ARROW
 	char is_alive;
 	char lives;
+	int score;
 	} Digger;
 
 void move_digger(Digger *player, int direction);

@@ -140,12 +140,15 @@ xmain() {
 	upd_draw_digger(player);
 	upd_draw_nobbin(enemys[0].y,enemys[0].x);
 	disp_draw_map();
+	disp_draw_lives(player.lives);
+	disp_draw_score(0);
 	
 	resume(dispid = create(displayer, INITSTK, INITPRIO, "DISPLAYER", 0));
 	resume(recvpid = create(receiver, INITSTK, INITPRIO, "RECIVEVER", 0));
 	resume(uppid = create(updater, INITSTK, INITPRIO, "UPDATER", 0));
 	resume(debug = create(refresh_debug_map, INITSTK, INITPRIO + 3, "debug_line",0));
 	resume( sound_effects_pid = create(sound_effects,INITSTK,INITPRIO+1,"sound_effects_pid",0));
+	resume( score_lives_pid = create(score_lives_updater,INITSTK,INITPRIO+3,"score_lives_updating",0));
 	receiver_pid = recvpid;
 	setup_interrupts();
     schedule(3,3, dispid, 1,  uppid, 0, dispid, 0);
