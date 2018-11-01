@@ -620,7 +620,7 @@ void fireball_advance(int y, int x, int direction){
 	
 	while(move_is_possible(x, y, direction, 0)){
 		
-		if(is_current_pixel_digger(y,x))
+		if(!is_current_pixel_digger(y,x))
 			upd_draw_empty(y,x,1);
 		x = x + deltaX;
 		y = y + deltaY;
