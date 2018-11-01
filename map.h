@@ -38,6 +38,7 @@
 #define DIAMOND_SCORE 250
 #define HOBBIN 89
 #define DEAD_DIGGER 100
+#define FIREBALL 6
 
 #define NOBBIN_COUNT 5
 #define start_address 0xB800
@@ -71,7 +72,7 @@ static char level_0[ROWS][COLUMNS] = {
 void setup_clean_screen();
 void disp_draw_map();
 
-int get_object_in_direction(int x, int y, int direction);
+int  get_object_in_direction(int x, int y, int direction);
 void disp_draw_pixel_with_char(int row, int col, char color,char ch);
 void upd_draw_diamond(int i,int j);
 void upd_draw_dirt(int i,int j);
@@ -85,8 +86,10 @@ void score_lives_updater();
 void disp_draw_score(int score);
 void upd_draw_digger(Digger player);
 void disp_draw_cube(int i,int j);
-int move_is_possible(int x,int y, int direction, int i_can_dig);
+int  move_is_possible(int x,int y, int direction, int i_can_dig);
 void gold_falling(int x, int y);
+int  is_current_pixel_digger(int y,int x);
+void fireball_advance(int y, int x, int direction);
 void refresh_map();
 void draw_debug_line(char* str);
 void refresh_debug_map();

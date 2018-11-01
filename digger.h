@@ -8,6 +8,7 @@ typedef struct digger {
 	char is_alive;
 	char lives;
 	int score;
+	int weapon_reloaded;
 	} Digger;
 
 void move_digger(Digger *player, int direction);

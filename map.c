@@ -199,6 +199,33 @@ void upd_draw_open_bag(int i, int j, int num){
 	gameMap.refresh_map[i][j] = 1;
 }
 
+/*
+	                       
+ fireball will look like:  *   and colored (RED)
+                          *** 
+						   *
+*/
+void upd_draw_fireball(int i,int j) {
+	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j);
+	// updating logical map to indicate fireball presence
+	gameMap.level_map[i][j]= FIREBALL;
+	// making the pixel empty before drawing fireball
+	upd_draw_empty(row_pixel,column_pixel,0);
+	// fireball pixel map update
+	gameMap.pixel_map[row_pixel][column_pixel+2][0] = '*';
+	gameMap.pixel_map[row_pixel][column_pixel+2][1] = RED;
+	gameMap.pixel_map[row_pixel+1][column_pixel+1][0] = '*';
+	gameMap.pixel_map[row_pixel+1][column_pixel+1][1] = RED;
+	gameMap.pixel_map[row_pixel+1][column_pixel+2][0] = '*';
+	gameMap.pixel_map[row_pixel+1][column_pixel+2][1] = RED;
+	gameMap.pixel_map[row_pixel+1][column_pixel+3][0] = '*';
+	gameMap.pixel_map[row_pixel+1][column_pixel+3][1] = RED;
+	gameMap.pixel_map[row_pixel+2][column_pixel+2][0] = '*';
+	gameMap.pixel_map[row_pixel+2][column_pixel+2][1] = RED;
+	
+	gameMap.refresh_map[i][j] = 1;
+}
+
 void upd_draw_dirt(int i,int j) {
 	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j), k, l;
 	gameMap.level_map[i][j] = DIRT;
@@ -562,6 +589,35 @@ void gold_falling(int i,int j){
 		}
 		else upd_draw_bag(y,x);
 	}
+}
+
+int is_current_pixel_digger(int y,int x){
+	return gameMap.level_map[y][x] == DIGGER;
+}
+
+void fireball_advance(int y, int x, int direction){
+	int deltaX = 0, deltaY = 0;
+	
+	if(direction == LEFT_ARROW)
+		deltaX = -1;
+	else if(direction == UP_ARROW)
+		deltaY = -1;
+	else if(direction == RIGHT_ARROW)
+		deltaX = 1;
+	else
+		deltaY = 1;
+	
+	while(move_is_possible(x, y, direction, 0)){
+		
+		if(is_current_pixel_digger(y,x))
+			upd_draw_empty(y,x,1);
+		x = x + deltaX;
+		y = y + deltaY;
+		upd_draw_fireball(y,x);
+		sleept(3);
+	}
+	
+	upd_draw_empty(y,x,1);
 }
 
 
