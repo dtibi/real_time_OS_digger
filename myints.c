@@ -28,8 +28,7 @@ INTPROC MyISR9(int mdevno)
 	  MOV BYTE PTR ascii,AL
 	  POP AX
 	} //asm
-	//sprintf(debug_str,"scan= %d ,",scan);
-	//send(debug,debug_str);
+	
 	if (scan == LEFT_ARROW) result = LEFT_ARROW;
 	else if (scan == UP_ARROW) result = UP_ARROW;
 	else if (scan == RIGHT_ARROW) result = RIGHT_ARROW;

@@ -2,10 +2,11 @@
 #include "digger.h"
 #include "nobin.h"
 #include "myints.h"
+#include "nobin.h"
 
 volatile Digger player;
 Map gameMap;
-volatile Nobbin enemys[NOBBIN_COUNT];
+volatile Enemy enemys[ENEMY_COUNT];
 char* debug_str;
 
 
@@ -470,6 +471,15 @@ int get_object_in_direction(int x, int y, int direction)
 	return -1;
 }
 
+int is_digger_next_to_me(int x, int y)
+{	
+	if		((y-1) >= 0 && gameMap.level_map[y-1][x] == DIGGER) return 1; 
+	else if ((y+1) < ROWS && gameMap.level_map[y+1][x] == DIGGER)	return 1;
+	else if ((x+1) < COLUMNS && gameMap.level_map[y][x+1] == DIGGER) return 1;
+	else if ((x-1) >= 0 && gameMap.level_map[y][x-1] == DIGGER) return 1;
+	return 0;
+}
+
 void score_lives_updater(){
 	int input;
 	while(1){
@@ -523,6 +533,7 @@ void disp_draw_score(int score){
 	for (i = 0; i < str_len && i < COLUMNS_PIXELS; i++)
 		disp_draw_pixel_with_char(0, i, 2, ch_score[i]);
 }
+
 void disp_draw_map(){
 	int i,j;
 	for (i=0; i<ROWS; i++) {

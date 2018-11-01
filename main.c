@@ -131,11 +131,11 @@ void updater() {
 xmain() {
 	int i,j;
 	player = create_digger();
-	for(i=0;i<NOBBIN_COUNT;i++)
-		enemys[i] = create_nobbin((Digger*)&player);
+	for(i = 0; i < ENEMY_COUNT; i++)
+		enemys[i] = create_enemy((Digger*)&player);
 	enemys[0].is_alive=1;
-	enemys[1].is_alive=1;
-	enemys[2].is_alive=1;
+	//enemys[1].is_alive=1;
+	//enemys[2].is_alive=1;
 	
 	setup_clean_screen();
 

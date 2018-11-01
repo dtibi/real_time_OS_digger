@@ -86,12 +86,13 @@ void move_digger(Digger *player, int direction) {
 			resume(create(gold_falling, INITSTK, INITPRIO+1, "gold_falling", 2,y-1,x));
 		}
 	}
-
+	
 	x = (*player).x;
 	y = (*player).y;
 	
 	//sprintf(debug_str,"x - %d , y %d , up:%d down:%d right:%d left:%d" ,x , y , get_object_in_direction(x, y, UP_ARROW), get_object_in_direction(x, y, DOWN_ARROW), get_object_in_direction(x, y, RIGHT_ARROW), get_object_in_direction(x, y, LEFT_ARROW));
 	//send(debug,debug_str);
+	
 	upd_draw_digger(*player);
 }
 
