@@ -4,7 +4,7 @@
 
 
 volatile unsigned long count,delay_timer;
-int uppid, dispid, recvpid, debug,gold_falling_pid,sound_effects_pid;
+int uppid, dispid, recvpid, debug,gold_falling_pid,sound_effects_pid,score_lives_pid;
 int receiver_pid;
 
 

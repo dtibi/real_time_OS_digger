@@ -13,7 +13,6 @@ int gno_of_pids;
 
 extern SYSCALL  sleept(int);
 extern struct intmap far *sys_imp;
-int uppid, dispid, recvpid, debug, gold_falling_pid, sound_effects_pid;
 
 char ch_arr[2048];
 int front = -1;
@@ -58,15 +57,16 @@ void displayer() {
 		disp_draw_pixel_with_char(0, 70, GRAY_BG, ' ');
 		for (i=0; i<ROWS; i++) {
 			for(j = 0; j < COLUMNS; j++){
-				if(gameMap.refresh_map[i][j] == 1) {
-					gameMap.refresh_map[i][j] = 0;
+				if(gameMap.refresh_map[i][j] == 1){
 					disp_draw_area(i, j);
+					gameMap.refresh_map[i][j] = 0;
 				}
 			}
 		}
 		
 		for (i=0; i<ROWS; i++) {
 			for(j=0;j<COLUMNS; j++) {
+				if(gameMap.level_map[i][j] == DIGGER) continue;
 				c = gameMap.level_map[i][j] + '0';
 				disp_draw_pixel_with_char(row_2_pixel(i)+(HEIGHT/2),column_2_pixel(j)+(WIDTH/2),BLACK_BG,c);
 			}
@@ -107,41 +107,15 @@ void updater() {
 				front = rear = -1;
 			
 			move_digger((Digger*)&player,button_sc);
+			if(counter%5 > 0) move_nobbins();
+			else	counter=1;
 		}
 		if(!player.is_alive) digger_death_flow();
 
 		//after buffer is empty we get here 
-		//start moving enemies  
-		if(counter%5 > 0) {
-			for(i=0; i<ENEMY_COUNT; i++) {
-				if(enemys[i].is_alive == 1) {
-					direction = find_direction_to_digger(enemys[i]);
-					
-					upd_draw_empty(enemys[i].y, enemys[i].x, 1);
-					switch (direction) {
-						case LEFT_ARROW:
-							enemys[i].x--;
-							break;
-						case RIGHT_ARROW:
-							enemys[i].x++;
-							break;
-						case DOWN_ARROW:
-							enemys[i].y++;
-							break;
-						case UP_ARROW:
-							enemys[i].y--;
-							break;
-					}
-					
-					if(direction!=0)
-						enemys[i].direction=direction;
-					
-					upd_draw_nobbin(enemys[i].y,enemys[i].x);
-				}
-			}
-		} 
-		else
-			counter=1;
+		//start moving nobbins 
+		if(counter%5 > 0) move_nobbins();
+		else	counter=1;
 		
 		disp_draw_pixel_with_char(0,68,BLACK_BG, ' ');
   }
@@ -166,13 +140,15 @@ xmain() {
 	upd_draw_digger(player);
 	upd_draw_nobbin(enemys[0].y,enemys[0].x);
 	disp_draw_map();
+	disp_draw_lives(player.lives);
+	disp_draw_score(0);
 	
 	resume(dispid = create(displayer, INITSTK, INITPRIO, "DISPLAYER", 0));
 	resume(recvpid = create(receiver, INITSTK, INITPRIO, "RECIVEVER", 0));
 	resume(uppid = create(updater, INITSTK, INITPRIO, "UPDATER", 0));
 	resume(debug = create(refresh_debug_map, INITSTK, INITPRIO + 3, "debug_line",0));
-	resume( gold_falling_pid = create(gold_falling,INITSTK,INITPRIO,"gold_falling",0));
 	resume( sound_effects_pid = create(sound_effects,INITSTK,INITPRIO+1,"sound_effects_pid",0));
+	resume( score_lives_pid = create(score_lives_updater,INITSTK,INITPRIO+3,"score_lives_updating",0));
 	receiver_pid = recvpid;
 	setup_interrupts();
     schedule(3,3, dispid, 1,  uppid, 0, dispid, 0);

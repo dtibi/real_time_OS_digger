@@ -2,6 +2,8 @@
 #define NOBIN_FILE
 #include "digger.h"
 
+#define NOBBIN_COUNT 5
+
 typedef struct enemy {
 	Digger *digger;
 	int x;

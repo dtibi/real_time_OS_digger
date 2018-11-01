@@ -19,7 +19,7 @@
 #define SHORT_DELAY 1
 
 extern volatile unsigned long count,delay_timer;
-extern int uppid, dispid, recvpid, debug,gold_falling_pid,sound_effects_pid;
+extern int uppid, dispid, recvpid, debug,sound_effects_pid,score_lives_pid;
 extern int receiver_pid;
 
 void setup_interrupts();
