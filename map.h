@@ -37,7 +37,7 @@
 #define HOBBIN 89
 #define DEAD_DIGGER 100
 
-#define NOBBIN_COUNT 5
+#define ENEMY_COUNT 5
 #define start_address 0xB800
 
 typedef struct map {
@@ -48,7 +48,7 @@ typedef struct map {
 
 extern Map gameMap;
 extern Digger player;
-extern Nobbin enemys[NOBBIN_COUNT];
+extern Enemy enemys[ENEMY_COUNT];
 extern char* debug_str;
 
 

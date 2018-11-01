@@ -58,8 +58,10 @@ void displayer() {
 		disp_draw_pixel_with_char(0, 70, GRAY_BG, ' ');
 		for (i=0; i<ROWS; i++) {
 			for(j = 0; j < COLUMNS; j++){
-				if(gameMap.refresh_map[i][j] == 1)
+				if(gameMap.refresh_map[i][j] == 1) {
+					gameMap.refresh_map[i][j] = 0;
 					disp_draw_area(i, j);
+				}
 			}
 		}
 		
@@ -109,9 +111,9 @@ void updater() {
 		if(!player.is_alive) digger_death_flow();
 
 		//after buffer is empty we get here 
-		//start moving nobbins 
+		//start moving enemies  
 		if(counter%5 > 0) {
-			for(i=0; i<NOBBIN_COUNT; i++) {
+			for(i=0; i<ENEMY_COUNT; i++) {
 				if(enemys[i].is_alive == 1) {
 					direction = find_direction_to_digger(enemys[i]);
 					
@@ -148,11 +150,11 @@ void updater() {
 xmain() {
 	int i,j;
 	player = create_digger();
-	for(i=0;i<NOBBIN_COUNT;i++)
-		enemys[i] = create_nobbin((Digger*)&player);
+	for(i = 0; i < ENEMY_COUNT; i++)
+		enemys[i] = create_enemy((Digger*)&player);
 	enemys[0].is_alive=1;
-	enemys[1].is_alive=1;
-	enemys[2].is_alive=1;
+	//enemys[1].is_alive=1;
+	//enemys[2].is_alive=1;
 	
 	setup_clean_screen();
 

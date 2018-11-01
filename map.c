@@ -5,7 +5,7 @@
 
 volatile Digger player;
 Map gameMap;
-volatile Nobbin enemys[NOBBIN_COUNT];
+volatile Enemy enemys[ENEMY_COUNT];
 char* debug_str;
 
 
@@ -413,6 +413,15 @@ int get_object_in_direction(int x, int y, int direction)
 	else if (direction==RIGHT_ARROW && (x+1) < COLUMNS) return gameMap.level_map[y][x+1];
 	else if (direction==LEFT_ARROW  && (x-1) >= 0) return gameMap.level_map[y][x-1];
 	return -1;
+}
+
+int is_digger_next_to_me(int x, int y)
+{	
+	if		((y-1) >= 0 && gameMap.level_map[y-1][x] == DIGGER) return 1; 
+	else if ((y+1) < ROWS && gameMap.level_map[y+1][x] == DIGGER)	return 1;
+	else if ((x+1) < COLUMNS && gameMap.level_map[y][x+1] == DIGGER) return 1;
+	else if ((x-1) >= 0 && gameMap.level_map[y][x-1] == DIGGER) return 1;
+	return 0;
 }
 
 void disp_draw_map(){
