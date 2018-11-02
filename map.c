@@ -602,10 +602,6 @@ void gold_falling(int i,int j){
 	}
 }
 
-int is_current_pixel_digger(int y,int x){
-	return gameMap.level_map[y][x] == DIGGER;
-}
-
 void fireball_advance(int y, int x, int direction){
 	int deltaX = 0, deltaY = 0;
 	
@@ -620,7 +616,7 @@ void fireball_advance(int y, int x, int direction){
 	
 	while(move_is_possible(x, y, direction, 0)){
 		
-		if(!is_current_pixel_digger(y,x))
+		if(gameMap.level_map[y][x] != DIGGER)
 			upd_draw_empty(y,x,1);
 		x = x + deltaX;
 		y = y + deltaY;

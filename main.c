@@ -111,6 +111,8 @@ void updater() {
 				if (player.weapon_reloaded == 1){
 					//player.weapon_reloaded = 0;
 					resume(create(fireball_advance, INITSTK, INITPRIO+1, "weapon_fired", 3 ,player.y ,player.x ,player.direction));
+					upd_draw_digger(player);
+					continue;
 				}
 			}
 			move_digger((Digger*)&player,button_sc);
