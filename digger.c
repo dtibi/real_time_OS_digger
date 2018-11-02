@@ -12,6 +12,7 @@ Digger create_digger() {
 	player.is_alive = 1;
 	player.lives = 3;
 	player.score = 0;
+	player.weapon_reloaded = 1;
 	
 	return player;
 }
@@ -24,15 +25,15 @@ void restart_digger(Digger* player) {
 }
 
 void move_digger(Digger *player, int direction) {	
-	int x = (*player).x, y = (*player).y, p_direction = (*player).direction, obj_in_direction;
+	int x = (*player).x, y = (*player).y, p_direction = (*player).direction,obj_in_direction, gold_pid;
 	if(direction != p_direction) { //check if the wanted move direction is diffrent from the current
 		(*player).direction = direction;
 		upd_draw_digger(*player);
 	}
-	obj_in_direction = get_object_in_direction(x, y, direction);
+	obj_in_direction = get_object_in_direction(y, x, direction);
 	
 	
-	if (!move_is_possible(x, y, direction, 1))
+	if (!move_is_possible(y,x, direction, 1))
 		return;
 
 	if (obj_in_direction == DIAMOND) { //diamond found
@@ -47,20 +48,23 @@ void move_digger(Digger *player, int direction) {
 		if(direction == UP_ARROW || direction == DOWN_ARROW) 
 			return;
 		
-		else if(direction == RIGHT_ARROW && move_is_possible(x + 1, y, RIGHT_ARROW, 1)) {
+		else if(direction == RIGHT_ARROW && move_is_possible( y, x + 1 , RIGHT_ARROW, 1)) {
+			if (get_object_in_direction(y, x + 1, RIGHT_ARROW) == GOLD_BAG) return;
 			upd_draw_bag(y, x+2);
 			upd_draw_empty(y, x+1,1);
-			if(move_is_possible(x + 2,y, DOWN_ARROW, 0)) {//check if there is no dirt under
+			if(move_is_possible(y,x + 2, DOWN_ARROW, 0)) {//check if there is no dirt under
 				upd_draw_empty(y, x+1,1);
 				gameMap.level_map[y][x+2]=MOVING_GOLD_BAG;//this is done to prevent digger from pushing the bag any more
 				resume(create(gold_falling, INITSTK, INITPRIO+1, "gold_falling", 2,y,x+2));
 			}
 		}
 		
-		else if(direction == LEFT_ARROW && move_is_possible(x - 1, y, LEFT_ARROW, 1))  {
+		else if(direction == LEFT_ARROW && move_is_possible( y , x - 1 , LEFT_ARROW, 1))  {
+			if (get_object_in_direction(y, x - 1, LEFT_ARROW) == GOLD_BAG) return;
+			printf(" %d ", get_object_in_direction(y, x - 1, LEFT_ARROW));
 			upd_draw_bag(y, x-2);
 			upd_draw_empty(y, x-1,1);
-			if(move_is_possible(x - 2,y, DOWN_ARROW, 0)) { //check if there is no dirt under
+			if(move_is_possible(y,x - 2, DOWN_ARROW, 0)) { //check if there is no dirt under
 				upd_draw_empty(y, x-1, 1);
 				gameMap.level_map[y][x-2]=MOVING_GOLD_BAG;//this is done to prevent digger from pushing the bag any more
 				resume(create(gold_falling, INITSTK, INITPRIO+1, "gold_falling", 2,y,x-2));
@@ -91,17 +95,15 @@ void move_digger(Digger *player, int direction) {
 	
 	if(x != (*player).x || y != (*player).y) {
 		upd_draw_empty(y,x,1);
-		if(get_object_in_direction(x,y,UP_ARROW)==GOLD_BAG) {
+		if(get_object_in_direction(y,x,UP_ARROW)==GOLD_BAG) {
 			//upd_draw_dirt(y-1,x);
-			resume(create(gold_falling, INITSTK, INITPRIO+1, "gold_falling", 2,y-1,x));
+			gold_pid = create(gold_falling, INITSTK, INITPRIO+1, "gold_falling", 2,y-1,x);
+			resume(create(shake_bag,INITSTK,INITPRIO+1,"gold_shaking",3,y-1,x,gold_pid));
 		}
 	}
 	
 	x = (*player).x;
 	y = (*player).y;
-	
-	//sprintf(debug_str,"x - %d , y %d , up:%d down:%d right:%d left:%d" ,x , y , get_object_in_direction(x, y, UP_ARROW), get_object_in_direction(x, y, DOWN_ARROW), get_object_in_direction(x, y, RIGHT_ARROW), get_object_in_direction(x, y, LEFT_ARROW));
-	//send(debug,debug_str);
 	
 	upd_draw_digger(*player);
 }
@@ -118,6 +120,7 @@ void digger_death_flow(){
 	}
 	send(sound_effects_pid,0);
 	upd_draw_grave(player.y,player.x);
+	sleept(15);
 	upd_draw_empty(player.y,player.x,1);
 	player.x=8;
 	player.y=7;

@@ -15,6 +15,33 @@ Enemy create_enemy(Digger *d) {
 	
 	return enemy;
 }
+
+Enemy create_enemy_by_val(int y, int x, Digger *d, int direction)
+{
+	Enemy enemy;
+	
+	enemy.x = x;
+	enemy.y = y;
+	enemy.direction = direction;
+	enemy.digger = d;
+	enemy.is_alive = 0;
+	enemy.is_hobin = 0;
+	
+	return enemy;
+}
+
+Enemy copy_enemy(Enemy to_copy) {
+	Enemy enemy;
+	
+	enemy.x = to_copy.x;
+	enemy.y = to_copy.y;
+	enemy.direction = to_copy.direction;
+	enemy.digger = to_copy.digger;
+	enemy.is_alive = to_copy.is_alive;
+	enemy.is_hobin = to_copy.is_hobin;
+	
+	return enemy;
+}
 				
 void move_nobbins(){
 	int i, direction, obj_in_direction;
@@ -26,6 +53,11 @@ void move_nobbins(){
 			if (obj_in_direction == DIAMOND) { //diamond found
 				gameMap.diamond_amount--;
 				if(gameMap.diamond_amount == 0) next_level(); //all the diamonds were taken
+			}
+			
+			if (get_object_in_direction(enemys[i].y, enemys[i].x,direction)==DIGGER) {
+				player.is_alive=0;
+				break;
 			}
 				
 				upd_draw_empty(enemys[i].y, enemys[i].x, 1);
@@ -44,11 +76,9 @@ void move_nobbins(){
 						break;
 				}
 				
-				if(direction!=0)
-					enemys[i].direction=direction;
+				if(direction!=0) enemys[i].direction=direction;
 				
 				upd_draw_nobbin(enemys[i].y,enemys[i].x);
-				if (gameMap.level_map[enemys[i].y][enemys[i].x]==DIGGER) player.is_alive=0;
 		}
 	}
 }
@@ -57,13 +87,13 @@ int find_direction_to_digger(Enemy enemy) {
 	int can_right, can_left, can_up, can_down, path_amount;
 	int len_right = MAX_PATH_LEN, len_left = MAX_PATH_LEN, len_up = MAX_PATH_LEN, len_down = MAX_PATH_LEN, min_path_index;
 	
-	can_right = move_is_possible(enemy.x, enemy.y, RIGHT_ARROW, enemy.is_hobin);
-	can_left = move_is_possible(enemy.x, enemy.y, LEFT_ARROW, enemy.is_hobin);
-	can_up = move_is_possible(enemy.x, enemy.y, UP_ARROW, enemy.is_hobin);
-	can_down = move_is_possible(enemy.x, enemy.y, DOWN_ARROW, enemy.is_hobin);
+	can_right = move_is_possible(enemy.y, enemy.x, RIGHT_ARROW, enemy.is_hobin);
+	can_left = move_is_possible(enemy.y, enemy.x, LEFT_ARROW, enemy.is_hobin);
+	can_up = move_is_possible(enemy.y, enemy.x, UP_ARROW, enemy.is_hobin);
+	can_down = move_is_possible(enemy.y, enemy.x, DOWN_ARROW, enemy.is_hobin);
 	path_amount = can_right + can_left + can_up + can_down;
 	
-	if(is_digger_next_to_me(enemy.x, enemy.y)) return 0;
+	if(is_digger_next_to_me(enemy.y, enemy.x)) return is_digger_next_to_me(enemy.y, enemy.x);
 	
 	else if(path_amount == 1) {
 		if (can_right) return RIGHT_ARROW;
@@ -101,12 +131,12 @@ int find_path_to_digger_len_iterative(int xE, int yE, int direction) {
 	int path_len = 0;
 	int rand;
 	
-	while (!is_digger_next_to_me(xE, yE)) {
+	while (!is_digger_next_to_me(yE, xE)) {
 		
-		can_right = move_is_possible(xE, yE, RIGHT_ARROW, 0);
-		can_left = move_is_possible(xE, yE, LEFT_ARROW, 0);
-		can_up = move_is_possible(xE, yE, UP_ARROW, 0);
-		can_down = move_is_possible(xE, yE, DOWN_ARROW, 0);
+		can_right = move_is_possible(yE,xE,  RIGHT_ARROW, 0);
+		can_left = move_is_possible(yE,xE,  LEFT_ARROW, 0);
+		can_up = move_is_possible(yE,xE,  UP_ARROW, 0);
+		can_down = move_is_possible(yE,xE,  DOWN_ARROW, 0);
 		path_amount = can_right + can_left + can_up + can_down;
 		
 		if (path_amount == 0) return 999;
@@ -179,7 +209,7 @@ int find_path_to_digger_len_iterative(int xE, int yE, int direction) {
 		}
 	}
 	
-	if (is_digger_next_to_me(xE, yE)) return path_len + 1;
+	if (is_digger_next_to_me(yE, xE)) return path_len + 1;
 	return 999;
 }
 
