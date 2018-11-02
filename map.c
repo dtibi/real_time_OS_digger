@@ -117,8 +117,6 @@ void upd_draw_bag_moving(int i,int j,int direction){
 	if(direction==DOWN_ARROW){
 		gameMap.level_map[i+1][j]=MOVING_GOLD_BAG;
 		while(row_pixel<=row_2_pixel(i)+HEIGHT){
-			gameMap.refresh_map[i][j] = 1;
-			gameMap.refresh_map[i+1][j] = 1;
 			gameMap.pixel_map[row_pixel][column_pixel+2][0] = 'w';
 			gameMap.pixel_map[row_pixel+1][column_pixel+1][0] = '/';
 			gameMap.pixel_map[row_pixel+1][column_pixel+2][0] = ' ';
@@ -146,12 +144,12 @@ void upd_draw_bag_moving(int i,int j,int direction){
 				gameMap.pixel_map[row_pixel][column_pixel+1][1] = BLACK_BG;
 				gameMap.pixel_map[row_pixel][column_pixel+3][1] = BLACK_BG;
 			}
+			gameMap.refresh_map[i][j] = 1;
+			gameMap.refresh_map[i+1][j] = 1;
 			sleept(5);
 			row_pixel++;
 		}
 	} 
-	else {
-	}
 	
 	gameMap.level_map[i][j] = EMPTY;
 	gameMap.refresh_map[i][j] = 1;
@@ -319,7 +317,7 @@ void upd_draw_grave(int y, int x){
 	gameMap.pixel_map[row_pixel+2][column_pixel+3][1] = GRAY_BG;
 	gameMap.pixel_map[row_pixel+2][column_pixel+1][1] = GRAY_BG;
 	gameMap.pixel_map[row_pixel+2][column_pixel+2][1] = GRAY_BG;
-	
+	gameMap.refresh_map[player.y][player.x] = 1;
 	sleept(8);
 	
 	gameMap.pixel_map[row_pixel+1][column_pixel+3][0] = ' ';
@@ -340,7 +338,7 @@ void upd_draw_grave(int y, int x){
 	gameMap.pixel_map[row_pixel+2][column_pixel+2][1] = GRAY_BG;
 	gameMap.pixel_map[row_pixel+2][column_pixel][0] = ' ';
 	gameMap.pixel_map[row_pixel+2][column_pixel][1] = GRAY_BG;
-	
+	gameMap.refresh_map[player.y][player.x] = 1;
 	sleept(8);
 	
 	gameMap.pixel_map[row_pixel][column_pixel+3][0] = ' ';
@@ -372,7 +370,8 @@ void upd_draw_grave(int y, int x){
 	gameMap.pixel_map[row_pixel+2][column_pixel+2][1] = GRAY_BG;
 	gameMap.pixel_map[row_pixel+2][column_pixel][0] = ' ';
 	gameMap.pixel_map[row_pixel+2][column_pixel][1] = GRAY_BG;
-	sleept(16);
+	gameMap.refresh_map[player.y][player.x] = 1;
+	sleept(26);
 	
 	gameMap.level_map[player.y][player.x] = EMPTY;
 }
@@ -550,8 +549,12 @@ void gold_falling(int i,int j){
 		while(obj==EMPTY || obj==DIGGER || obj==NOBBIN || obj==HOBBIN){	
 			if(obj==DIGGER){
 				player.is_alive=0;
-				sleep(0);
-				break;
+				upd_draw_empty(y, x,1);
+				sleept(10);
+				y+=2;
+				counter+=2;
+				obj = get_object_in_direction(x,y,DOWN_ARROW);
+				continue;
 			} else if (obj==NOBBIN || obj==HOBBIN) {
 				for(i=0;i<NOBBIN_COUNT;i++)
 					if(enemys[i].x==x && enemys[i].y==y+1){
@@ -564,7 +567,7 @@ void gold_falling(int i,int j){
 			sleep(0);
 			upd_draw_bag_moving(y, x,DOWN_ARROW);
 			upd_draw_empty(y, x,1);
-			y = y + 1;
+			y++;
 			obj = get_object_in_direction(x,y,DOWN_ARROW);
 		}
 		if(counter>1){

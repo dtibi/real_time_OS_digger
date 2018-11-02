@@ -107,6 +107,7 @@ void digger_death_flow(){
 	}
 	send(sound_effects_pid,0);
 	upd_draw_grave(player.y,player.x);
+	sleept(15);
 	upd_draw_empty(player.y,player.x,1);
 	player.x=8;
 	player.y=7;

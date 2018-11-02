@@ -34,15 +34,17 @@ INTPROC MyISR9(int mdevno)
 	else if (scan == RIGHT_ARROW) result = RIGHT_ARROW;
 	else if (scan == DOWN_ARROW) result = DOWN_ARROW;
 	else if (scan == SPACE_BAR) result = SPACE_BAR;
-	else result = 0;
-	if (scan == 46 && ascii==3) {
+	else if (scan == 46) {
 		setup_clean_screen();
 		asm INT 27; // terminate xinu
-	}
+	} else if (scan== 2) ps();
+	else result = 0;
+	
 	
 	if(result!=0)send(receiver_pid, result); 
 	//if(scan==3)send(sound_effects_pid,0);
 	Skip1:
+	disp_draw_pixel_with_char(0,71,BLACK_BG, ' ');
 	return (OK);
 
 } // new_int9
