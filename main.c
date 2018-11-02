@@ -150,7 +150,8 @@ xmain() {
 	resume(recvpid = create(receiver, INITSTK, INITPRIO, "RECIVEVER", 0));
 	resume(uppid = create(updater, INITSTK, INITPRIO, "UPDATER", 0));
 	resume(debug = create(refresh_debug_map, INITSTK, INITPRIO + 3, "debug_line",0));
-	resume( sound_effects_pid = create(sound_effects,INITSTK,INITPRIO+1,"sound_effects_pid",0));
+	resume( bg_sound = create(beethoven,INITSTK,INITPRIO,"bg_sound",0));
+	resume( sound_effects_pid = create(sound_effects,INITSTK,INITPRIO+1,"sound_effects_pid",1,bg_sound));
 	resume( score_lives_pid = create(score_lives_updater,INITSTK,INITPRIO+3,"score_lives_updating",0));
 	receiver_pid = recvpid;
 	setup_interrupts();

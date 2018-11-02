@@ -32,7 +32,7 @@
 #define GOLD_BAG 3
 #define MOVING_GOLD_BAG 4
 #define GOLD 10
-#define GOLD_NUGGER_SCORE 50
+#define GOLD_NUGGER_SCORE 100
 #define DIRT 1
 #define DIAMOND 2
 #define DIAMOND_SCORE 250

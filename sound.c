@@ -262,6 +262,8 @@ void beethoven(){
 }
 
 void play_death(){
+	kill(bg_sound);
+	no_sound();
 	//1
 	sound(C4);
 	my_delay(3,1);
@@ -317,15 +319,16 @@ void play_death(){
 	my_delay(2,1);
 	no_sound();
 	my_delay(1,1);
+	resume( bg_sound = create(beethoven,INITSTK,INITPRIO,"bg_sound",0));
 }
 
-void sound_effects(){
+void sound_effects(int bg_sound){
 	int sound_id;
 	while(1){
 		sound_id = -1;
 		sound_id = receive();
 		
-		if(sound_id==0) play_death();
+		if(sound_id==0) play_death(bg_sound);
 		
 	}
 }
