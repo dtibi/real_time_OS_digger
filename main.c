@@ -100,6 +100,16 @@ void updater() {
 		if(pressed) {
 			button_sc = ch_arr;
 			pressed = 0;
+
+			if(button_sc == SPACE_BAR){
+				
+				if (player.weapon_reloaded == 1){
+					//player.weapon_reloaded = 0;
+					resume(create(fireball_advance, INITSTK, INITPRIO+1, "weapon_fired", 3 ,player.y ,player.x ,player.direction));
+					upd_draw_digger(player);
+					continue;
+				}
+			}
 			move_digger((Digger*)&player,button_sc);
 		}
 		if(counter%5 > 0) move_nobbins();

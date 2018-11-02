@@ -86,10 +86,7 @@ int find_direction_to_digger(Enemy enemy) {
 	can_down = move_is_possible(enemy.x, enemy.y, DOWN_ARROW, enemy.is_hobin);
 	path_amount = can_right + can_left + can_up + can_down;
 	
-	if(get_object_in_direction(enemy.x, enemy.y, RIGHT_ARROW) == DIGGER) return RIGHT_ARROW;
-	if(get_object_in_direction(enemy.x, enemy.y, LEFT_ARROW) == DIGGER) return LEFT_ARROW;
-	if(get_object_in_direction(enemy.x, enemy.y, DOWN_ARROW) == DIGGER) return DOWN_ARROW;
-	if(get_object_in_direction(enemy.x, enemy.y, UP_ARROW) == DIGGER) return UP_ARROW;
+	if(is_digger_next_to_me(enemy.x, enemy.y)) return 0;
 	
 	else if(path_amount == 1) {
 		if (can_right) return RIGHT_ARROW;
@@ -125,7 +122,7 @@ int find_direction_to_digger(Enemy enemy) {
 int find_path_to_digger_len_iterative(int xE, int yE, int direction) {
 	int can_right, can_left, can_up, can_down, path_amount;
 	int path_len = 0;
-	int rand, selcted_random = 0;
+	int rand;
 	
 	while (!is_digger_next_to_me(xE, yE)) {
 		
@@ -166,83 +163,48 @@ int find_path_to_digger_len_iterative(int xE, int yE, int direction) {
 		}
 		
 		else if (path_amount == 3 || path_amount == 4) {
-			while (selcted_random == 0) {
-				rand = tod%4;
-				
-				if (rand ==0 && can_up && direction != DOWN_ARROW) {
-					path_len++;
+			rand = tod%4;
+			
+			try_up:
+			if (rand == 0) {
+				if (can_up && direction != DOWN_ARROW) {
 					yE--;
 					direction = UP_ARROW;
-					selcted_random =1;
-				}
-				if (rand == 1 && can_down && direction != UP_ARROW) {
-					path_len++;
+				} else rand++;
+			}
+			
+			if(rand == 1) {
+				if (can_down && direction != UP_ARROW) {
 					yE++;
 					direction = DOWN_ARROW;
-					selcted_random =1;
-				}
+				} else rand++;
+			}
+			
+			if(rand == 2) {
 				if (rand == 2 && can_right && direction != LEFT_ARROW) {
-					path_len++;
 					xE++;
 					direction = RIGHT_ARROW;
-					selcted_random =1;
-				}
-				
+				}else rand ++;
+			}
+			
+			if(rand == 3) {
 				if (rand == 3 && can_left && direction != RIGHT_ARROW) {
-					path_len++;
 					xE--;
 					direction = LEFT_ARROW;
-					selcted_random =1;
+				}
+				else {
+					rand = 0;
+					goto try_up;
 				}
 			}
-			selcted_random =0;
+			path_len++;
+			
 		}
 	}
 	
 	if (is_digger_next_to_me(xE, yE)) return path_len + 1;
 	return 999;
 }
-
-/*
-int find_path_to_digger_len(int xE, int yE, int direction, int start_x, int start_y, int tryed_up, int tryed_down, int tryed_right, int tryed_left) {
-	int can_right, can_left, can_up, can_down, path_amount;
-	int len_right = 9999, len_left = 9999, len_up = 9999, len_down = 9999;
-	int min_path_index = 0;
-	
-	if(get_object_in_direction(xE, yE, RIGHT_ARROW) == DIGGER) return 1;
-	if(get_object_in_direction(xE, yE, LEFT_ARROW) == DIGGER) return 1;
-	if(get_object_in_direction(xE, yE, DOWN_ARROW) == DIGGER) return 1;
-	if(get_object_in_direction(xE, yE, UP_ARROW) == DIGGER) return 1;
-	
-	can_right = move_is_possible(xE, yE, RIGHT_ARROW, 0);
-	can_left = move_is_possible(xE, yE, LEFT_ARROW, 0);
-	can_up = move_is_possible(xE, yE, UP_ARROW, 0);
-	can_down = move_is_possible(xE, yE, DOWN_ARROW, 0);
-	path_amount = can_right + can_left + can_up + can_down;
-	
-	if (path_amount == 1 || path_amount == 2 ) {
-		if (can_up && direction != DOWN_ARROW) return 1+ find_path_to_digger_len(xE, yE - 1, UP_ARROW, start_x, start_y, tryed_up, tryed_down, tryed_right, tryed_left);
-		if (can_down && direction != UP_ARROW) return 1+ find_path_to_digger_len(xE, yE + 1, DOWN_ARROW, start_x, start_y, tryed_up, tryed_down, tryed_right, tryed_left);
-		if (can_right && direction != LEFT_ARROW) return 1+ find_path_to_digger_len(xE + 1, yE, RIGHT_ARROW, start_x, start_y, tryed_up, tryed_down, tryed_right, tryed_left);
-		if (can_left && direction != RIGHT_ARROW) return 1+ find_path_to_digger_len(xE - 1, yE, LEFT_ARROW, start_x, start_y, tryed_up, tryed_down, tryed_right, tryed_left);
-		return 999;
-	}
-	
-	else if (path_amount == 3  || path_amount == 4) {
-		if (!tryed_up && can_up && direction != DOWN_ARROW) len_up = 1 + find_path_to_digger_len(xE, yE - 1, UP_ARROW, xD, yD, xE, yE, 1, tryed_down, tryed_right, tryed_left);
-		if (!tryed_down && can_down && direction != UP_ARROW) len_down = 1 + find_path_to_digger_len(xE, yE + 1, DOWN_ARROW, xD, yD, xE, yE, tryed_up, 1, tryed_right, tryed_left);
-		if (!tryed_right && can_right && direction != LEFT_ARROW) len_right = 1 + find_path_to_digger_len(xE + 1, yE, RIGHT_ARROW, xD, yD, xE, yE, tryed_up, tryed_down, 1, tryed_left);
-		if (!tryed_left &&  can_left && direction != RIGHT_ARROW) len_left = 1 + find_path_to_digger_len(xE - 1, yE, LEFT_ARROW, xD, yD, xE, yE, tryed_up, tryed_down, tryed_right, 1);
-		
-		min_path_index = min_index(len_up, len_down, len_right, len_left);
-		if(min_path_index == 1) return 1 + find_path_to_digger_len(xE, yE - 1, UP_ARROW, xD, yD, xE, yE, 0, 0, 0, 0);
-		if(min_path_index == 2) return 1 + find_path_to_digger_len(xE, yE + 1, DOWN_ARROW, xD, yD, xE, yE, 0, 0, 0, 0);
-		if(min_path_index == 3) return 1 + find_path_to_digger_len(xE + 1, yE, RIGHT_ARROW, xD, yD, xE, yE, 0, 0, 0, 0);
-		if(min_path_index == 4) return 1 + find_path_to_digger_len(xE - 1, LEFT_ARROW, yE, xD, yD, xE, yE, 0, 0, 0, 0);
-	}
-	return 8888;
-}
-*/
 
 int min_index(int v1, int v2, int v3, int v4) {
 	if(v1 <= v2 && v1 <= v3 && v1 <= v4) return 1;

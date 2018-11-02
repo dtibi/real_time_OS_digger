@@ -12,6 +12,7 @@ Digger create_digger() {
 	player.is_alive = 1;
 	player.lives = 3;
 	player.score = 0;
+	player.weapon_reloaded = 1;
 	
 	return player;
 }
