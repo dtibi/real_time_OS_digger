@@ -72,7 +72,7 @@ static char level_0[ROWS][COLUMNS] = {
 void setup_clean_screen();
 void disp_draw_map();
 
-int  get_object_in_direction(int x, int y, int direction);
+int  get_object_in_direction(int y, int x, int direction);
 void disp_draw_pixel_with_char(int row, int col, char color,char ch);
 void upd_draw_diamond(int i,int j);
 void upd_draw_dirt(int i,int j);
@@ -86,9 +86,9 @@ void score_lives_updater();
 void disp_draw_score(int score);
 void upd_draw_digger(Digger player);
 void disp_draw_cube(int i,int j);
-int  move_is_possible(int x,int y, int direction, int i_can_dig);
-void gold_falling(int x, int y);
-int  is_current_pixel_digger(int y,int x);
+int  move_is_possible(int y, int x, int direction, int i_can_dig);
+void gold_falling(int y, int x);
+int  is_current_pixel_digger(int y, int x);
 void fireball_advance(int y, int x, int direction);
 void refresh_map();
 void draw_debug_line(char* str);

@@ -411,8 +411,8 @@ void restart_game() {
 	
 } */
 
-int move_is_possible(int x, int y, int direction, int i_can_dig) {
-	int obj_in_direction = get_object_in_direction(x, y, direction);
+int move_is_possible(int y, int x, int direction, int i_can_dig) {
+	int obj_in_direction = get_object_in_direction(y,x, direction);
 	if((direction == UP_ARROW    && y - 1 < 0	  	 ) ||
 	   (direction == DOWN_ARROW  && y + 1 >= ROWS	 ) ||
 	   (direction == RIGHT_ARROW && x + 1 >= COLUMNS ) ||
@@ -461,7 +461,7 @@ int column_2_pixel(int column_index) {
 }
 
 //return the color of the pixel (BLACK_BG || GREEN_BG || BROWN_BG || )
-int get_object_in_direction(int x, int y, int direction)
+int get_object_in_direction(int y, int x, int direction)
 {	
 	if		(direction==UP_ARROW    && (y-1) >= 0) 		return gameMap.level_map[y-1][x]; 
 	else if (direction==DOWN_ARROW  && (y+1) < ROWS) 	return gameMap.level_map[y+1][x];
@@ -470,7 +470,7 @@ int get_object_in_direction(int x, int y, int direction)
 	return -1;
 }
 
-int is_digger_next_to_me(int x, int y)
+int is_digger_next_to_me(int y, int x)
 {	
 	if		((y-1) >= 0 && gameMap.level_map[y-1][x] == DIGGER) return UP_ARROW; 
 	else if ((y+1) < ROWS && gameMap.level_map[y+1][x] == DIGGER)	return DOWN_ARROW;
@@ -564,6 +564,35 @@ void disp_draw_cube(int i,int j){
 	}
 }
 
+void shake_bag(int y, int x,int pid_to_fall){
+	int row_pixel = row_2_pixel(y), column_pixel,j = column_2_pixel(x),p, next=-1;
+	int index[4];
+	index[0] = j-1; index[1] =  j ; index[2] = j+1 ; index[3] =  j;
+	for (p=0;p<4*3;p++){
+		column_pixel = index[(++next)%4];
+		upd_draw_empty(y,x,0);
+		gameMap.pixel_map[row_pixel][column_pixel + 2][0] = 'w';
+		gameMap.pixel_map[row_pixel + 1][column_pixel + 1][0] = '/';
+		gameMap.pixel_map[row_pixel + 1][column_pixel + 2][0] = ' ';
+		gameMap.pixel_map[row_pixel + 1][column_pixel + 3][0] = '\\';
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 1][0] = ' ';
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 2][0] = '$';
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 3][0] = ' ';
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 1][1] = GRAY_BG;
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 2][1] = GRAY_BG;
+		gameMap.pixel_map[row_pixel + 2][column_pixel + 3][1] = GRAY_BG;
+		gameMap.pixel_map[row_pixel][column_pixel + 2][1] = GRAY_ON_BROWN;
+		gameMap.pixel_map[row_pixel + 1][column_pixel + 1][1] = GRAY_ON_BROWN;
+		gameMap.pixel_map[row_pixel + 1][column_pixel + 2][1] = GRAY_BG;
+		gameMap.pixel_map[row_pixel + 1][column_pixel + 3][1] = GRAY_ON_BROWN;
+		gameMap.refresh_map[y][x] = 1;
+		sleept(2);
+	}	
+	gameMap.refresh_map[y][x] = 1;
+	resume(pid_to_fall);
+	
+}
+
 void gold_falling(int i,int j){
 	int x,y,counter,obj,gold_chunks;		
 	
@@ -572,7 +601,7 @@ void gold_falling(int i,int j){
 		counter=0;
 		y=i;
 		x=j;
-		obj = get_object_in_direction(x,y,DOWN_ARROW);
+		obj = get_object_in_direction(y,x,DOWN_ARROW);
 		while(obj==EMPTY || obj==DIGGER || obj==NOBBIN || obj==HOBBIN){	
 			if(obj==DIGGER){
 				player.is_alive=0;
@@ -580,7 +609,7 @@ void gold_falling(int i,int j){
 				sleept(10);
 				y+=2;
 				counter+=2;
-				obj = get_object_in_direction(x,y,DOWN_ARROW);
+				obj = get_object_in_direction(y,x,DOWN_ARROW);
 				continue;
 			} else if (obj==NOBBIN || obj==HOBBIN) {
 				for(i=0;i<NOBBIN_COUNT;i++)
@@ -595,7 +624,7 @@ void gold_falling(int i,int j){
 			upd_draw_bag_moving(y, x,DOWN_ARROW);
 			upd_draw_empty(y, x,1);
 			y++;
-			obj = get_object_in_direction(x,y,DOWN_ARROW);
+			obj = get_object_in_direction(y,x,DOWN_ARROW);
 		}
 		if(counter>1){
 			gold_chunks=tod%4+2;
@@ -617,7 +646,7 @@ void fireball_advance(int y, int x, int direction){
 	else
 		deltaY = 1;
 	
-	while(move_is_possible(x, y, direction, 0)){
+	while(move_is_possible(y,x, direction, 0)){
 		
 		if(gameMap.level_map[y][x] != DIGGER)
 			upd_draw_empty(y,x,1);
