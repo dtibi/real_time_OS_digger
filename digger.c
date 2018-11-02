@@ -16,8 +16,15 @@ Digger create_digger() {
 	return player;
 }
 
+void restart_digger(Digger* player) {
+	(*player).x = 8;
+	(*player).y = 7;
+	(*player).direction = LEFT_ARROW;
+	(*player).is_alive = 1;
+}
+
 void move_digger(Digger *player, int direction) {	
-	int x = (*player).x, y = (*player).y, p_direction = (*player).direction,obj_in_direction;
+	int x = (*player).x, y = (*player).y, p_direction = (*player).direction, obj_in_direction;
 	if(direction != p_direction) { //check if the wanted move direction is diffrent from the current
 		(*player).direction = direction;
 		upd_draw_digger(*player);
@@ -29,7 +36,11 @@ void move_digger(Digger *player, int direction) {
 		return;
 
 	if (obj_in_direction == DIAMOND) { //diamond found
-		send(score_lives_pid,DIAMOND_SCORE);
+		send(score_lives_pid, DIAMOND_SCORE);
+		sprintf(debug_str,"diamonds amount - %d", gameMap.diamond_amount - 1);
+		send(debug,debug_str);
+		gameMap.diamond_amount--;
+		if(gameMap.diamond_amount == 0) next_level(); //all the diamonds were taken
 	}
 	else if (obj_in_direction == GOLD_BAG) //gold sack found
 	{

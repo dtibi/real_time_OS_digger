@@ -15,70 +15,47 @@ Enemy create_enemy(Digger *d) {
 	
 	return enemy;
 }
-
-Enemy create_enemy_by_val(int x, int y, Digger *d, int direction)
-{
-	Enemy enemy;
-	
-	enemy.x = x;
-	enemy.y = y;
-	enemy.direction = direction;
-	enemy.digger = d;
-	enemy.is_alive = 0;
-	enemy.is_hobin = 0;
-	
-	return enemy;
-}
-
-Enemy copy_enemy(Enemy to_copy) {
-	Enemy enemy;
-	
-	enemy.x = to_copy.x;
-	enemy.y = to_copy.y;
-	enemy.direction = to_copy.direction;
-	enemy.digger = to_copy.digger;
-	enemy.is_alive = to_copy.is_alive;
-	enemy.is_hobin = to_copy.is_hobin;
-	
-	return enemy;
-}
 				
 void move_nobbins(){
-	int i;
-	char direction;
+	int i, direction, obj_in_direction;
 	for(i=0; i<NOBBIN_COUNT; i++) {
 		if(enemys[i].is_alive == 1) {
 			direction = find_direction_to_digger(enemys[i]);
+			obj_in_direction = get_object_in_direction(enemys[i].x, enemys[i].y, direction);
 			
-			upd_draw_empty(enemys[i].y, enemys[i].x, 1);
-			switch (direction) {
-				case LEFT_ARROW:
-					enemys[i].x--;
-					break;
-				case RIGHT_ARROW:
-					enemys[i].x++;
-					break;
-				case DOWN_ARROW:
-					enemys[i].y++;
-					break;
-				case UP_ARROW:
-					enemys[i].y--;
-					break;
+			if (obj_in_direction == DIAMOND) { //diamond found
+				gameMap.diamond_amount--;
+				if(gameMap.diamond_amount == 0) next_level(); //all the diamonds were taken
 			}
-			
-			if(direction!=0)
-				enemys[i].direction=direction;
-			
-			upd_draw_nobbin(enemys[i].y,enemys[i].x);
-			if (gameMap.level_map[enemys[i].y][enemys[i].x]==DIGGER) player.is_alive=0;
+				
+				upd_draw_empty(enemys[i].y, enemys[i].x, 1);
+				switch (direction) {
+					case LEFT_ARROW:
+						enemys[i].x--;
+						break;
+					case RIGHT_ARROW:
+						enemys[i].x++;
+						break;
+					case DOWN_ARROW:
+						enemys[i].y++;
+						break;
+					case UP_ARROW:
+						enemys[i].y--;
+						break;
+				}
+				
+				if(direction!=0)
+					enemys[i].direction=direction;
+				
+				upd_draw_nobbin(enemys[i].y,enemys[i].x);
+				if (gameMap.level_map[enemys[i].y][enemys[i].x]==DIGGER) player.is_alive=0;
 		}
 	}
 }
 
 int find_direction_to_digger(Enemy enemy) {
-	int can_right, can_left, can_up, can_down;
-	int path_amount;
-	int len_right = 999, len_left = 999, len_up = 999, len_down = 999, min_path_index = 0;
+	int can_right, can_left, can_up, can_down, path_amount;
+	int len_right = MAX_PATH_LEN, len_left = MAX_PATH_LEN, len_up = MAX_PATH_LEN, len_down = MAX_PATH_LEN, min_path_index;
 	
 	can_right = move_is_possible(enemy.x, enemy.y, RIGHT_ARROW, enemy.is_hobin);
 	can_left = move_is_possible(enemy.x, enemy.y, LEFT_ARROW, enemy.is_hobin);
@@ -104,10 +81,10 @@ int find_direction_to_digger(Enemy enemy) {
 	
 	else if(path_amount == 3 || path_amount == 4) {
 		
-		if (can_up && enemy.direction != DOWN_ARROW) len_up = find_path_to_digger_len_iterative(enemy.x, enemy.y - 1, UP_ARROW);//find_path_to_digger_len(enemy.x, enemy.y - 1, UP_ARROW, enemy.x, enemy.y - 1, 0, 0, 0, 0);
-		if (can_down && enemy.direction != UP_ARROW) len_down = find_path_to_digger_len_iterative(enemy.x, enemy.y + 1, DOWN_ARROW);//find_path_to_digger_len(enemy.x, enemy.y + 1, DOWN_ARROW, enemy.x, enemy.y + 1, 0, 0, 0, 0);
-		if (can_right && enemy.direction != LEFT_ARROW) len_right = find_path_to_digger_len_iterative(enemy.x + 1, enemy.y, RIGHT_ARROW);//find_path_to_digger_len(enemy.x + 1, enemy.y, RIGHT_ARROW, enemy.x + 1, enemy.y, 0, 0, 0, 0);
-		if (can_left && enemy.direction != RIGHT_ARROW) len_left = find_path_to_digger_len_iterative(enemy.x - 1, enemy.y, LEFT_ARROW);//find_path_to_digger_len(enemy.x - 1, enemy.y, LEFT_ARROW, enemy.x - 1, enemy.y, 0, 0, 0, 0);
+		if (can_up && enemy.direction != DOWN_ARROW) len_up = find_path_to_digger_len_iterative(enemy.x, enemy.y - 1, UP_ARROW);
+		if (can_down && enemy.direction != UP_ARROW) len_down = find_path_to_digger_len_iterative(enemy.x, enemy.y + 1, DOWN_ARROW);
+		if (can_right && enemy.direction != LEFT_ARROW) len_right = find_path_to_digger_len_iterative(enemy.x + 1, enemy.y, RIGHT_ARROW);
+		if (can_left && enemy.direction != RIGHT_ARROW) len_left = find_path_to_digger_len_iterative(enemy.x - 1, enemy.y, LEFT_ARROW);
 		
 		min_path_index = min_index(len_up, len_down, len_right, len_left);
 		if(min_path_index == 1) return UP_ARROW;

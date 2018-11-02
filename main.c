@@ -46,7 +46,7 @@ void displayer() {
 	char c;
 	for (i = 0; i < ROWS; i++) {
 		for(j = 0; j < COLUMNS; j++)
-			gameMap.level_map[i][j] = level_0[i][j];
+			gameMap.level_map[i][j] = levels[gameMap.level_id][i][j];
 	}
 	upd_draw_digger(player);
 	upd_draw_nobbin(enemys[0].y, enemys[0].x);
@@ -124,24 +124,17 @@ void updater() {
 xmain() {
 	int i,j;
 	player = create_digger();
-	for(i = 0; i < ENEMY_COUNT; i++)
-		enemys[i] = create_enemy((Digger*)&player);
-	enemys[0].is_alive=1;
-	//enemys[1].is_alive=1;
-	//enemys[2].is_alive=1;
+	create_enemys();
 	
 	setup_clean_screen();
-
-	for (i=0; i<ROWS; i++) {
-		for(j=0;j<COLUMNS; j++) {
-			gameMap.level_map[i][j] = level_0[i][j];
-		}
-	}
-	upd_draw_digger(player);
-	upd_draw_nobbin(enemys[0].y,enemys[0].x);
+	create_map(0);
+	
 	disp_draw_map();
 	disp_draw_lives(player.lives);
-	disp_draw_score(0);
+	disp_draw_score(player.score);
+	
+	upd_draw_digger(player);
+	upd_draw_nobbin(enemys[0].y,enemys[0].x);
 	
 	resume(dispid = create(displayer, INITSTK, INITPRIO, "DISPLAYER", 0));
 	resume(recvpid = create(receiver, INITSTK, INITPRIO, "RECIVEVER", 0));

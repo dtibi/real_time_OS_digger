@@ -575,6 +575,67 @@ void gold_falling(int i,int j){
 	}
 }
 
+void create_enemys() {
+	int i;
+	for(i = 0; i < ENEMY_COUNT; i++)
+		enemys[i] = create_enemy((Digger*)&player);
+	enemys[0].is_alive=1;
+	//enemys[1].is_alive=1;
+	//enemys[2].is_alive=1;
+}
+
+void kill_all_enemys() {
+	int i;
+	for(i = 0; i < ENEMY_COUNT; i++)
+		enemys[i].is_alive=0;
+}
+
+int count_diamonds() {
+	int i, j, ret=0;
+	for (i=0; i<ROWS; i++) {
+		for(j=0;j<COLUMNS; j++) {
+			if (gameMap.level_map[i][j] == DIAMOND) ret++;
+		}
+	}
+	return ret;
+}
+
+void create_map(int level_id) { //char leve_map[ROWS][COLUMNS], int level_id) {
+	int i, j;
+	for (i=0; i<ROWS; i++) {
+		for(j=0;j<COLUMNS; j++) {
+			gameMap.level_map[i][j] = levels[level_id][i][j];
+		}
+	}
+	gameMap.level_id = level_id;
+	gameMap.diamond_amount = count_diamonds();
+}
+
+void next_level() {
+	int ps;
+	
+	if(gameMap.level_id + 1 < NUMBER_OF_LEVELS) {
+		gameMap.level_id++;
+		
+		kill_all_enemys();
+		disable(ps);
+		restart_digger(&player);
+		create_enemys();
+		
+		setup_clean_screen();
+		create_map(gameMap.level_id);
+		
+		disp_draw_map();
+		disp_draw_lives(player.lives);
+		disp_draw_score(player.score);
+		
+		upd_draw_digger(player);
+		upd_draw_nobbin(enemys[0].y,enemys[0].x);
+		
+		restore(ps);
+	}
+	//else the player finished all the levels- won the game! 
+}
 
 void refresh_debug_map(){
 	while(1){
