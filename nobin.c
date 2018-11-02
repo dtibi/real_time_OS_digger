@@ -49,7 +49,13 @@ void move_nobbins(){
 	for(i=0; i<NOBBIN_COUNT; i++) {
 		if(enemys[i].is_alive == 1) {
 			direction = find_direction_to_digger(enemys[i]);
-			
+			if (get_object_in_direction(enemys[i].x, enemys[i].y,direction)==DIGGER) {
+				printf("KILL DIGGER!");
+				player.is_alive=0;
+				break;
+			}
+			sprintf(debug_str,"%d",get_object_in_direction(enemys[i].x, enemys[i].y,direction));
+			send(debug,debug_str);
 			upd_draw_empty(enemys[i].y, enemys[i].x, 1);
 			switch (direction) {
 				case LEFT_ARROW:
@@ -70,7 +76,6 @@ void move_nobbins(){
 				enemys[i].direction=direction;
 			
 			upd_draw_nobbin(enemys[i].y,enemys[i].x);
-			if (gameMap.level_map[enemys[i].y][enemys[i].x]==DIGGER) player.is_alive=0;
 		}
 	}
 }
@@ -86,7 +91,7 @@ int find_direction_to_digger(Enemy enemy) {
 	can_down = move_is_possible(enemy.x, enemy.y, DOWN_ARROW, enemy.is_hobin);
 	path_amount = can_right + can_left + can_up + can_down;
 	
-	if(is_digger_next_to_me(enemy.x, enemy.y)) return 0;
+	if(is_digger_next_to_me(enemy.x, enemy.y)) return is_digger_next_to_me(enemy.x, enemy.y);
 	
 	else if(path_amount == 1) {
 		if (can_right) return RIGHT_ARROW;

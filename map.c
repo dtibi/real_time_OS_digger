@@ -472,10 +472,10 @@ int get_object_in_direction(int x, int y, int direction)
 
 int is_digger_next_to_me(int x, int y)
 {	
-	if		((y-1) >= 0 && gameMap.level_map[y-1][x] == DIGGER) return 1; 
-	else if ((y+1) < ROWS && gameMap.level_map[y+1][x] == DIGGER)	return 1;
-	else if ((x+1) < COLUMNS && gameMap.level_map[y][x+1] == DIGGER) return 1;
-	else if ((x-1) >= 0 && gameMap.level_map[y][x-1] == DIGGER) return 1;
+	if		((y-1) >= 0 && gameMap.level_map[y-1][x] == DIGGER) return UP_ARROW; 
+	else if ((y+1) < ROWS && gameMap.level_map[y+1][x] == DIGGER)	return DOWN_ARROW;
+	else if ((x+1) < COLUMNS && gameMap.level_map[y][x+1] == DIGGER) return RIGHT_ARROW;
+	else if ((x-1) >= 0 && gameMap.level_map[y][x-1] == DIGGER) return LEFT_ARROW;
 	return 0;
 }
 
