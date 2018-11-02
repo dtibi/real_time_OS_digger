@@ -37,7 +37,7 @@ INTPROC MyISR9(int mdevno)
 	else if (scan == 46) {
 		setup_clean_screen();
 		asm INT 27; // terminate xinu
-	} else if (scan== 2) ps();
+	} else if (scan== 2) ;
 	else result = 0;
 	
 	
