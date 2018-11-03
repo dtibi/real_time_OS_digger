@@ -445,7 +445,11 @@ void upd_draw_grave(int y, int x){
 }
 
 void restart_game() {
-	
+	//stop drawing map
+	setup_clean_screen();
+	sprintf(debug_str, "You LOST with score of %d!", player.score);
+	send(debug, debug_str);
+	asm INT 27; //terminate xinu
 }
 
 /* void draw_fire_ball(FireBall fb) {
@@ -697,7 +701,6 @@ void create_map(int level_id) { //char leve_map[ROWS][COLUMNS], int level_id) {
 	gameMap.monster_become_angry_time = become_hobin[level_id];
 	gameMap.monster_angry_for_time = hobin_time[level_id];
 	gameMap.level_id = level_id;
-	gameMap.diamond_amount = count_diamonds();
 	gameMap.digger_reload_time=digger_time[level_id];
 }
 
@@ -710,7 +713,8 @@ void next_level() {
 		sleept(0);
 		kill_all_enemys();
 		disable(ps);
-		restart_digger(&player);
+		
+		restart_digger((Digger*)(&player));
 		create_enemys();
 		
 		setup_clean_screen();
@@ -724,11 +728,15 @@ void next_level() {
 		resume(nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
 		restore(ps);
 	}
-	//else the player finished all the levels- won the game! 
+	else { //the player finished all the levels- won the game! 
+		sprintf(debug_str, "You WON with score of %d!", player.score);
+		send(debug, debug_str);
+		asm INT 27; //terminate xinu
+	}
 }
 
 void fireball_advance(int y, int x, int direction){
-	int deltaX = 0, deltaY = 0;
+	int deltaX = 0, deltaY = 0, i;
 	
 	if(direction == LEFT_ARROW)
 		deltaX = -1;
@@ -740,13 +748,22 @@ void fireball_advance(int y, int x, int direction){
 		deltaY = 1;
 	
 	while(move_is_possible(y,x, direction, 0)){
-		
 		if(gameMap.level_map[y][x] != DIGGER)
 			upd_draw_empty(y,x,1);
 		x = x + deltaX;
 		y = y + deltaY;
 		upd_draw_fireball(y,x);
 		sleept(3);
+	}
+	
+	if(get_object_in_direction(y,x, direction) == NOBBIN || get_object_in_direction(y,x, direction) == HOBBIN){
+		for(i = 0; i < ENEMY_COUNT; i++){
+			if((enemys[i].y == y + deltaY) && (enemys[i].x == x + deltaX)){
+					enemys[i].is_alive = 0;
+					send(score_lives_pid, DEAD_ENEMY);
+					upd_draw_empty(y + deltaY, x + deltaX,1);
+			}
+		}
 	}
 	
 	upd_draw_empty(y,x,1);

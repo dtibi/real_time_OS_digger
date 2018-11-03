@@ -35,12 +35,16 @@
 #define GOLD_BAG 3
 #define MOVING_GOLD_BAG 4
 #define GOLD 10
-#define GOLD_NUGGER_SCORE 100
 #define DIRT 1
 #define DIAMOND 2
-#define DIAMOND_SCORE 250
 #define DEAD_DIGGER 100
 #define FIREBALL 6
+
+
+#define DIAMOND_SCORE 250
+#define GOLD_NUGGET_SCORE 100
+#define DEAD_ENEMY 250
+#define CHERRY_SCORE 1000
 
 #define start_address 0xB800
 #define NUMBER_OF_LEVELS 3
@@ -101,6 +105,8 @@ int hobin_time [NUMBER_OF_LEVELS] = { 15,20,30  };
 int digger_time [NUMBER_OF_LEVELS] = { 2,4,7};
 void setup_clean_screen();
 void disp_draw_map();
+void next_level();
+void create_map(int level_id);
 
 int  get_object_in_direction(int y, int x, int direction);
 void disp_draw_pixel_with_char(int row, int col, char color,char ch);

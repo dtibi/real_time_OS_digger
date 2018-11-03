@@ -49,10 +49,10 @@ void move_nobbins(){
 			direction = find_direction_to_digger(enemys[i]);
 			obj_in_direction = get_object_in_direction(enemys[i].x, enemys[i].y, direction);
 			
-			if (obj_in_direction == DIAMOND) { //diamond found
-				gameMap.diamond_amount--;
-				if(gameMap.diamond_amount == 0) next_level(); //all the diamonds were taken
-			}
+			sprintf(debug_str, "diamonds = %d", count_diamonds());
+			send(debug,debug_str);
+			
+			if (obj_in_direction == DIAMOND && count_diamonds() - 1 == 0) next_level();  //all the diamonds were taken
 			
 			if(direction!=0)
 				enemys[i].direction=direction;
@@ -63,28 +63,28 @@ void move_nobbins(){
 				break;
 			}
 				
-				upd_draw_empty(enemys[i].y, enemys[i].x, 1);
-				switch (direction) {
-					case LEFT_ARROW:
-						enemys[i].x--;
-						break;
-					case RIGHT_ARROW:
-						enemys[i].x++;
-						break;
-					case DOWN_ARROW:
-						enemys[i].y++;
-						break;
-					case UP_ARROW:
-						enemys[i].y--;
-						break;
-				}
-				
-				if(direction!=0) enemys[i].direction=direction;
-				
-				if(enemys[i].is_hobin)
-					upd_draw_hobbin(enemys[i].y,enemys[i].x,enemys[i].direction);
-				else
-					upd_draw_nobbin(enemys[i].y,enemys[i].x);
+			upd_draw_empty(enemys[i].y, enemys[i].x, 1);
+			switch (direction) {
+				case LEFT_ARROW:
+					enemys[i].x--;
+					break;
+				case RIGHT_ARROW:
+					enemys[i].x++;
+					break;
+				case DOWN_ARROW:
+					enemys[i].y++;
+					break;
+				case UP_ARROW:
+					enemys[i].y--;
+					break;
+			}
+			
+			if(direction!=0) enemys[i].direction=direction;
+			
+			if(enemys[i].is_hobin)
+				upd_draw_hobbin(enemys[i].y,enemys[i].x,enemys[i].direction);
+			else
+				upd_draw_nobbin(enemys[i].y,enemys[i].x);
 		}
 	}
 }
@@ -228,6 +228,7 @@ int min_index(int v1, int v2, int v3, int v4) {
 	return 0;
 }
 
+
 void nobbin_creator(){
 	int i,lowest_dead_nobbin=-1;
 	
@@ -269,6 +270,7 @@ int enemys_alive_count(){
 	return counter;
 }
 
+
 void kill_all_enemys() {
 	int i;
 	for(i = 0; i < ENEMY_COUNT; i++){
@@ -279,6 +281,8 @@ void kill_all_enemys() {
 
 void create_enemys() {
 	int i;
-	for(i = 0; i < ENEMY_COUNT; i++)
+	for(i = 0; i < ENEMY_COUNT; i++) {
 		enemys[i] = create_enemy();
+		upd_draw_empty(enemys[i].y, enemys[i].x, 1);
+	}
 }

@@ -2,6 +2,7 @@
 #include "map.h"
 #include "nobin.h"
 #include "myints.h"
+#include <stdio.h>
 
 //Create digger
 Digger create_digger() {
@@ -22,7 +23,6 @@ void restart_digger(Digger* player) {
 	(*player).x = 8;
 	(*player).y = 7;
 	(*player).direction = LEFT_ARROW;
-	(*player).is_alive = 1;
 }
 
 void move_digger(Digger *player, int direction) {	
@@ -39,10 +39,7 @@ void move_digger(Digger *player, int direction) {
 
 	if (obj_in_direction == DIAMOND) { //diamond found
 		send(score_lives_pid, DIAMOND_SCORE);
-		sprintf(debug_str,"diamonds amount - %d", gameMap.diamond_amount - 1);
-		send(debug,debug_str);
-		gameMap.diamond_amount--;
-		if(gameMap.diamond_amount == 0) next_level(); //all the diamonds were taken
+		if(count_diamonds() - 1 == 0) next_level(); //all the diamonds were taken
 	}
 	else if (obj_in_direction == GOLD_BAG) //gold sack found
 	{
@@ -62,7 +59,6 @@ void move_digger(Digger *player, int direction) {
 		
 		else if(direction == LEFT_ARROW && move_is_possible( y , x - 1 , LEFT_ARROW, 1))  {
 			if (get_object_in_direction(y, x - 1, LEFT_ARROW) == GOLD_BAG) return;
-			printf(" %d ", get_object_in_direction(y, x - 1, LEFT_ARROW));
 			upd_draw_bag(y, x-2);
 			upd_draw_empty(y, x-1,1);
 			if(move_is_possible(y,x - 2, DOWN_ARROW, 0)) { //check if there is no dirt under
@@ -76,7 +72,7 @@ void move_digger(Digger *player, int direction) {
 		}
 	}
 	else if (obj_in_direction >= GOLD+2 && obj_in_direction <= GOLD+5) {//gold nugets found
-		send(score_lives_pid,(obj_in_direction-GOLD)*GOLD_NUGGER_SCORE);
+		send(score_lives_pid,(obj_in_direction-GOLD)*GOLD_NUGGET_SCORE);
 	}
 	
 	switch (direction) {
@@ -116,7 +112,7 @@ void digger_death_flow(){
 	kill_all_enemys();
 	player.lives--;
 	send(score_lives_pid,-1);
-	if(player.lives==0) {
+	if(player.lives <=0) {
 		restart_game();
 		return;
 	}
@@ -127,7 +123,6 @@ void digger_death_flow(){
 	player.x=8;
 	player.y=7;
 	player.is_alive=1;
-	
+	create_enemys();
 	resume(nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
-	
 }
