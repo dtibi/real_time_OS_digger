@@ -1,6 +1,0 @@
-C:
-cd TC\BIN\
-tcc -IC:\XINU4WIN\NEWSRC -c -DTURBOC C:\XINU4WIN\NEWSRC\targil\INITIALI.C
-tlib C:\XINU4WIN\NEWSRC\targil\xinu.lib -+ initiali.obj
-tcc -IC:\XINU4WIN\NEWSRC -eC:\XINU4WIN\NEWSRC\targil\ex9.exe C:\XINU4WIN\NEWSRC\targil\ex9.c C:\XINU4WIN\NEWSRC\targil\XINU.LIB
-C:\XINU4WIN\NEWSRC\targil\ex9.exe

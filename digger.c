@@ -14,14 +14,15 @@ Digger create_digger() {
 	player.is_alive = 1;
 	player.lives = 3;
 	player.score = 0;
-	player.weapon_reloaded = 1;
+	player.last_time_shot = 0;
 	return player;
 }
 
-void restart_digger(Digger* player) {
-	(*player).x = 8;
-	(*player).y = 7;
-	(*player).direction = LEFT_ARROW;
+void restart_digger() {
+	player.x = 8;
+	player.y = 7;
+	player.direction = LEFT_ARROW;
+	upd_draw_digger(player);
 }
 
 void move_digger(Digger *player, int direction) {	
@@ -133,9 +134,9 @@ void move_digger(Digger *player, int direction) {
 
 
 void digger_death_flow(){
-	kill(nobbin_creator_pid);
-	sleept(0);
 	kill_all_enemys();
+	//reseting enemys counter
+	gameMap.monster_max_amount = monster_max_count[gameMap.level_id];;
 	player.lives--;
 	send(score_lives_pid,-1);
 	if(player.lives <=0) {
@@ -150,5 +151,4 @@ void digger_death_flow(){
 	player.y=7;
 	player.is_alive=1;
 	create_enemys();
-	resume(nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
 }
