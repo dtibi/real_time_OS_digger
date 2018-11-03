@@ -404,7 +404,11 @@ void upd_draw_grave(int y, int x){
 }
 
 void restart_game() {
-	
+	//stop drawing map
+	setup_clean_screen();
+	sprintf(debug_str, "You LOST with score of %d!", player.score);
+	send(debug, debug_str);
+	asm INT 27; //terminate xinu
 }
 
 /* void draw_fire_ball(FireBall fb) {
@@ -634,21 +638,6 @@ void gold_falling(int i,int j){
 	}
 }
 
-void create_enemys() {
-	int i;
-	for(i = 0; i < ENEMY_COUNT; i++)
-		enemys[i] = create_enemy((Digger*)&player);
-	enemys[0].is_alive=1;
-	//enemys[1].is_alive=1;
-	//enemys[2].is_alive=1;
-}
-
-void kill_all_enemys() {
-	int i;
-	for(i = 0; i < ENEMY_COUNT; i++)
-		enemys[i].is_alive=0;
-}
-
 int count_diamonds() {
 	int i, j, ret=0;
 	for (i=0; i<ROWS; i++) {
@@ -667,7 +656,6 @@ void create_map(int level_id) { //char leve_map[ROWS][COLUMNS], int level_id) {
 		}
 	}
 	gameMap.level_id = level_id;
-	gameMap.diamond_amount = count_diamonds();
 }
 
 void next_level() {
@@ -678,7 +666,8 @@ void next_level() {
 		
 		kill_all_enemys();
 		disable(ps);
-		restart_digger(&player);
+		
+		restart_digger((Digger*)(&player));
 		create_enemys();
 		
 		setup_clean_screen();
@@ -693,7 +682,11 @@ void next_level() {
 		
 		restore(ps);
 	}
-	//else the player finished all the levels- won the game! 
+	else { //the player finished all the levels- won the game! 
+		sprintf(debug_str, "You WON with score of %d!", player.score);
+		send(debug, debug_str);
+		asm INT 27; //terminate xinu
+	}
 }
 
 void fireball_advance(int y, int x, int direction){

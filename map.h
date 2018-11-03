@@ -49,7 +49,6 @@ typedef struct map {
 	int level_id;
 	char pixel_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
 	char refresh_map[ROWS][COLUMNS];
-	int diamond_amount;
 	} Map;
 
 extern Map gameMap;
@@ -90,6 +89,8 @@ static char levels [NUMBER_OF_LEVELS][ROWS][COLUMNS] = {{
 	
 void setup_clean_screen();
 void disp_draw_map();
+void next_level();
+void create_map(int level_id);
 
 int  get_object_in_direction(int y, int x, int direction);
 void disp_draw_pixel_with_char(int row, int col, char color,char ch);

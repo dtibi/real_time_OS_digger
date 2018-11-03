@@ -50,35 +50,34 @@ void move_nobbins(){
 			direction = find_direction_to_digger(enemys[i]);
 			obj_in_direction = get_object_in_direction(enemys[i].x, enemys[i].y, direction);
 			
-			if (obj_in_direction == DIAMOND) { //diamond found
-				gameMap.diamond_amount--;
-				if(gameMap.diamond_amount == 0) next_level(); //all the diamonds were taken
-			}
+			sprintf(debug_str, "diamonds = %d", count_diamonds());
+			send(debug,debug_str);
+			
+			if (obj_in_direction == DIAMOND && count_diamonds() - 1 == 0) next_level();  //all the diamonds were taken
 			
 			if (get_object_in_direction(enemys[i].y, enemys[i].x,direction)==DIGGER) {
 				player.is_alive=0;
 				break;
 			}
 				
-				upd_draw_empty(enemys[i].y, enemys[i].x, 1);
-				switch (direction) {
-					case LEFT_ARROW:
-						enemys[i].x--;
-						break;
-					case RIGHT_ARROW:
-						enemys[i].x++;
-						break;
-					case DOWN_ARROW:
-						enemys[i].y++;
-						break;
-					case UP_ARROW:
-						enemys[i].y--;
-						break;
-				}
-				
-				if(direction!=0) enemys[i].direction=direction;
-				
-				upd_draw_nobbin(enemys[i].y,enemys[i].x);
+			upd_draw_empty(enemys[i].y, enemys[i].x, 1);
+			switch (direction) {
+				case LEFT_ARROW:
+					enemys[i].x--;
+					break;
+				case RIGHT_ARROW:
+					enemys[i].x++;
+					break;
+				case DOWN_ARROW:
+					enemys[i].y++;
+					break;
+				case UP_ARROW:
+					enemys[i].y--;
+					break;
+			}
+			
+			if(direction!=0) enemys[i].direction=direction;
+			upd_draw_nobbin(enemys[i].y,enemys[i].x);
 		}
 	}
 }
@@ -220,4 +219,21 @@ int min_index(int v1, int v2, int v3, int v4) {
 	else if(v4 <= v1 && v4 <= v2 && v4 <= v3) return 4;
 	
 	return 0;
+}
+
+void create_enemys() {
+	int i;
+	for(i = 0; i < ENEMY_COUNT; i++)
+		enemys[i] = create_enemy((Digger*)&player);
+	enemys[0].is_alive=1;
+	upd_draw_empty(enemys[0].y,enemys[0].x,1);
+}
+
+void kill_all_enemys() {
+	int i;
+	for(i = 0; i < ENEMY_COUNT; i++) {
+		enemys[i].is_alive=0;
+		upd_draw_empty(enemys[i].y, enemys[i].x, 1);
+	}
+	
 }
