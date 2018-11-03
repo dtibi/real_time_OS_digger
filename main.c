@@ -107,8 +107,9 @@ void updater() {
 					upd_draw_digger(player);
 					continue;
 				}
+			} else {
+				move_digger((Digger*)&player,button_sc);
 			}
-			move_digger((Digger*)&player,button_sc);
 		}
 		if(counter%5 > 0) move_nobbins();
 		else	counter=1;
@@ -141,7 +142,6 @@ xmain() {
 	int i,j;
 	player = create_digger();
 	create_enemys();
-	
 	setup_clean_screen();
 	create_map(0);
 	

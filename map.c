@@ -445,11 +445,7 @@ void upd_draw_grave(int y, int x){
 }
 
 void restart_game() {
-	//stop drawing map
-	setup_clean_screen();
-	sprintf(debug_str, "You LOST with score of %d!", player.score);
-	send(debug, debug_str);
-	asm INT 27; //terminate xinu
+	send(terminate_xinu_pid);
 }
 
 /* void draw_fire_ball(FireBall fb) {
@@ -572,7 +568,7 @@ void disp_draw_lives(int lives){
 void disp_draw_score(int score){
 	int i,str_len;
 	char* ch_score;
-	sprintf(ch_score,"%6d",score);
+	sprintf(ch_score,"%06d",score);
 	str_len = (strlen(ch_score) > COLUMNS_PIXELS) ? COLUMNS_PIXELS : strlen(ch_score);
 	for (i = 0; i < str_len && i < COLUMNS_PIXELS; i++)
 		disp_draw_pixel_with_char(0, i, 2, ch_score[i]);
@@ -612,6 +608,7 @@ void disp_draw_cube(int i,int j){
 void shake_bag(int y, int x,int pid_to_fall){
 	int row_pixel = row_2_pixel(y), column_pixel,j = column_2_pixel(x),p, next=-1;
 	int index[4];
+	gameMap.level_map[y][x] = MOVING_GOLD_BAG;
 	index[0] = j-1; index[1] =  j ; index[2] = j+1 ; index[3] =  j;
 	for (p=0;p<4*3;p++){
 		column_pixel = index[(++next)%4];
@@ -689,7 +686,7 @@ int count_diamonds() {
 	return ret;
 }
 
-void create_map(int level_id) { //char leve_map[ROWS][COLUMNS], int level_id) {
+void create_map(int level_id) { //char level_map[ROWS][COLUMNS], int level_id) {
 	int i, j;
 	for (i=0; i<ROWS; i++) {
 		for(j=0;j<COLUMNS; j++) {
@@ -697,7 +694,7 @@ void create_map(int level_id) { //char leve_map[ROWS][COLUMNS], int level_id) {
 		}
 	}
 	gameMap.monster_start_amount = monster_count[level_id];
-	gameMap.monster_max_amount = monster__max_count[level_id];
+	gameMap.monster_max_amount = monster_max_count[level_id];
 	gameMap.monster_become_angry_time = become_hobin[level_id];
 	gameMap.monster_angry_for_time = hobin_time[level_id];
 	gameMap.level_id = level_id;
@@ -707,12 +704,13 @@ void create_map(int level_id) { //char leve_map[ROWS][COLUMNS], int level_id) {
 void next_level() {
 	int ps;
 	
-	if(gameMap.level_id + 1 < NUMBER_OF_LEVELS) {
-		gameMap.level_id++;
-		kill(nobbin_creator_pid);
-		sleept(0);
-		kill_all_enemys();
+	gameMap.level_id++;
+	
+	if(gameMap.level_id < NUMBER_OF_LEVELS) {
+		
 		disable(ps);
+		
+		kill_all_enemys();
 		
 		restart_digger((Digger*)(&player));
 		create_enemys();
@@ -725,13 +723,15 @@ void next_level() {
 		disp_draw_score(player.score);
 		
 		upd_draw_digger(player);
-		resume(nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
 		restore(ps);
+		sleept(5);
+		resume(nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
 	}
 	else { //the player finished all the levels- won the game! 
-		sprintf(debug_str, "You WON with score of %d!", player.score);
-		send(debug, debug_str);
-		asm INT 27; //terminate xinu
+		//sprintf(debug_str, "You WON with score of %d!", player.score);
+		//send(debug, debug_str);
+		sleept(25);
+		send(terminate_xinu_pid);
 	}
 }
 

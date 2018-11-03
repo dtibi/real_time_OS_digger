@@ -49,9 +49,6 @@ void move_nobbins(){
 			direction = find_direction_to_digger(enemys[i]);
 			obj_in_direction = get_object_in_direction(enemys[i].x, enemys[i].y, direction);
 			
-			sprintf(debug_str, "diamonds = %d", count_diamonds());
-			send(debug,debug_str);
-			
 			if (obj_in_direction == DIAMOND && count_diamonds() - 1 == 0) next_level();  //all the diamonds were taken
 			
 			if(direction!=0)
@@ -230,20 +227,12 @@ int min_index(int v1, int v2, int v3, int v4) {
 
 
 void nobbin_creator(){
-	int i,lowest_dead_nobbin=-1;
-	
-	for (i=0;i<gameMap.monster_start_amount;i++) {
-		lowest_dead_nobbin = get_lowest_dead_nobbin();
-		if(lowest_dead_nobbin>=0) {
-			enemys[lowest_dead_nobbin] = create_enemy();
-			enemys[lowest_dead_nobbin].is_alive = 1;
-			gameMap.monster_max_amount--;
-		}
-		sleept(SECONDT*5);
-	}
-	lowest_dead_nobbin = -1;
+	int i,lowest_dead_nobbin=-1,n;
+
 	while(gameMap.monster_max_amount>0) {
-		if (enemys_alive_count()<gameMap.monster_start_amount){
+		disp_draw_pixel_with_char(0, 69, BABY_BG, ' ');
+		n = enemys_alive_count();
+		if (n<gameMap.monster_start_amount){
 			lowest_dead_nobbin = get_lowest_dead_nobbin();
 			if(lowest_dead_nobbin>=0) {
 				enemys[lowest_dead_nobbin] = create_enemy();
@@ -251,8 +240,10 @@ void nobbin_creator(){
 				gameMap.monster_max_amount--;
 			}
 		}
+		disp_draw_pixel_with_char(0, 69, BLACK_BG, ' ');
 		sleept(SECONDT*5);
 	}
+	next_level();
 	
 }
 

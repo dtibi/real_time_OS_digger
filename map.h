@@ -99,7 +99,7 @@ static char levels [NUMBER_OF_LEVELS][ROWS][COLUMNS] = {{
 }};
 	
 int monster_count [NUMBER_OF_LEVELS] = { 5, 5, 10 };
-int monster__max_count [NUMBER_OF_LEVELS] = { 8, 10, 15 };
+int monster_max_count [NUMBER_OF_LEVELS] = { 8, 10, 15 };
 int become_hobin [NUMBER_OF_LEVELS] = { 90,60,60  };
 int hobin_time [NUMBER_OF_LEVELS] = { 15,20,30  };
 int digger_time [NUMBER_OF_LEVELS] = { 2,4,7};
