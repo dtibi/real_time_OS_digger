@@ -25,10 +25,13 @@
 #define GREEN_ON_BLACK 2
 #define BROWN_ON_BLACK 6
 #define GRAY_ON_BROWN 103
+#define RED_ON_GREEN 36
+#define BROWN_ON_GREEN 38
 
 #define DIGGER 99
 #define EMPTY 0
 #define NOBBIN 88
+#define HOBBIN 89
 #define GOLD_BAG 3
 #define MOVING_GOLD_BAG 4
 #define GOLD 10
@@ -36,7 +39,6 @@
 #define DIRT 1
 #define DIAMOND 2
 #define DIAMOND_SCORE 250
-#define HOBBIN 89
 #define DEAD_DIGGER 100
 #define FIREBALL 6
 
@@ -80,6 +82,7 @@ void upd_draw_bag(int i,int j);
 void upd_draw_bag_moving(int i,int j,int direction);
 void upd_draw_empty(int i,int j,int update_map);
 void upd_draw_nobbin(int i, int j);
+void upd_draw_hobbin(int i, int j,int direction);
 void disp_draw_area(int y, int x);
 void disp_draw_lives(int lives);
 void score_lives_updater();

@@ -68,8 +68,11 @@ void move_nobbins(){
 			
 			if(direction!=0)
 				enemys[i].direction=direction;
+			if(enemys[i].is_hobin)
+				upd_draw_hobbin(enemys[i].y,enemys[i].x,enemys[i].direction);
+			else
+				upd_draw_nobbin(enemys[i].y,enemys[i].x);
 			
-			upd_draw_nobbin(enemys[i].y,enemys[i].x);
 			if (gameMap.level_map[enemys[i].y][enemys[i].x]==DIGGER) player.is_alive=0;
 		}
 	}

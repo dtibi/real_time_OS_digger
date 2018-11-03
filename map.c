@@ -279,6 +279,47 @@ void upd_draw_nobbin(int i, int j) {
 	gameMap.refresh_map[i][j] = 1;
 }
 
+/* 
+nobbin should look like:
+     ___       ___
+    | 0 |     | 0 |
+    |__<|     |>__|
+	 _|_       _|_
+
+ */
+void upd_draw_hobbin(int i, int j,int direction) {
+	int x = column_2_pixel(j),y = row_2_pixel(i);
+	gameMap.level_map[i][j] = HOBBIN;
+	upd_draw_empty(i, j, 0);
+	gameMap.pixel_map[y][x + 1][0] = ' ';
+	gameMap.pixel_map[y][x + 1][1] =  GREEN_BG;
+	gameMap.pixel_map[y][x + 2][0] = '0';
+	gameMap.pixel_map[y][x + 2][1] =  BROWN_ON_GREEN;
+	gameMap.pixel_map[y][x + 3][0] = ' ';
+	gameMap.pixel_map[y][x + 3][1] =  GREEN_BG;
+	gameMap.pixel_map[y + 1][x + 2][0] = ' ';
+	gameMap.pixel_map[y + 1][x + 2][1] =  GREEN_BG;
+	if(direction == LEFT_ARROW || direction == UP_ARROW){
+		gameMap.pixel_map[y + 1][x + 1][0] = '>';
+		gameMap.pixel_map[y + 1][x + 1][1] =  RED_ON_GREEN;
+		gameMap.pixel_map[y + 1][x + 3][0] = ' ';
+		gameMap.pixel_map[y + 1][x + 3][1] =  GREEN_BG;
+	} else {
+		gameMap.pixel_map[y + 1][x + 1][0] = ' ';
+		gameMap.pixel_map[y + 1][x + 1][1] =  GREEN_BG;
+		gameMap.pixel_map[y + 1][x + 3][0] = '<';
+		gameMap.pixel_map[y + 1][x + 3][1] =  RED_ON_GREEN;
+	}
+	gameMap.pixel_map[y + 2][x + 1][0] = '_';
+	gameMap.pixel_map[y + 2][x + 1][1] =  RED;
+	gameMap.pixel_map[y + 2][x + 2][0] = '|';
+	gameMap.pixel_map[y + 2][x + 2][1] =  RED;
+	gameMap.pixel_map[y + 2][x + 3][0] = '_';
+	gameMap.pixel_map[y + 2][x + 3][1] =  RED;
+	
+	gameMap.refresh_map[i][j] = 1;
+}
+
 void disp_draw_area(int y, int x) {
 	int i, j;
 	for(i = row_2_pixel(y - 1); i < row_2_pixel(y + 1) + 1 && i < ROWS_PIXELS; i++) {
