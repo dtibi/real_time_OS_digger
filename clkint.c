@@ -47,7 +47,6 @@ int mdevno;				/* minor device number		*/
 
         
 	tod++;
-	if(delay_timer>=tod) {send(sound_effects_pid,0);delay_timer=tod-1;}
         resched_flag = 0;
 	if (slnempty)
 		if ( (--*sltop) <= 0 )

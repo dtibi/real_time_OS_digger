@@ -3,13 +3,12 @@
 #include "map.h"
 #include "myints.h"
 
-Enemy create_enemy(Digger *d) { 
+Enemy create_enemy() { 
 	Enemy enemy;
 	
 	enemy.x = 14;
 	enemy.y = 0;
 	enemy.direction = LEFT_ARROW;
-	enemy.digger = d;
 	enemy.is_alive = 0;
 	enemy.is_hobin = 0;
 	
@@ -45,7 +44,7 @@ Enemy copy_enemy(Enemy to_copy) {
 				
 void move_nobbins(){
 	int i, direction, obj_in_direction;
-	for(i=0; i<NOBBIN_COUNT; i++) {
+	for(i=0; i<ENEMY_COUNT; i++) {
 		if(enemys[i].is_alive == 1) {
 			direction = find_direction_to_digger(enemys[i]);
 			obj_in_direction = get_object_in_direction(enemys[i].x, enemys[i].y, direction);
@@ -227,4 +226,59 @@ int min_index(int v1, int v2, int v3, int v4) {
 	else if(v4 <= v1 && v4 <= v2 && v4 <= v3) return 4;
 	
 	return 0;
+}
+
+void nobbin_creator(){
+	int i,lowest_dead_nobbin=-1;
+	
+	for (i=0;i<gameMap.monster_start_amount;i++) {
+		lowest_dead_nobbin = get_lowest_dead_nobbin();
+		if(lowest_dead_nobbin>=0) {
+			enemys[lowest_dead_nobbin] = create_enemy();
+			enemys[lowest_dead_nobbin].is_alive = 1;
+			gameMap.monster_max_amount--;
+		}
+		sleept(SECONDT*5);
+	}
+	lowest_dead_nobbin = -1;
+	while(gameMap.monster_max_amount>0) {
+		if (enemys_alive_count()<gameMap.monster_start_amount){
+			lowest_dead_nobbin = get_lowest_dead_nobbin();
+			if(lowest_dead_nobbin>=0) {
+				enemys[lowest_dead_nobbin] = create_enemy();
+				enemys[lowest_dead_nobbin].is_alive = 1;
+				gameMap.monster_max_amount--;
+			}
+		}
+		sleept(SECONDT*5);
+	}
+	
+}
+
+int get_lowest_dead_nobbin() {
+	int i;
+	for(i=0;i<ENEMY_COUNT;i++)
+		if (!enemys[i].is_alive) return i;
+	return -1;
+}
+
+int enemys_alive_count(){
+	int i,counter=0;
+	for(i=0;i<ENEMY_COUNT;i++)
+		if (enemys[i].is_alive) counter++;
+	return counter;
+}
+
+void kill_all_enemys() {
+	int i;
+	for(i = 0; i < ENEMY_COUNT; i++){
+		enemys[i].is_alive=0;
+		upd_draw_empty(enemys[i].y,enemys[i].x,1);
+	}
+}
+
+void create_enemys() {
+	int i;
+	for(i = 0; i < ENEMY_COUNT; i++)
+		enemys[i] = create_enemy();
 }

@@ -636,13 +636,13 @@ void shake_bag(int y, int x,int pid_to_fall){
 
 void gold_falling(int i,int j){
 	int x,y,counter,obj,gold_chunks;		
-	
-	if(gameMap.level_map[i+1][j]==EMPTY){
+	y=i;
+	x=j;
+	obj = get_object_in_direction(y,x,DOWN_ARROW);
+	if(obj==EMPTY || obj==DIGGER || obj==NOBBIN || obj==HOBBIN){
 		gameMap.level_map[i][j]=MOVING_GOLD_BAG;
 		counter=0;
-		y=i;
-		x=j;
-		obj = get_object_in_direction(y,x,DOWN_ARROW);
+		
 		while(obj==EMPTY || obj==DIGGER || obj==NOBBIN || obj==HOBBIN){	
 			if(obj==DIGGER){
 				player.is_alive=0;
@@ -653,7 +653,7 @@ void gold_falling(int i,int j){
 				obj = get_object_in_direction(y,x,DOWN_ARROW);
 				continue;
 			} else if (obj==NOBBIN || obj==HOBBIN) {
-				for(i=0;i<NOBBIN_COUNT;i++)
+				for(i=0;i<ENEMY_COUNT;i++)
 					if(enemys[i].x==x && enemys[i].y==y+1){
 						enemys[i].is_alive=0;
 						upd_draw_empty(y+1,x,1);
@@ -675,21 +675,6 @@ void gold_falling(int i,int j){
 	}
 }
 
-void create_enemys() {
-	int i;
-	for(i = 0; i < ENEMY_COUNT; i++)
-		enemys[i] = create_enemy((Digger*)&player);
-	enemys[0].is_alive=1;
-	//enemys[1].is_alive=1;
-	//enemys[2].is_alive=1;
-}
-
-void kill_all_enemys() {
-	int i;
-	for(i = 0; i < ENEMY_COUNT; i++)
-		enemys[i].is_alive=0;
-}
-
 int count_diamonds() {
 	int i, j, ret=0;
 	for (i=0; i<ROWS; i++) {
@@ -707,8 +692,13 @@ void create_map(int level_id) { //char leve_map[ROWS][COLUMNS], int level_id) {
 			gameMap.level_map[i][j] = levels[level_id][i][j];
 		}
 	}
+	gameMap.monster_start_amount = monster_count[level_id];
+	gameMap.monster_max_amount = monster__max_count[level_id];
+	gameMap.monster_become_angry_time = become_hobin[level_id];
+	gameMap.monster_angry_for_time = hobin_time[level_id];
 	gameMap.level_id = level_id;
 	gameMap.diamond_amount = count_diamonds();
+	gameMap.digger_reload_time=digger_time[level_id];
 }
 
 void next_level() {
@@ -716,7 +706,8 @@ void next_level() {
 	
 	if(gameMap.level_id + 1 < NUMBER_OF_LEVELS) {
 		gameMap.level_id++;
-		
+		kill(nobbin_creator_pid);
+		sleept(0);
 		kill_all_enemys();
 		disable(ps);
 		restart_digger(&player);
@@ -730,8 +721,7 @@ void next_level() {
 		disp_draw_score(player.score);
 		
 		upd_draw_digger(player);
-		upd_draw_nobbin(enemys[0].y,enemys[0].x);
-		
+		resume(nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
 		restore(ps);
 	}
 	//else the player finished all the levels- won the game! 

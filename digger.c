@@ -1,5 +1,6 @@
 #include "digger.h"
 #include "map.h"
+#include "nobin.h"
 #include "myints.h"
 
 //Create digger
@@ -110,8 +111,9 @@ void move_digger(Digger *player, int direction) {
 
 
 void digger_death_flow(){
-	//need to kill all enemys so they stop moving
-	enemys[0].is_alive=0;
+	kill(nobbin_creator_pid);
+	sleept(0);
+	kill_all_enemys();
 	player.lives--;
 	send(score_lives_pid,-1);
 	if(player.lives==0) {
@@ -126,9 +128,6 @@ void digger_death_flow(){
 	player.y=7;
 	player.is_alive=1;
 	
-	//need to delete all enemys from map and respon them with time.
-	upd_draw_empty(enemys[0].y,enemys[0].x,1);
-	upd_draw_empty(enemys[1].y,enemys[1].x,1);
-	upd_draw_empty(enemys[2].y,enemys[2].x,1);
+	resume(nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
 	
 }

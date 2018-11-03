@@ -22,7 +22,7 @@
 #define SECONDT 18
 
 extern volatile unsigned long count,delay_timer;
-extern int uppid, dispid, recvpid, debug,sound_effects_pid,score_lives_pid,bg_sound,terminate_xinu_pid;
+extern int uppid, dispid, recvpid, debug,sound_effects_pid,score_lives_pid,bg_sound,terminate_xinu_pid,nobbin_creator_pid;
 extern int receiver_pid;
 
 void setup_interrupts();

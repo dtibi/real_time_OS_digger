@@ -42,7 +42,6 @@
 #define DEAD_DIGGER 100
 #define FIREBALL 6
 
-#define ENEMY_COUNT 5
 #define start_address 0xB800
 #define NUMBER_OF_LEVELS 3
 
@@ -52,6 +51,11 @@ typedef struct map {
 	char pixel_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
 	char refresh_map[ROWS][COLUMNS];
 	int diamond_amount;
+	int monster_start_amount;
+	int monster_max_amount;
+	int monster_become_angry_time;
+	int monster_angry_for_time;
+	int digger_reload_time;
 	} Map;
 
 extern Map gameMap;
@@ -90,6 +94,11 @@ static char levels [NUMBER_OF_LEVELS][ROWS][COLUMNS] = {{
 	{2 , 2 , 1 , 1 , 1 , 2 , 1 , 0 , 1 , 2 , 1 , 1 , 1 , 1 , 2 , 2} 
 }};
 	
+int monster_count [NUMBER_OF_LEVELS] = { 5, 5, 10 };
+int monster__max_count [NUMBER_OF_LEVELS] = { 8, 10, 15 };
+int become_hobin [NUMBER_OF_LEVELS] = { 90,60,60  };
+int hobin_time [NUMBER_OF_LEVELS] = { 15,20,30  };
+int digger_time [NUMBER_OF_LEVELS] = { 2,4,7};
 void setup_clean_screen();
 void disp_draw_map();
 
