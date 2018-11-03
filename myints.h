@@ -14,12 +14,15 @@
 #define UP_ARROW 72
 #define SPACE_BAR 57
 
+
 //speed of sound delays
 #define LONG_DELAY 5
 #define SHORT_DELAY 1
 
+#define SECONDT 18
+
 extern volatile unsigned long count,delay_timer;
-extern int uppid, dispid, recvpid, debug,sound_effects_pid,score_lives_pid,bg_sound;
+extern int uppid, dispid, recvpid, debug,sound_effects_pid,score_lives_pid,bg_sound,terminate_xinu_pid;
 extern int receiver_pid;
 
 void setup_interrupts();

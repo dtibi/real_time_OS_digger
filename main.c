@@ -124,6 +124,21 @@ void updater() {
   }
 }
 
+void kill_xinu(){
+	int i;
+	receive();
+	for(i=0; i < 2; i++){
+		kill(sched_arr_pid[i]);
+	} 
+	kill(bg_sound);
+	sleept(SECONDT);
+	no_sound();
+	setup_clean_screen();
+	xdone();
+	asm INT 27; // terminate xinu
+	return;
+}
+
 xmain() {
 	int i,j;
 	player = create_digger();
@@ -146,6 +161,7 @@ xmain() {
 	resume( bg_sound = create(beethoven,INITSTK,INITPRIO,"bg_sound",0));
 	resume( sound_effects_pid = create(sound_effects,INITSTK,INITPRIO+1,"sound_effects_pid",1,bg_sound));
 	resume( score_lives_pid = create(score_lives_updater,INITSTK,INITPRIO+3,"score_lives_updating",0));
+	resume(terminate_xinu_pid = create(kill_xinu,INITSTK,INITPRIO+3,"kill_Xinu",0));
 	receiver_pid = recvpid;
 	setup_interrupts();
     schedule(2,3, dispid, 1,  uppid, 2);
