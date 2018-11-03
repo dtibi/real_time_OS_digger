@@ -55,6 +55,10 @@ void move_nobbins(){
 			
 			if (obj_in_direction == DIAMOND && count_diamonds() - 1 == 0) next_level();  //all the diamonds were taken
 			
+			if(direction!=0)
+				enemys[i].direction=direction;
+			
+			if (gameMap.level_map[enemys[i].y][enemys[i].x]==DIGGER) player.is_alive=0;
 			if (get_object_in_direction(enemys[i].y, enemys[i].x,direction)==DIGGER) {
 				player.is_alive=0;
 				break;
@@ -77,7 +81,11 @@ void move_nobbins(){
 			}
 			
 			if(direction!=0) enemys[i].direction=direction;
-			upd_draw_nobbin(enemys[i].y,enemys[i].x);
+			
+			if(enemys[i].is_hobin)
+				upd_draw_hobbin(enemys[i].y,enemys[i].x,enemys[i].direction);
+			else
+				upd_draw_nobbin(enemys[i].y,enemys[i].x);
 		}
 	}
 }
