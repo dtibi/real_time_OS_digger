@@ -101,15 +101,13 @@ void updater() {
 
 			if(button_sc == SPACE_BAR){
 				
-				if (player.weapon_reloaded == 1){
-					//player.weapon_reloaded = 0;
+				if ((tod - player.last_time_shot) / SECONDT >= gameMap.digger_reload_time){
+					player.last_time_shot = tod;
 					resume(create(fireball_advance, INITSTK, INITPRIO+1, "weapon_fired", 3 ,player.y ,player.x ,player.direction));
 					upd_draw_digger(player);
 					continue;
 				}
-			} else {
-				move_digger((Digger*)&player,button_sc);
-			}
+			} else move_digger((Digger*)&player,button_sc);
 		}
 		if(counter%5 > 0) move_nobbins();
 		else	counter=1;

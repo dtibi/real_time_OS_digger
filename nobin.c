@@ -49,6 +49,9 @@ void move_nobbins(){
 			direction = find_direction_to_digger(enemys[i]);
 			obj_in_direction = get_object_in_direction(enemys[i].x, enemys[i].y, direction);
 			
+		//			sprintf(debug_str, "diamonds = %d", count_diamonds());
+		//			send(debug,debug_str);
+			
 			if (obj_in_direction == DIAMOND && count_diamonds() - 1 == 0) next_level();  //all the diamonds were taken
 			
 			if(direction!=0)
