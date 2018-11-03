@@ -1,5 +1,6 @@
 #include "digger.h"
 #include "map.h"
+#include "nobin.h"
 #include "myints.h"
 #include <stdio.h>
 
@@ -25,6 +26,7 @@ void restart_digger(Digger* player) {
 
 void move_digger(Digger *player, int direction) {	
 	int x = (*player).x, y = (*player).y, p_direction = (*player).direction,obj_in_direction, gold_pid;
+	int deltaX=0, deltaY=0, i;
 	if(direction != p_direction) { //check if the wanted move direction is diffrent from the current
 		(*player).direction = direction;
 		upd_draw_digger(*player);
@@ -43,6 +45,26 @@ void move_digger(Digger *player, int direction) {
 	if (obj_in_direction == CHERRY) { //cherry found
 		send(score_lives_pid, CHERRY_SCORE);
 		crazy_mode = 1;
+	}
+	
+	if((obj_in_direction == HOBBIN || obj_in_direction == NOBBIN) && crazy_mode) {
+		
+		if(direction == LEFT_ARROW)
+			deltaX = -1;
+		else if(direction == UP_ARROW)
+			deltaY = -1;
+		else if(direction == RIGHT_ARROW)
+			deltaX = 1;
+		else
+			deltaY = 1;
+		
+		for(i = 0; i < ENEMY_COUNT; i++){
+			if((enemys[i].y == (*player).y + deltaY) && (enemys[i].x == (*player).x + deltaX)){
+					enemys[i].is_alive = 0;
+					upd_draw_empty(enemys[i].y, enemys[i].x, 1);
+					send(score_lives_pid, DEAD_ENEMY_SCORE);
+			}
+		}
 	}
 	
 	else if (obj_in_direction == GOLD_BAG) //gold sack found
@@ -109,24 +131,24 @@ void move_digger(Digger *player, int direction) {
 	upd_draw_digger(*player);
 }
 
-void digger_death_flow(){	
-	kill_all_enemys(); //kill all enemys so they stop moving
+
+void digger_death_flow(){
+	kill(nobbin_creator_pid);
+	sleept(0);
+	kill_all_enemys();
 	player.lives--;
 	send(score_lives_pid,-1);
 	if(player.lives <=0) {
 		restart_game();
 		return;
 	}
-	
-	else {
-		send(sound_effects_pid,0);
-		upd_draw_grave(player.y,player.x);
-		sleept(15);
-		upd_draw_empty(player.y,player.x,1);
-		player.x=8;
-		player.y=7;
-		player.is_alive=1;
-		create_enemys();
-		
-	}
+	send(sound_effects_pid,0);
+	upd_draw_grave(player.y,player.x);
+	sleept(15);
+	upd_draw_empty(player.y,player.x,1);
+	player.x=8;
+	player.y=7;
+	player.is_alive=1;
+	create_enemys();
+	resume(nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
 }

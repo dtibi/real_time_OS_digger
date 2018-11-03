@@ -3,8 +3,8 @@
 #include "sound.h"
 
 
-volatile unsigned long count,delay_timer;
-int uppid, dispid, recvpid, debug,gold_falling_pid,sound_effects_pid,score_lives_pid,bg_sound;
+volatile unsigned long count,delay_timer=0;
+int uppid, dispid, recvpid, debug,gold_falling_pid,sound_effects_pid,score_lives_pid,bg_sound,terminate_xinu_pid,nobbin_creator_pid;
 int receiver_pid;
 
 
@@ -35,9 +35,8 @@ INTPROC MyISR9(int mdevno)
 	else if (scan == DOWN_ARROW) result = DOWN_ARROW;
 	else if (scan == SPACE_BAR) result = SPACE_BAR;
 	else if (scan == 46) {
-		setup_clean_screen();
-		asm INT 27; // terminate xinu
-	} else if (scan== 2) ;
+		send(terminate_xinu_pid);
+	}
 	else result = 0;
 	
 	

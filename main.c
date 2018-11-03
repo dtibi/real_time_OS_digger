@@ -48,7 +48,6 @@ void displayer() {
 			gameMap.level_map[i][j] = levels[gameMap.level_id][i][j];
 	}
 	upd_draw_digger(player);
-	upd_draw_nobbin(enemys[0].y, enemys[0].x);
 	disp_draw_map();
 	while (1) {
 		receive();
@@ -72,6 +71,7 @@ void displayer() {
 		}
 		
 		disp_draw_pixel_with_char(0, 70, BLACK_BG, ' ');
+	
 	 }
 }
 
@@ -87,8 +87,6 @@ void receiver() {
 
 void updater() {
 	int i, j, counter = 1, direction, button_sc;
-	
-	enemys[0].is_alive = 1; 
 
 	while(1) {
 		receive();
@@ -124,6 +122,21 @@ void updater() {
   }
 }
 
+void kill_xinu(){
+	int i;
+	receive();
+	for(i=0; i < 2; i++){
+		kill(sched_arr_pid[i]);
+	} 
+	kill(bg_sound);
+	sleept(SECONDT);
+	no_sound();
+	setup_clean_screen();
+	xdone();
+	asm INT 27; // terminate xinu
+	return;
+}
+
 xmain() {
 	int i,j;
 	player = create_digger();
@@ -136,8 +149,7 @@ xmain() {
 	disp_draw_lives(player.lives);
 	disp_draw_score(player.score);
 	
-	upd_draw_digger(player);
-	upd_draw_nobbin(enemys[0].y,enemys[0].x);
+	printf("%d",enemys_alive_count());
 	
 	resume(dispid = create(displayer, INITSTK, INITPRIO, "DISPLAYER", 0));
 	resume(recvpid = create(receiver, INITSTK, INITPRIO, "RECIVEVER", 0));
@@ -146,6 +158,8 @@ xmain() {
 	resume( bg_sound = create(beethoven,INITSTK,INITPRIO,"bg_sound",0));
 	resume( sound_effects_pid = create(sound_effects,INITSTK,INITPRIO+1,"sound_effects_pid",1,bg_sound));
 	resume( score_lives_pid = create(score_lives_updater,INITSTK,INITPRIO+3,"score_lives_updating",0));
+	resume(terminate_xinu_pid = create(kill_xinu,INITSTK,INITPRIO+3,"kill_Xinu",0));
+	resume(nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
 	receiver_pid = recvpid;
 	setup_interrupts();
     schedule(2,3, dispid, 1,  uppid, 2);
