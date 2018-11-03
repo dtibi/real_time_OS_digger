@@ -62,7 +62,8 @@ void move_nobbins(){
 				player.is_alive=0;
 				break;
 			}
-				
+			
+			if(!move_is_possible(enemys[i].y,enemys[i].x,direction,enemys[i].is_hobin)) continue;
 			upd_draw_empty(enemys[i].y, enemys[i].x, 1);
 			switch (direction) {
 				case LEFT_ARROW:

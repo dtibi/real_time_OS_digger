@@ -60,6 +60,8 @@ typedef struct map {
 	int monster_become_angry_time;
 	int monster_angry_for_time;
 	int digger_reload_time;
+	int digger_speed;
+	int monster_speed;
 	} Map;
 
 extern Map gameMap;
@@ -103,6 +105,8 @@ int monster_max_count [NUMBER_OF_LEVELS] = { 8, 10, 15 };
 int become_hobin [NUMBER_OF_LEVELS] = { 90,60,60  };
 int hobin_time [NUMBER_OF_LEVELS] = { 15,20,30  };
 int digger_time [NUMBER_OF_LEVELS] = { 2,4,7};
+int digger_speed [NUMBER_OF_LEVELS] = { 1,1,5};
+int monster_speed [NUMBER_OF_LEVELS] = { 5,1,1};
 void setup_clean_screen();
 void disp_draw_map();
 void next_level();

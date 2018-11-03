@@ -699,6 +699,9 @@ void create_map(int level_id) { //char level_map[ROWS][COLUMNS], int level_id) {
 	gameMap.monster_angry_for_time = hobin_time[level_id];
 	gameMap.level_id = level_id;
 	gameMap.digger_reload_time=digger_time[level_id];
+	gameMap.digger_speed = digger_speed[level_id];
+	gameMap.monster_speed = monster_speed[level_id];
+	
 }
 
 void next_level() {
@@ -722,9 +725,7 @@ void next_level() {
 		disp_draw_lives(player.lives);
 		disp_draw_score(player.score);
 		
-		upd_draw_digger(player);
 		restore(ps);
-		sleept(5);
 		resume(nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
 	}
 	else { //the player finished all the levels- won the game! 

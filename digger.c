@@ -19,10 +19,11 @@ Digger create_digger() {
 	return player;
 }
 
-void restart_digger(Digger* player) {
-	(*player).x = 8;
-	(*player).y = 7;
-	(*player).direction = LEFT_ARROW;
+void restart_digger() {
+	player.x = 8;
+	player.y = 7;
+	player.direction = LEFT_ARROW;
+	upd_draw_digger(player);
 }
 
 void move_digger(Digger *player, int direction) {	
