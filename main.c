@@ -14,9 +14,8 @@ int gno_of_pids;
 extern SYSCALL  sleept(int);
 extern struct intmap far *sys_imp;
 
-char ch_arr[2048];
-int front = -1;
-int rear = -1;
+char ch_arr;
+int pressed = 0;
 
  
 SYSCALL schedule(int no_of_pids, int cycle_length, int pid1, ...) {
@@ -46,7 +45,7 @@ void displayer() {
 	char c;
 	for (i = 0; i < ROWS; i++) {
 		for(j = 0; j < COLUMNS; j++)
-			gameMap.level_map[i][j] = level_0[i][j];
+			gameMap.level_map[i][j] = levels[gameMap.level_id][i][j];
 	}
 	upd_draw_digger(player);
 	upd_draw_nobbin(enemys[0].y, enemys[0].x);
@@ -80,11 +79,8 @@ void receiver() {
 	char temp;
 	while(1) {
 		temp = receive();
-		disp_draw_pixel_with_char(0, 71, BLACK_BG, ' ');
-		rear++;
-		ch_arr[rear] = temp;
-		if (front == -1)
-		   front = 0;
+		pressed = 1;
+		ch_arr = temp;
 	}
 }
 
@@ -96,16 +92,15 @@ void updater() {
 
 	while(1) {
 		receive();
+		sleept(5);
 		disp_draw_pixel_with_char(0,68,GREEN_BG, ' ');
 		counter++;
 		
-		while(front != -1) {
-			button_sc = ch_arr[front];
-			if(front != rear)
-			   front++;
-			else
-				front = rear = -1;
-			
+		if(!player.is_alive) digger_death_flow();
+		if(pressed) {
+			button_sc = ch_arr;
+			pressed = 0;
+
 			if(button_sc == SPACE_BAR){
 				
 				if (player.weapon_reloaded == 1){
@@ -116,15 +111,14 @@ void updater() {
 				}
 			}
 			move_digger((Digger*)&player,button_sc);
-			if(counter%5 > 0) move_nobbins();
-			else	counter=1;
 		}
-		if(!player.is_alive) digger_death_flow();
-
-		//after buffer is empty we get here 
-		//start moving nobbins 
 		if(counter%5 > 0) move_nobbins();
 		else	counter=1;
+		
+		//after buffer is empty we get here 
+		//start moving nobbins 
+		/* if(counter%5 > 0) move_nobbins();
+		else	counter=1; */
 		
 		disp_draw_pixel_with_char(0,68,BLACK_BG, ' ');
   }
@@ -133,34 +127,28 @@ void updater() {
 xmain() {
 	int i,j;
 	player = create_digger();
-	for(i = 0; i < ENEMY_COUNT; i++)
-		enemys[i] = create_enemy((Digger*)&player);
-	enemys[0].is_alive=1;
-	//enemys[1].is_alive=1;
-	//enemys[2].is_alive=1;
+	create_enemys();
 	
 	setup_clean_screen();
-
-	for (i=0; i<ROWS; i++) {
-		for(j=0;j<COLUMNS; j++) {
-			gameMap.level_map[i][j] = level_0[i][j];
-		}
-	}
-	upd_draw_digger(player);
-	upd_draw_nobbin(enemys[0].y,enemys[0].x);
+	create_map(0);
+	
 	disp_draw_map();
 	disp_draw_lives(player.lives);
-	disp_draw_score(0);
+	disp_draw_score(player.score);
+	
+	upd_draw_digger(player);
+	upd_draw_nobbin(enemys[0].y,enemys[0].x);
 	
 	resume(dispid = create(displayer, INITSTK, INITPRIO, "DISPLAYER", 0));
 	resume(recvpid = create(receiver, INITSTK, INITPRIO, "RECIVEVER", 0));
 	resume(uppid = create(updater, INITSTK, INITPRIO, "UPDATER", 0));
 	resume(debug = create(refresh_debug_map, INITSTK, INITPRIO + 3, "debug_line",0));
-	resume( sound_effects_pid = create(sound_effects,INITSTK,INITPRIO+1,"sound_effects_pid",0));
+	resume( bg_sound = create(beethoven,INITSTK,INITPRIO,"bg_sound",0));
+	resume( sound_effects_pid = create(sound_effects,INITSTK,INITPRIO+1,"sound_effects_pid",1,bg_sound));
 	resume( score_lives_pid = create(score_lives_updater,INITSTK,INITPRIO+3,"score_lives_updating",0));
 	receiver_pid = recvpid;
 	setup_interrupts();
-    schedule(3,3, dispid, 1,  uppid, 0, dispid, 0);
+    schedule(2,3, dispid, 1,  uppid, 2);
 	
 	return (OK);
 }

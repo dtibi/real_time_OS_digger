@@ -2,6 +2,7 @@
 #define NOBIN_FILE
 #include "digger.h"
 
+#define MAX_PATH_LEN 127 //ROWS * COLUMNS - 1
 #define NOBBIN_COUNT 5
 
 typedef struct enemy {

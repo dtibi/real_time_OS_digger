@@ -15,5 +15,6 @@ void move_digger(Digger *player, int direction);
 void fire(Digger* player);
 Digger create_digger();
 void digger_death_flow();
+void restart_digger(Digger* player);
 
 #endif

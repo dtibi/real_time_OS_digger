@@ -35,7 +35,7 @@
 #define GOLD_BAG 3
 #define MOVING_GOLD_BAG 4
 #define GOLD 10
-#define GOLD_NUGGER_SCORE 50
+#define GOLD_NUGGER_SCORE 100
 #define DIRT 1
 #define DIAMOND 2
 #define DIAMOND_SCORE 250
@@ -44,11 +44,14 @@
 
 #define ENEMY_COUNT 5
 #define start_address 0xB800
+#define NUMBER_OF_LEVELS 3
 
 typedef struct map {
 	char level_map[ROWS][COLUMNS];
+	int level_id;
 	char pixel_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
 	char refresh_map[ROWS][COLUMNS];
+	int diamond_amount;
 	} Map;
 
 extern Map gameMap;
@@ -58,23 +61,39 @@ extern char* debug_str;
 
 
 //unsigned static int start_address = 0xB800; //B800h
-static char level_1[ROWS_PIXELS][COLUMNS_PIXELS];
-static char level_0[ROWS][COLUMNS] = {
-	0 , 1 , 3 , 1 , 3 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 0 , 0 ,
-    0 , 2 , 2 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 3 , 1 ,
-	0 , 2 , 2 , 1 , 1 , 2 , 3 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 1 , 1 ,
-	0 , 2 , 2 , 3 , 1 , 2 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 2 , 2 ,
-	0 , 1 , 1 , 1 , 1 , 2 , 1 , 1 , 3 , 1 , 1 , 1 , 1 , 0 , 2 , 2 ,
-	0 , 0 , 0 , 0 , 1 , 2 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 1 , 1 ,
-	2 , 1 , 1 , 0 , 0 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 1 , 2 ,
-	2 , 2 , 1 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2 
-};
-
+static char levels [NUMBER_OF_LEVELS][ROWS][COLUMNS] = {{
+	{0 , 1 , 3 , 1 , 3 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 0 , 0},
+	{0 , 2 , 2 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 3 , 1},
+	{0 , 2 , 2 , 1 , 1 , 2 , 3 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 1 , 1},
+	{0 , 2 , 2 , 3 , 1 , 2 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 2 , 2},
+	{0 , 1 , 1 , 1 , 1 , 2 , 1 , 1 , 3 , 1 , 1 , 1 , 1 , 0 , 2 , 2},
+	{0 , 0 , 0 , 0 , 1 , 2 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 1 , 1},
+	{2 , 1 , 1 , 0 , 0 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 1 , 2},
+	{2 , 2 , 1 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 2 , 2} 
+}, {
+	{0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 1 , 3 , 1 , 3 , 1 , 1 , 0 },
+	{1 , 1 , 3 , 2 , 2 , 3 , 1 , 0 , 1 , 2 , 2 , 2 , 2 , 2 , 1 , 0 },
+	{1 , 1 , 2 , 2 , 2 , 2 , 1 , 0 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 },
+	{1 , 1 , 2 , 2 , 2 , 2 , 1 , 0 , 1 , 3 , 1 , 1 , 0 , 0 , 0 , 0 },
+	{1 , 1 , 1 , 2 , 2 , 1 , 1 , 0 , 1 , 2 , 2 , 1 , 0 , 1 , 1 , 1 },
+	{1 , 1 , 1 , 3 , 3 , 1 , 1 , 0 , 2 , 2 , 2 , 2 , 0 , 2 , 2 , 2 },
+	{2 , 1 , 2 , 1 , 1 , 1 , 1 , 0 , 1 , 2 , 2 , 1 , 0 , 2 , 2 , 2 },
+	{2 , 1 , 2 , 2 , 1 , 1 , 1 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 1 , 1 } 
+}, {
+	{0 , 0 , 0 , 0 , 0 , 3 , 1 , 3 , 1 , 3 , 0 , 0 , 0 , 0 , 0 , 0},
+    {1 , 3 , 3 , 1 , 0 , 2 , 2 , 1 , 2 , 1 , 0 , 2 , 2 , 2 , 2 , 2},
+	{2 , 2 , 2 , 2 , 0 , 2 , 2 , 1 , 2 , 1 , 0 , 2 , 2 , 2 , 2 , 2},
+	{2 , 2 , 2 , 2 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 1 , 1 , 2 , 2 , 1},
+	{1 , 2 , 2 , 1 , 1 , 2 , 1 , 0 , 1 , 2 , 1 , 1 , 1 , 2 , 2 , 1},
+	{1 , 2 , 2 , 1 , 1 , 2 , 1 , 0 , 1 , 2 , 1 , 1 , 1 , 1 , 1 , 1},
+	{2 , 1 , 1 , 1 , 1 , 2 , 1 , 0 , 1 , 2 , 1 , 1 , 1 , 1 , 1 , 2},
+	{2 , 2 , 1 , 1 , 1 , 2 , 1 , 0 , 1 , 2 , 1 , 1 , 1 , 1 , 2 , 2} 
+}};
 	
 void setup_clean_screen();
 void disp_draw_map();
 
-int  get_object_in_direction(int x, int y, int direction);
+int  get_object_in_direction(int y, int x, int direction);
 void disp_draw_pixel_with_char(int row, int col, char color,char ch);
 void upd_draw_diamond(int i,int j);
 void upd_draw_dirt(int i,int j);
@@ -89,9 +108,9 @@ void score_lives_updater();
 void disp_draw_score(int score);
 void upd_draw_digger(Digger player);
 void disp_draw_cube(int i,int j);
-int  move_is_possible(int x,int y, int direction, int i_can_dig);
-void gold_falling(int x, int y);
-int  is_current_pixel_digger(int y,int x);
+int  move_is_possible(int y, int x, int direction, int i_can_dig);
+void gold_falling(int y, int x);
+int  is_current_pixel_digger(int y, int x);
 void fireball_advance(int y, int x, int direction);
 void refresh_map();
 void draw_debug_line(char* str);
