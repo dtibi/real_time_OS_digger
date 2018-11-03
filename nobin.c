@@ -50,9 +50,6 @@ void move_nobbins(){
 			direction = find_direction_to_digger(enemys[i]);
 			obj_in_direction = get_object_in_direction(enemys[i].x, enemys[i].y, direction);
 			
-			sprintf(debug_str, "diamonds = %d", count_diamonds());
-			send(debug,debug_str);
-			
 			if (obj_in_direction == DIAMOND && count_diamonds() - 1 == 0) next_level();  //all the diamonds were taken
 			
 			if(direction!=0)
@@ -93,6 +90,7 @@ void move_nobbins(){
 int find_direction_to_digger(Enemy enemy) {
 	int can_right, can_left, can_up, can_down, path_amount;
 	int len_right = MAX_PATH_LEN, len_left = MAX_PATH_LEN, len_up = MAX_PATH_LEN, len_down = MAX_PATH_LEN, min_path_index;
+	int next_move;
 	
 	can_right = move_is_possible(enemy.y, enemy.x, RIGHT_ARROW, enemy.is_hobin);
 	can_left = move_is_possible(enemy.y, enemy.x, LEFT_ARROW, enemy.is_hobin);
@@ -123,7 +121,14 @@ int find_direction_to_digger(Enemy enemy) {
 		if (can_right && enemy.direction != LEFT_ARROW) len_right = find_path_to_digger_len(enemy.x + 1, enemy.y, RIGHT_ARROW);
 		if (can_left && enemy.direction != RIGHT_ARROW) len_left = find_path_to_digger_len(enemy.x - 1, enemy.y, LEFT_ARROW);
 		
-		min_path_index = min_index(len_up, len_down, len_right, len_left);
+		if(crazy_mode) {
+			sprintf(debug_str, "FOUND CHERRY");
+			send(debug, debug_str);
+			
+			next_move =  max_index(len_up, len_down, len_right, len_left);
+		}
+		else  next_move = min_index(len_up, len_down, len_right, len_left);
+		
 		if(min_path_index == 1) return UP_ARROW;
 		if(min_path_index == 2) return DOWN_ARROW;
 		if(min_path_index == 3) return RIGHT_ARROW;
@@ -229,12 +234,22 @@ int min_index(int v1, int v2, int v3, int v4) {
 	return 0;
 }
 
+int max_index(int v1, int v2, int v3, int v4) {
+	if(v1 >= v2 && v1 >= v3 && v1 >= v4) return 1;
+	else if(v2 >= v1 && v2 >= v3 && v2 >= v4) return 2;
+	else if(v3 >= v1 && v3 >= v2 && v3 >= v4) return 3;
+	else if(v4 >= v1 && v4 >= v2 && v4 >= v3) return 4;
+	
+	return 0;
+}
+
 void create_enemys() {
 	int i;
-	for(i = 0; i < ENEMY_COUNT; i++)
+	for(i = 0; i < ENEMY_COUNT; i++) {
 		enemys[i] = create_enemy((Digger*)&player);
-	enemys[0].is_alive=1;
-	upd_draw_empty(enemys[0].y,enemys[0].x,1);
+		enemys[i].is_alive=1;
+		upd_draw_empty(enemys[i].y,enemys[i].x,1);
+	}
 }
 
 void kill_all_enemys() {

@@ -13,6 +13,8 @@
 #define HEIGHT 3 
 
 #define RED 4
+#define GREEN 2
+
 #define BLACK_BG 7
 #define BLUE_BG 16
 #define GREEN_BG 38
@@ -41,8 +43,10 @@
 #define DIGGER 99
 #define DEAD_DIGGER 100
 
-#define GOLD_NUGGER_SCORE 100
 #define DIAMOND_SCORE 250
+#define GOLD_NUGGET_SCORE 100
+#define DEAD_ENEMY_SCORE 250
+#define CHERRY_SCORE 1000
 
 #define ENEMY_COUNT 5
 #define NUMBER_OF_LEVELS 3
@@ -59,6 +63,7 @@ typedef struct map {
 extern Map gameMap;
 extern Digger player;
 extern Enemy enemys[ENEMY_COUNT];
+extern int crazy_mode;
 extern char* debug_str;
 
 

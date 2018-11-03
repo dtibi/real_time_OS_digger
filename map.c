@@ -6,9 +6,9 @@
 
 volatile Digger player;
 Map gameMap;
+int crazy_mode;
 volatile Enemy enemys[ENEMY_COUNT];
 char* debug_str;
-
 
 
 void draw_debug_line(char *str) {
@@ -332,13 +332,13 @@ void upd_draw_cherry(int i, int j) {
 	upd_draw_empty(i, j, 0);
 	
 	gameMap.pixel_map[y+1][x+1][0] = '/';
-	gameMap.pixel_map[y+1][x+1][1] = GREEN_BG;
+	gameMap.pixel_map[y+1][x+1][1] = GREEN;
 	gameMap.pixel_map[y+1][x+2][0] = '\\';
-	gameMap.pixel_map[y+1][x+2][1] = GREEN_BG;
+	gameMap.pixel_map[y+1][x+2][1] = GREEN;
 	gameMap.pixel_map[y+2][x][0] = '@';
-	gameMap.pixel_map[y+2][x][1] = RED_BG;
+	gameMap.pixel_map[y+2][x][1] = RED;
 	gameMap.pixel_map[y+2][x+3][0] = '@';
-	gameMap.pixel_map[y+2][x+3][1] = RED_BG;
+	gameMap.pixel_map[y+2][x+3][1] = RED;
 	
 	gameMap.refresh_map[i][j] = 1;
 }
@@ -756,7 +756,7 @@ void next_level() {
 }
 
 void fireball_advance(int y, int x, int direction){
-	int deltaX = 0, deltaY = 0;
+	int deltaX = 0, deltaY = 0, i;
 	
 	if(direction == LEFT_ARROW)
 		deltaX = -1;
@@ -768,13 +768,22 @@ void fireball_advance(int y, int x, int direction){
 		deltaY = 1;
 	
 	while(move_is_possible(y,x, direction, 0)){
-		
 		if(gameMap.level_map[y][x] != DIGGER)
 			upd_draw_empty(y,x,1);
 		x = x + deltaX;
 		y = y + deltaY;
 		upd_draw_fireball(y,x);
 		sleept(3);
+	}
+	
+	if(get_object_in_direction(y,x, direction) == NOBBIN || get_object_in_direction(y,x, direction) == HOBBIN){
+		for(i = 0; i < ENEMY_COUNT; i++){
+			if((enemys[i].y == y + deltaY) && (enemys[i].x == x + deltaX)){
+					upd_draw_cherry(enemys[i].y, enemys[i].x);
+					enemys[i].is_alive = 0;
+					send(score_lives_pid, DEAD_ENEMY_SCORE);
+			}
+		}
 	}
 	
 	upd_draw_empty(y,x,1);

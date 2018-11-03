@@ -14,7 +14,6 @@ Digger create_digger() {
 	player.lives = 3;
 	player.score = 0;
 	player.weapon_reloaded = 1;
-	
 	return player;
 }
 
@@ -40,6 +39,12 @@ void move_digger(Digger *player, int direction) {
 		send(score_lives_pid, DIAMOND_SCORE);
 		if(count_diamonds() - 1 == 0) next_level(); //all the diamonds were taken
 	}
+	
+	if (obj_in_direction == CHERRY) { //cherry found
+		send(score_lives_pid, CHERRY_SCORE);
+		crazy_mode = 1;
+	}
+	
 	else if (obj_in_direction == GOLD_BAG) //gold sack found
 	{
 		if(direction == UP_ARROW || direction == DOWN_ARROW) 
@@ -71,7 +76,7 @@ void move_digger(Digger *player, int direction) {
 		}
 	}
 	else if (obj_in_direction >= GOLD+2 && obj_in_direction <= GOLD+5) {//gold nugets found
-		send(score_lives_pid,(obj_in_direction-GOLD)*GOLD_NUGGER_SCORE);
+		send(score_lives_pid,(obj_in_direction-GOLD)*GOLD_NUGGET_SCORE);
 	}
 	
 	switch (direction) {
