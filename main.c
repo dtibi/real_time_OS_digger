@@ -140,7 +140,6 @@ xmain() {
 	int i,j;
 	player = create_digger();
 	create_enemys();
-	
 	setup_clean_screen();
 	create_map(0);
 	

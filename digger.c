@@ -107,9 +107,9 @@ void move_digger(Digger *player, int direction) {
 
 
 void digger_death_flow(){
-	kill(nobbin_creator_pid);
-	sleept(0);
 	kill_all_enemys();
+	//reseting enemys counter
+	gameMap.monster_max_amount = monster_max_count[gameMap.level_id];;
 	player.lives--;
 	send(score_lives_pid,-1);
 	if(player.lives <=0) {
@@ -124,5 +124,4 @@ void digger_death_flow(){
 	player.y=7;
 	player.is_alive=1;
 	create_enemys();
-	resume(nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
 }
