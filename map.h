@@ -66,6 +66,8 @@ typedef struct map {
 	int digger_reload_time;
 	int digger_speed;
 	int monster_speed;
+	int time_to_hobbin;
+	int time_of_hobbin;
 	} Map;
 
 extern Map gameMap;
