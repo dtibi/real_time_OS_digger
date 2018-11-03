@@ -118,10 +118,10 @@ int find_direction_to_digger(Enemy enemy) {
 	
 	else if(path_amount == 3 || path_amount == 4) {
 		
-		if (can_up && enemy.direction != DOWN_ARROW) len_up = find_path_to_digger_len_iterative(enemy.x, enemy.y - 1, UP_ARROW);
-		if (can_down && enemy.direction != UP_ARROW) len_down = find_path_to_digger_len_iterative(enemy.x, enemy.y + 1, DOWN_ARROW);
-		if (can_right && enemy.direction != LEFT_ARROW) len_right = find_path_to_digger_len_iterative(enemy.x + 1, enemy.y, RIGHT_ARROW);
-		if (can_left && enemy.direction != RIGHT_ARROW) len_left = find_path_to_digger_len_iterative(enemy.x - 1, enemy.y, LEFT_ARROW);
+		if (can_up && enemy.direction != DOWN_ARROW) len_up = find_path_to_digger_len(enemy.x, enemy.y - 1, UP_ARROW);
+		if (can_down && enemy.direction != UP_ARROW) len_down = find_path_to_digger_len(enemy.x, enemy.y + 1, DOWN_ARROW);
+		if (can_right && enemy.direction != LEFT_ARROW) len_right = find_path_to_digger_len(enemy.x + 1, enemy.y, RIGHT_ARROW);
+		if (can_left && enemy.direction != RIGHT_ARROW) len_left = find_path_to_digger_len(enemy.x - 1, enemy.y, LEFT_ARROW);
 		
 		min_path_index = min_index(len_up, len_down, len_right, len_left);
 		if(min_path_index == 1) return UP_ARROW;
@@ -133,7 +133,7 @@ int find_direction_to_digger(Enemy enemy) {
 	return 0;
 }
 
-int find_path_to_digger_len_iterative(int xE, int yE, int direction) {
+int find_path_to_digger_len(int xE, int yE, int direction) {
 	int can_right, can_left, can_up, can_down, path_amount;
 	int path_len = 0;
 	int rand;

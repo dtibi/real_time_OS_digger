@@ -28,23 +28,26 @@
 #define RED_ON_GREEN 36
 #define BROWN_ON_GREEN 38
 
-#define DIGGER 99
 #define EMPTY 0
-#define NOBBIN 88
-#define HOBBIN 89
-#define GOLD_BAG 3
-#define MOVING_GOLD_BAG 4
-#define GOLD 10
-#define GOLD_NUGGER_SCORE 100
 #define DIRT 1
 #define DIAMOND 2
-#define DIAMOND_SCORE 250
-#define DEAD_DIGGER 100
+#define GOLD_BAG 3
+#define MOVING_GOLD_BAG 4
+#define CHERRY 5
 #define FIREBALL 6
+#define GOLD 10
+#define NOBBIN 88
+#define HOBBIN 89
+#define DIGGER 99
+#define DEAD_DIGGER 100
+
+#define GOLD_NUGGER_SCORE 100
+#define DIAMOND_SCORE 250
 
 #define ENEMY_COUNT 5
-#define start_address 0xB800
 #define NUMBER_OF_LEVELS 3
+
+#define start_address 0xB800
 
 typedef struct map {
 	char level_map[ROWS][COLUMNS];
