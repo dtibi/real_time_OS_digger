@@ -75,7 +75,7 @@ void move_digger(Digger *player, int direction) {
 		}
 	}
 	else if (obj_in_direction >= GOLD+2 && obj_in_direction <= GOLD+5) {//gold nugets found
-		send(score_lives_pid,(obj_in_direction-GOLD)*GOLD_NUGGER_SCORE);
+		send(score_lives_pid,(obj_in_direction-GOLD)*GOLD_NUGGET_SCORE);
 	}
 	
 	switch (direction) {

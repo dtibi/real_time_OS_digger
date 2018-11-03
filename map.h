@@ -35,12 +35,15 @@
 #define GOLD_BAG 3
 #define MOVING_GOLD_BAG 4
 #define GOLD 10
-#define GOLD_NUGGER_SCORE 100
 #define DIRT 1
 #define DIAMOND 2
-#define DIAMOND_SCORE 250
 #define DEAD_DIGGER 100
 #define FIREBALL 6
+
+#define DIAMOND_SCORE 250
+#define GOLD_NUGGET_SCORE 100
+#define DEAD_ENEMY 250
+#define CHERRY_SCORE 1000
 
 #define ENEMY_COUNT 5
 #define start_address 0xB800

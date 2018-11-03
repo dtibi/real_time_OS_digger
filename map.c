@@ -738,7 +738,7 @@ void next_level() {
 }
 
 void fireball_advance(int y, int x, int direction){
-	int deltaX = 0, deltaY = 0;
+	int deltaX = 0, deltaY = 0, i;
 	
 	if(direction == LEFT_ARROW)
 		deltaX = -1;
@@ -750,13 +750,22 @@ void fireball_advance(int y, int x, int direction){
 		deltaY = 1;
 	
 	while(move_is_possible(y,x, direction, 0)){
-		
 		if(gameMap.level_map[y][x] != DIGGER)
 			upd_draw_empty(y,x,1);
 		x = x + deltaX;
 		y = y + deltaY;
 		upd_draw_fireball(y,x);
 		sleept(3);
+	}
+	
+	if(get_object_in_direction(y,x, direction) == NOBBIN || get_object_in_direction(y,x, direction) == HOBBIN){
+		for(i = 0; i < ENEMY_COUNT; i++){
+			if((enemys[i].y == y + deltaY) && (enemys[i].x == x + deltaX)){
+					enemys[i].is_alive = 0;
+					send(score_lives_pid, DEAD_ENEMY);
+					upd_draw_empty(y + deltaY, x + deltaX,1);
+			}
+		}
 	}
 	
 	upd_draw_empty(y,x,1);
