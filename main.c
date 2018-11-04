@@ -115,6 +115,7 @@ void digger_updater() {
 			if(button_sc == SPACE_BAR){
 				if ((time_from_start - player.last_time_shot) / SECONDT >= gameMap.digger_reload_time){
 					player.last_time_shot = time_from_start;
+					send(sound_effects_pid,4);
 					resume(create(fireball_advance, INITSTK, INITPRIO+1, "weapon_fired", 3 ,player.y ,player.x ,player.direction));
 					continue;
 				}
@@ -143,8 +144,7 @@ xmain() {
 	resume(recvpid = create(receiver, INITSTK, INITPRIO+3, "RECIVEVER", 0));
 	resume(dig_uppid = create(digger_updater, INITSTK, INITPRIO, "digger_UPDATER", 0));
 	resume(debug = create(refresh_debug_map, INITSTK, INITPRIO + 3, "debug_line",0));
-	resume( bg_sound = create(beethoven,INITSTK,INITPRIO,"bg_sound",0));
-	resume( sound_effects_pid = create(sound_effects,INITSTK,INITPRIO+1,"sound_effects_pid",1,bg_sound));
+	resume( sound_effects_pid = create(sound_effects,INITSTK,INITPRIO+1,"sound_effects_pid",0));
 	resume( score_lives_pid = create(score_lives_updater,INITSTK,INITPRIO+3,"score_lives_updating",0));
 	resume( terminate_xinu_pid = create(kill_xinu,INITSTK,INITPRIO+3,"kill_Xinu",1,(int*)&sched_arr_pid));
 	resume( nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));

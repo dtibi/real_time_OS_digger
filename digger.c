@@ -41,11 +41,13 @@ void move_digger( int direction) {
 
 	if (obj_in_direction == DIAMOND) { //diamond found
 		send(score_lives_pid, DIAMOND_SCORE);
+		send(sound_effects_pid,2);
 		if(count_diamonds() - 1 == 0) next_level(); //all the diamonds were taken
 	}
 	
 	if (obj_in_direction == CHERRY) { //cherry found
 		send(score_lives_pid, CHERRY_SCORE);
+		send(sound_effects_pid,3);
 		crazy_mode = 1;
 	}
 	
@@ -65,6 +67,7 @@ void move_digger( int direction) {
 					upd_draw_empty(enemys[i].y, enemys[i].x, 1);
 					send(score_lives_pid, DEAD_ENEMY_SCORE);
 					kill_enemy(i);
+					send(sound_effects_pid,1);
 					if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
 			}
 		}
