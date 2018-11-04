@@ -262,8 +262,6 @@ void beethoven(){
 }
 
 void play_death(){
-	kill(bg_sound);
-	no_sound();
 	//1
 	sound(C4);
 	my_delay(3,1);
@@ -319,16 +317,70 @@ void play_death(){
 	my_delay(2,1);
 	no_sound();
 	my_delay(1,1);
-	resume( bg_sound = create(beethoven,INITSTK,INITPRIO,"bg_sound",0));
 }
 
-void sound_effects(int bg_sound){
+void enemy_killed_sound(){
+	
+	sound(B4);
+	my_delay(2,0);
+	sound(G4);
+	my_delay(2,0);
+	sound(B4);
+	my_delay(2,0);
+	no_sound();
+	my_delay(1,0);
+	
+}
+
+void fire_sound(){
+	
+	sound(C4S);
+	my_delay(2,0);
+	sound(D4S);
+	my_delay(2,0);
+	sound(F4S);
+	my_delay(2,0);
+	no_sound();
+	my_delay(1,0);
+	
+}
+
+void diamond_taken_sound(){
+	
+	sound(F4);
+	my_delay(2,0);
+	sound(D4);
+	my_delay(2,0);
+	no_sound();
+	my_delay(1,0);
+	
+}
+
+void cherry_taken_sound(){
+	
+	sound(D4);
+	my_delay(2,0);
+	no_sound();
+	my_delay(1,0);
+	sound(D4);
+	my_delay(2,0);
+	sound(A4);
+	my_delay(3,0);
+	no_sound();
+	my_delay(1,0);
+	
+}
+
+void sound_effects(){
 	int sound_id;
 	while(1){
 		sound_id = -1;
 		sound_id = receive();
 		
-		if(sound_id==0) play_death(bg_sound);
-		
+		if(sound_id==0) play_death();
+		else if(sound_id==1) enemy_killed_sound();
+		else if(sound_id==2) diamond_taken_sound();
+		else if(sound_id==3) cherry_taken_sound();
+		else if(sound_id==4) fire_sound();
 	}
 }

@@ -27,6 +27,13 @@ void my_delay(int n,int type);
 void change_speaker(int status);
 void sound(int hertz);
 void no_sound(void);
+void sound_effects(void);
+
+void play_death(void);
+void enemy_killed_sound(void);
+void fire_sound(void);
+void diamond_taken_sound(void);
+void cherry_taken_sound(void);
 
 void beethoven(void);
 

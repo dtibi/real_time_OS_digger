@@ -473,10 +473,6 @@ void restart_game() {
 	send(terminate_xinu_pid);
 }
 
-/* void draw_fire_ball(FireBall fb) {
-	
-} */
-
 int move_is_possible(int y, int x, int direction, int i_can_dig) {
 	int obj_in_direction = get_object_in_direction(y,x, direction);
 	if((direction == UP_ARROW    && y - 1 < 0	  	 ) ||
@@ -776,6 +772,7 @@ void fireball_advance(int y, int x, int direction){
 		deltaY = 1;
 	
 	while(move_is_possible(y,x, direction, 0)){
+		
 		if(gameMap.level_map[y][x] != DIGGER)
 			upd_draw_empty(y,x,1);
 		x = x + deltaX;
@@ -787,15 +784,17 @@ void fireball_advance(int y, int x, int direction){
 	if(get_object_in_direction(y,x, direction) == NOBBIN || get_object_in_direction(y,x, direction) == HOBBIN){
 		for(i = 0; i < ENEMY_COUNT; i++){
 			if((enemys[i].y == y + deltaY) && (enemys[i].x == x + deltaX)){
-					upd_draw_cherry(enemys[i].y, enemys[i].x);
 					enemys[i].is_alive = 0;
 					send(score_lives_pid, DEAD_ENEMY_SCORE);
+					send(sound_effects_pid,1);
+					upd_draw_empty(y + deltaY, x + deltaX,1);
+					upd_draw_cherry(enemys[i].y, enemys[i].x);
 					if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
 			}
 		}
 	}
-	
-	upd_draw_empty(y,x,1);
+	if(gameMap.level_map[y][x] != DIGGER)
+		upd_draw_empty(y,x,1);
 }
 
 void refresh_debug_map(){
