@@ -64,6 +64,7 @@ void move_digger(Digger *player, int direction) {
 					enemys[i].is_alive = 0;
 					upd_draw_empty(enemys[i].y, enemys[i].x, 1);
 					send(score_lives_pid, DEAD_ENEMY_SCORE);
+					if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
 			}
 		}
 	}

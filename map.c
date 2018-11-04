@@ -683,6 +683,8 @@ void gold_falling(int i,int j){
 					if(enemys[i].x==x && enemys[i].y==y+1){
 						enemys[i].is_alive=0;
 						upd_draw_empty(y+1,x,1);
+						send(score_lives_pid, DEAD_ENEMY_SCORE);
+						if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
 						break;
 					}
 			}
@@ -788,6 +790,7 @@ void fireball_advance(int y, int x, int direction){
 					upd_draw_cherry(enemys[i].y, enemys[i].x);
 					enemys[i].is_alive = 0;
 					send(score_lives_pid, DEAD_ENEMY_SCORE);
+					if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
 			}
 		}
 	}

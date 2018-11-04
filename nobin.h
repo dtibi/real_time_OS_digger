@@ -14,6 +14,8 @@ typedef struct enemy {
 	int is_hobin;
 } Enemy;
 
+extern int all_enemys_created;
+
 void move_enemies();
 void kill_all_enemys();
 void create_enemys();

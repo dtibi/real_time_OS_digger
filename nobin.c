@@ -3,6 +3,8 @@
 #include "map.h"
 #include "myints.h"
 
+int all_enemys_created = 0;
+
 Enemy create_enemy() { 
 	Enemy enemy;
 	
@@ -258,6 +260,7 @@ int max_index(int v1, int v2, int v3, int v4) {
 void nobbin_creator(){
 	int i,lowest_dead_nobbin=-1,n;
 
+	all_enemys_created = 0;
 	while(gameMap.monster_max_amount>0) {
 		disp_draw_pixel_with_char(0, 69, BABY_BG, ' ');
 		n = enemys_alive_count();
@@ -272,8 +275,7 @@ void nobbin_creator(){
 		disp_draw_pixel_with_char(0, 69, BLACK_BG, ' ');
 		sleept(SECONDT*5);
 	}
-	next_level();
-	
+	all_enemys_created = 1;
 }
 
 int get_lowest_dead_nobbin() {
@@ -305,4 +307,12 @@ void create_enemys() {
 		enemys[i] = create_enemy();
 		upd_draw_empty(enemys[i].y, enemys[i].x, 1);
 	}
+}
+
+int number_of_live_enemys() {
+	int i, ret = 0;
+	for(i = 0; i < ENEMY_COUNT; i++) {
+		if (enemys[i].is_alive == 1) ret++;
+	}
+	return ret;
 }

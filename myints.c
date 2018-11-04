@@ -15,7 +15,7 @@ INTPROC (*Int8Save) (int);
 
 INTPROC MyISR9(int mdevno)
 {	
-	int scan = mdevno,ascii,result;
+	int scan = mdevno, ascii, result;
 	disp_draw_pixel_with_char(0,71,RED_BG, ' ');
 	asm {
 	  PUSH AX
