@@ -2,20 +2,16 @@
 #include "map.h"
 #include "sound.h"
 
-
-volatile unsigned long count,delay_timer=0;
-int uppid, dispid, recvpid, debug,gold_falling_pid,sound_effects_pid,score_lives_pid,bg_sound,terminate_xinu_pid,nobbin_creator_pid;
-int receiver_pid;
-
+int dig_uppid,mon_uppid, dispid, recvpid, debug,gold_falling_pid,sound_effects_pid,score_lives_pid,bg_sound,terminate_xinu_pid,nobbin_creator_pid,receiver_pid;
+long time_from_start=0;
+int num_of_pids,pressed_flag=0,pressed=0;
 
 
 INTPROC (*Int9Save)(int);
 INTPROC (*Int8Save) (int);
 
-
-INTPROC MyISR9(int mdevno)
-{	
-	int scan = mdevno, ascii, result;
+INTPROC MyISR9(int mdevno) {	
+	char scan=0,ascii=0,result=mdevno;
 	disp_draw_pixel_with_char(0,71,RED_BG, ' ');
 	asm {
 	  PUSH AX
@@ -36,56 +32,44 @@ INTPROC MyISR9(int mdevno)
 	else if (scan == SPACE_BAR) result = SPACE_BAR;
 	else if (scan == 46) {
 		send(terminate_xinu_pid);
+		return(OK);
 	}
-	else result = 0;
+	else result = -1;
 	
-	
-	if(result!=0)send(receiver_pid, result); 
 	//if(scan==3)send(sound_effects_pid,0);
 	Skip1:
+	if(pressed_flag==1 && scan==0) result=0;
+	if (scan==0) pressed_flag=1;
+	else pressed_flag=0; 
+	if(result!=-1) send(receiver_pid, result); 
 	disp_draw_pixel_with_char(0,71,BLACK_BG, ' ');
 	return (OK);
 
 } // new_int9
 
 
-/* INTPROC MyISR8(int mdevno)
-{
+INTPROC MyISR8(int mdevno) {
     Int8Save(mdevno);
-	count++;
+	time_from_start++;
 	
-	//if (count>=delay_timer) send(bg_sound_pid);
-	
-	if(count%((TIME_TIK*7)/10)==0)send(digger_move_pid,TIME_TIK);
-	if(count%TIME_TIK==0){send(move_enemys_pid,TIME_TIK);send(gold_falling_pid);}
-	if(count>=delay_timer){
-		delay_timer=count+LETCH;
-		send(sound_effects_pid);
-	}
-	
-	if (count>=LETCH){
-		count=0;
-		delay_timer=0;
-	}
-	//sprintf(debug_str,"count= %6d   delay_timer=%d",count,delay_timer);
-	//send(debug,debug_str);
 	return(OK);
 } // newint8(void)
- */
+
 void restore_ints(){
 	int i;
 	for(i=0; i < 32; i++){
 		if (sys_imp[i].ivec == 9){
 			sys_imp[i].newisr = Int9Save;
-			return;
+		}
+		if (sys_imp[i].ivec == 8){
+			sys_imp[i].newisr = Int8Save;
 		}
 	}
 }
 
 void setup_interrupts(){
-	//setup latch to LETCH assuming a second is worth ?? interrupts8
 	int i;
-	/* asm {
+	asm {
 	  CLI
 	  PUSH AX
 	  MOV AL,036h
@@ -96,16 +80,32 @@ void setup_interrupts(){
 	  OUT 40h,AL 
 	  POP AX
 	  STI
-	} // asm */
-	
+	} // asm
 	for(i=0; i < 32; i++){
 		if (sys_imp[i].ivec == 9){
 			Int9Save = sys_imp[i].newisr;
 			sys_imp[i].newisr = MyISR9;
-			return;
+		}
+		if (sys_imp[i].ivec == 8){
+			Int8Save = sys_imp[i].newisr;
+			sys_imp[i].newisr = MyISR8;
 		}
 	}
-	
-	
-
 }
+
+
+void kill_xinu(int* sched_arr_pid ){
+	int i;
+	receive();
+	for(i=0; i < num_of_pids; i++){
+		kill(sched_arr_pid[i]);
+	} 
+	kill(bg_sound);
+	sleept(SECONDT);
+	no_sound();
+	setup_clean_screen();
+	xdone();
+	asm INT 27; // terminate xinu
+	return;
+}
+
