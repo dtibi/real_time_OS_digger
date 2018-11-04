@@ -679,16 +679,14 @@ void gold_falling(int i,int j){
 				obj = get_object_in_direction(y,x,DOWN_ARROW);
 				continue;
 			} else if (obj==NOBBIN || obj==HOBBIN) {
-				disable(ps);
 				for(i=0;i<ENEMY_COUNT;i++)
 					if(enemys[i].x==x && enemys[i].y==y+1){
 						upd_draw_empty(y+1,x,1);
 						send(score_lives_pid, DEAD_ENEMY_SCORE);
 						kill_enemy(i);
-						if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
+						if(number_of_live_enemys() == 0 && all_enemys_created) disp_next_level();
 						break;
 					}
-				restore(ps);
 			}
 			counter++;
 			sleept(0);
@@ -734,12 +732,17 @@ void create_map(int level_id) { //char level_map[ROWS][COLUMNS], int level_id) {
 	
 }
 
-void next_level() {
+void disp_next_level() {
+	int ps;
+
 	gameMap.level_id++;
 	
 	if(gameMap.level_id < NUMBER_OF_LEVELS) {
 		crazy_mode=0;
-		if (all_enemys_created==0)kill(nobbin_creator_pid);
+		if (all_enemys_created==0){
+			if(kill(nobbin_creator_pid)==SYSERR) printf("could not kill nobbin_creator!!!");
+			ready(nobbin_creator_pid);
+		}
 		kill_all_enemys();
 		
 		restart_digger((Digger*)(&player));
@@ -791,10 +794,8 @@ void fireball_advance(int y, int x, int direction){
 					send(sound_effects_pid,1);
 					upd_draw_empty(y + deltaY, x + deltaX,1);
 					upd_draw_cherry(enemys[i].y, enemys[i].x);
-					disable(ps);
 					kill_enemy(i);
-					if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
-					restore(ps);
+					if(number_of_live_enemys() == 0 && all_enemys_created) disp_next_level();
 					break;
 			}
 		}

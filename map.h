@@ -118,7 +118,7 @@ float digger_speed [NUMBER_OF_LEVELS] = { 0.0,0.0,0.2};
 float monster_speed [NUMBER_OF_LEVELS] = { 1.0,0.6,0.6};
 void setup_clean_screen();
 void disp_draw_map();
-void next_level();
+void disp_next_level();
 void create_map(int level_id);
 
 int  get_object_in_direction(int y, int x, int direction);

@@ -17,7 +17,8 @@ Enemy create_enemy(int i) {
 	enemy.last_time_hobin=time_from_start;
 	sprintf(pname,"nobbin_%d",i);
 	resume(enemys_pid[i] = create(move_nobbin,INITSTK,INITPRIO,pname,1,i));
-	enemys_proccess_is_alive[i]=1;
+	if (enemys_pid[i]==SYSERR) printf("could not create %s",pname);
+	else enemys_proccess_is_alive[i]=1;
 	restore(ps);
 	return enemy;
 }
@@ -26,9 +27,7 @@ void move_nobbin(int i){
 	int  direction, obj_in_direction,ps;
 	while(1) {
 		sleept((int)((SECONDT/FACTOR)+(SECONDT/FACTOR)*gameMap.monster_speed));
-		disable(ps);
 		if (enemys_proccess_is_alive[i]==0) return;
-		restore(ps);
 		disp_draw_pixel_with_char(0,50+i,RED_BG, ' ');
 		if (!enemys[i].is_hobin) {
 			if((time_from_start-enemys[i].last_time_hobin)/SECONDT >= gameMap.monster_become_angry_time) {
@@ -47,9 +46,7 @@ void move_nobbin(int i){
 		if(direction!=0) enemys[i].direction=direction;
 		if(!move_is_possible(enemys[i].y,enemys[i].x,direction,enemys[i].is_hobin)) continue;
 		obj_in_direction = get_object_in_direction(enemys[i].x, enemys[i].y, direction);
-		disable(ps);
-		if (obj_in_direction == DIAMOND && count_diamonds() - 1 == 0) next_level();  //all the diamonds were taken
-		restore(ps);
+		if (obj_in_direction == DIAMOND && count_diamonds() - 1 == 0) disp_next_level();  //all the diamonds were taken
 		upd_draw_empty(enemys[i].y, enemys[i].x, 1);
 		if (gameMap.level_map[enemys[i].y][enemys[i].x]==DIGGER && !crazy_mode) {
 			player.is_alive=0;
@@ -240,9 +237,7 @@ void nobbin_creator(){
 	all_enemys_created = 0;
 	while(gameMap.monster_max_amount>0) {
 		disp_draw_pixel_with_char(0, 69, BABY_BG, ' ');
-		disable(ps);
 		n = number_of_live_enemys();
-		restore(ps);
 		if (n<gameMap.monster_start_amount){
 			lowest_dead_nobbin = get_lowest_dead_nobbin();
 			if(lowest_dead_nobbin>=0) {
@@ -266,14 +261,16 @@ int get_lowest_dead_nobbin() {
 }
 
 void kill_enemy(int i){
-	SYSCALL kill_status;
-	
-	kill_status = kill(enemys_pid[i]);
-	if (kill_status==SYSERR) {
-		printf("could not kill pid:%d",enemys_pid[i]);
+	int ps;
+	SYSCALL kill_status = OK;
+	disable(ps);
+	if(enemys_proccess_is_alive[i]==1){
+		kill_status = kill(enemys_pid[i]);
+		if (kill_status==SYSERR) printf("could not kill pid:%d",enemys_pid[i]);
+		ready(enemys_pid[i]);
+		enemys_proccess_is_alive[i]=0;
 	}
-	ready(enemys_pid[i]);
-	enemys_proccess_is_alive[i]=0;
+	restore(ps);
 }
 
 void kill_all_enemys() {

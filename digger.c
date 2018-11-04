@@ -42,9 +42,7 @@ void move_digger( int direction) {
 	if (obj_in_direction == DIAMOND) { //diamond found
 		send(score_lives_pid, DIAMOND_SCORE);
 		send(sound_effects_pid,2);
-		disable(ps);
-		if(count_diamonds() - 1 == 0) next_level(); //all the diamonds were taken
-		restore(ps);
+		if(count_diamonds() - 1 == 0) disp_next_level(); //all the diamonds were taken
 	}
 	
 	if (obj_in_direction == CHERRY) { //cherry found
@@ -54,7 +52,6 @@ void move_digger( int direction) {
 	}
 	
 	if((obj_in_direction == HOBBIN || obj_in_direction == NOBBIN) && crazy_mode) {
-		
 		if(direction == LEFT_ARROW)
 			deltaX = -1;
 		else if(direction == UP_ARROW)
@@ -63,19 +60,16 @@ void move_digger( int direction) {
 			deltaX = 1;
 		else
 			deltaY = 1;
-		disable(ps);
 		for(i = 0; i < ENEMY_COUNT; i++){
 			if((enemys[i].y == player.y + deltaY) && (enemys[i].x == player.x + deltaX)) {
 					upd_draw_empty(enemys[i].y, enemys[i].x, 1);
 					send(score_lives_pid, DEAD_ENEMY_SCORE);
 					kill_enemy(i);
 					send(sound_effects_pid,1);
-					if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
+					if(number_of_live_enemys() == 0 && all_enemys_created) disp_next_level();
 			}
 		}
-		restore(ps);
 	}
-	
 	else if (obj_in_direction == GOLD_BAG) //gold sack found
 	{
 		if(direction == UP_ARROW || direction == DOWN_ARROW) 
@@ -145,8 +139,6 @@ void move_digger( int direction) {
 }
 
 void digger_death_flow(){
-	int ps;
-	disable(ps);
 	kill_all_enemys();
 	//reseting enemys counter
 	gameMap.monster_max_amount = monster_max_count[gameMap.level_id];;
@@ -163,5 +155,4 @@ void digger_death_flow(){
 	player.x=8;
 	player.y=7;
 	player.is_alive=1;
-	restore(ps);
 }
