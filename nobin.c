@@ -2,24 +2,28 @@
 #include "nobin.h"
 #include "map.h"
 #include "myints.h"
+int all_enemys_created = 0;
+
 
 Enemy create_enemy(int i) { 
+	int ps;
 	Enemy enemy;
 	char* pname;
-	
+	disable(ps);
 	enemy.x = 14;
 	enemy.y = 0;
 	enemy.direction = LEFT_ARROW;
-	enemy.is_alive = 0;
 	enemy.is_hobin = 0;
 	enemy.last_time_hobin=time_from_start;
 	sprintf(pname,"nobbin_move_%d",i);
 	resume(enemys_pid[i] = create(move_nobbin,INITSTK,INITPRIO-1,pname,1,i));
+	enemys_proccess_is_alive[i]=1;
+	restore(ps);
 	return enemy;
 }
 				
 void move_nobbin(int i){
-	int  direction, obj_in_direction;
+	int  direction, obj_in_direction,ps;
 	while(1) {
 		sleept((int)((SECONDT/FACTOR)+(SECONDT/FACTOR)*gameMap.monster_speed));
 		disp_draw_pixel_with_char(0,50+i,RED_BG, ' ');
@@ -28,6 +32,7 @@ void move_nobbin(int i){
 				enemys[i].is_hobin=1;
 				enemys[i].last_time_hobin=time_from_start;
 			}
+
 		} else {
 			if((time_from_start-enemys[i].last_time_hobin)/SECONDT >= gameMap.monster_angry_for_time) {
 				enemys[i].is_hobin=0;
@@ -35,37 +40,36 @@ void move_nobbin(int i){
 			}
 		}
 		direction = find_direction_to_digger(enemys[i]);
-		obj_in_direction = get_object_in_direction(enemys[i].x, enemys[i].y, direction);
-		
-	//			sprintf(debug_str, "diamonds = %d", count_diamonds());
-	//			send(debug,debug_str);
-		if (obj_in_direction == DIAMOND && count_diamonds() - 1 == 0) next_level();  //all the diamonds were taken
 		
 		if(direction!=0) enemys[i].direction=direction;
-		
+		if(!move_is_possible(enemys[i].y,enemys[i].x,direction,enemys[i].is_hobin)) continue;
+		obj_in_direction = get_object_in_direction(enemys[i].x, enemys[i].y, direction);
+		disable(ps);
+		if (obj_in_direction == DIAMOND && count_diamonds() - 1 == 0) next_level();  //all the diamonds were taken
+		restore(ps);
 		upd_draw_empty(enemys[i].y, enemys[i].x, 1);
 		if (gameMap.level_map[enemys[i].y][enemys[i].x]==DIGGER && !crazy_mode) player.is_alive=0;
 		if (gameMap.level_map[enemys[i].y][enemys[i].x]==DIGGER && crazy_mode) {
-			enemys[i].is_alive = 0;
 			send(score_lives_pid, DEAD_ENEMY_SCORE);
+			disable(ps);
+			if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
+			restore(ps);
 			upd_draw_digger(player);
-			continue;
+			return;//kill myself
 		}
 		
 		if (get_object_in_direction(enemys[i].y, enemys[i].x,direction)==DIGGER) {
 			if(crazy_mode) {
-				enemys[i].is_alive = 0;
 				send(score_lives_pid, DEAD_ENEMY_SCORE);
+				disable(ps);
+				if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
+				restore(ps);
 				upd_draw_digger(player);
-				continue;
+				return;//kill myself
 			}
-			else {
-				player.is_alive=0;
-				break;
-			}
+			else player.is_alive=0;
 		}
 		
-		if(!move_is_possible(enemys[i].y,enemys[i].x,direction,enemys[i].is_hobin)) continue;
 		upd_draw_empty(enemys[i].y, enemys[i].x, 1);
 		switch (direction) {
 			case LEFT_ARROW:
@@ -81,8 +85,6 @@ void move_nobbin(int i){
 				enemys[i].y--;
 				break;
 		}
-		
-		if(direction!=0) enemys[i].direction=direction;
 		
 		if(enemys[i].is_hobin) upd_draw_hobbin(enemys[i].y,enemys[i].x,enemys[i].direction);
 		else upd_draw_nobbin(enemys[i].y,enemys[i].x);
@@ -247,39 +249,32 @@ int max_index(int v1, int v2, int v3, int v4) {
 void nobbin_creator(){
 	int i,lowest_dead_nobbin=-1,n,ps;
 
+	all_enemys_created = 0;
 	while(gameMap.monster_max_amount>0) {
 		disp_draw_pixel_with_char(0, 69, BABY_BG, ' ');
-		n = enemys_alive_count();
+		n = number_of_live_enemys();
 		if (n<gameMap.monster_start_amount){
 			lowest_dead_nobbin = get_lowest_dead_nobbin();
 			if(lowest_dead_nobbin>=0) {
 				disable(ps);
 				enemys[lowest_dead_nobbin] = create_enemy(lowest_dead_nobbin);
-				enemys[lowest_dead_nobbin].is_alive = 1;
 				gameMap.monster_max_amount--;
-				
 				restore(ps);
 			}
 		}
 		disp_draw_pixel_with_char(0, 69, BLACK_BG, ' ');
 		sleept(SECONDT*5);
 	}
-	next_level();
-	
+	all_enemys_created = 1;
 }
 
 int get_lowest_dead_nobbin() {
-	int i;
+	int i,ps;
+	disable(ps);
 	for(i=0;i<ENEMY_COUNT;i++)
-		if (!enemys[i].is_alive) return i;
+		if (!enemys_proccess_is_alive[i]) return i;
+	restore(ps);
 	return -1;
-}
-
-int enemys_alive_count(){
-	int i,counter=0;
-	for(i=0;i<ENEMY_COUNT;i++)
-		if (enemys[i].is_alive) counter++;
-	return counter;
 }
 
 
@@ -288,12 +283,20 @@ void kill_all_enemys() {
 	disable(ps);
 	for(i = 0; i < ENEMY_COUNT; i++){
 		if(enemys_proccess_is_alive[i]==1) {
-			enemys[i].is_alive=0;
 			upd_draw_empty(enemys[i].y,enemys[i].x,1);
 			kill(enemys_pid[i]);
-			enemys_proccess_is_alive[i]=0;
+			enemys_proccess_is_alive[i]=0;	
 		}
-			
 	}
 	restore(ps);
+}
+
+int number_of_live_enemys() {
+	int i, ret = 0,ps;
+	disable(ps);
+	for(i = 0; i < ENEMY_COUNT; i++) {
+		if (enemys_proccess_is_alive[i] == 1) ret++;
+	}
+	restore(ps);
+	return ret;
 }

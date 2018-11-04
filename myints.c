@@ -10,7 +10,6 @@ int num_of_pids,pressed_flag=0,pressed=0;
 INTPROC (*Int9Save)(int);
 INTPROC (*Int8Save) (int);
 
-
 INTPROC MyISR9(int mdevno) {	
 	char scan=0,ascii=0,result=mdevno;
 	disp_draw_pixel_with_char(0,71,RED_BG, ' ');

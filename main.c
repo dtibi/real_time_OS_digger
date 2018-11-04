@@ -69,6 +69,7 @@ void displayer() {
 				disp_draw_pixel_with_char(row_2_pixel(i)+(HEIGHT/2),column_2_pixel(j)+(WIDTH/2),BLACK_BG,c);
 			}
 		}  */
+
 		
 		disp_draw_pixel_with_char(0, 70, BLACK_BG, ' ');
 	
@@ -106,7 +107,7 @@ void digger_updater() {
 					continue;
 				}
 			} else {
-				move_digger((Digger*)&player,button_sc);
+				move_digger(button_sc);
 			}
 		}
 		
@@ -124,8 +125,6 @@ xmain() {
 	disp_draw_map();
 	disp_draw_lives(player.lives);
 	disp_draw_score(player.score);
-	
-	printf("%d",enemys_alive_count());
 	
 	resume(dispid = create(displayer, INITSTK, INITPRIO, "DISPLAYER", 0));
 	resume(recvpid = create(receiver, INITSTK, INITPRIO+3, "RECIVEVER", 0));

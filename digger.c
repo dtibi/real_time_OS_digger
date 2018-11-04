@@ -25,13 +25,13 @@ void restart_digger() {
 	upd_draw_digger(player);
 }
 
-void move_digger(Digger *player, int direction) {	
-	int x = (*player).x, y = (*player).y, p_direction = (*player).direction,obj_in_direction, gold_pid,ps;
+void move_digger( int direction) {	
+	int x = player.x, y = player.y, p_direction = player.direction,obj_in_direction, gold_pid,ps;
 	int deltaX=0, deltaY=0, i;
 	sleept((int)((SECONDT/FACTOR)+(SECONDT/FACTOR)*gameMap.digger_speed));
 	if(direction != p_direction) { //check if the wanted move direction is diffrent from the current
-		(*player).direction = direction;
-		upd_draw_digger(*player);
+		player.direction = direction;
+		upd_draw_digger(player);
 	}
 	obj_in_direction = get_object_in_direction(y, x, direction);
 	
@@ -61,12 +61,12 @@ void move_digger(Digger *player, int direction) {
 			deltaY = 1;
 		disable(ps);
 		for(i = 0; i < ENEMY_COUNT; i++){
-			if((enemys[i].y == (*player).y + deltaY) && (enemys[i].x == (*player).x + deltaX)){
-					enemys[i].is_alive = 0;
+			if((enemys[i].y == player.y + deltaY) && (enemys[i].x == player.x + deltaX)) {
 					upd_draw_empty(enemys[i].y, enemys[i].x, 1);
 					send(score_lives_pid, DEAD_ENEMY_SCORE);
 					kill(enemys_pid[i]);
 					enemys_proccess_is_alive[i]=0;
+					if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
 			}
 		}
 		restore(ps);
@@ -108,20 +108,20 @@ void move_digger(Digger *player, int direction) {
 	
 	switch (direction) {
 		case LEFT_ARROW:
-				(*player).x --;
+				player.x --;
 			break;
 		case RIGHT_ARROW:
-				(*player).x ++;
+				player.x ++;
 			break;
 		case DOWN_ARROW:
-				(*player).y ++;
+				player.y ++;
 			break;
 		case UP_ARROW:
-				(*player).y --;
+				player.y --;
 			break;
 	}
 	
-	if(x != (*player).x || y != (*player).y) {
+	if(x != player.x || y != player.y) {
 		upd_draw_empty(y,x,1);
 		if(get_object_in_direction(y,x,UP_ARROW)==GOLD_BAG) {
 			//upd_draw_dirt(y-1,x);
@@ -130,10 +130,10 @@ void move_digger(Digger *player, int direction) {
 		}
 	}
 	
-	x = (*player).x;
-	y = (*player).y;
+	x = player.x;
+	y = player.y;
 	
-	upd_draw_digger(*player);
+	upd_draw_digger(player);
 }
 
 

@@ -664,7 +664,7 @@ void shake_bag(int y, int x,int pid_to_fall){
 }
 
 void gold_falling(int i,int j){
-	int x,y,counter,obj,gold_chunks;		
+	int x,y,counter,obj,gold_chunks,ps;		
 	y=i;
 	x=j;
 	obj = get_object_in_direction(y,x,DOWN_ARROW);
@@ -682,12 +682,17 @@ void gold_falling(int i,int j){
 				obj = get_object_in_direction(y,x,DOWN_ARROW);
 				continue;
 			} else if (obj==NOBBIN || obj==HOBBIN) {
+				disable(ps);
 				for(i=0;i<ENEMY_COUNT;i++)
 					if(enemys[i].x==x && enemys[i].y==y+1){
-						enemys[i].is_alive=0;
 						upd_draw_empty(y+1,x,1);
+						send(score_lives_pid, DEAD_ENEMY_SCORE);
+						kill(enemys_pid[i]);
+						enemys_proccess_is_alive[i]=0;
+						if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
 						break;
 					}
+				restore(ps);
 			}
 			counter++;
 			sleept(0);
@@ -738,9 +743,8 @@ void next_level() {
 	gameMap.level_id++;
 	
 	if(gameMap.level_id < NUMBER_OF_LEVELS) {
-		
-		disable(ps);
 		crazy_mode=0;
+		if (all_enemys_created==0)kill(nobbin_creator_pid);
 		kill_all_enemys();
 		
 		restart_digger((Digger*)(&player));
@@ -752,7 +756,6 @@ void next_level() {
 		disp_draw_lives(player.lives);
 		disp_draw_score(player.score);
 		
-		restore(ps);
 		resume(nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
 	}
 	else { //the player finished all the levels- won the game! 
@@ -789,11 +792,12 @@ void fireball_advance(int y, int x, int direction){
 			if((enemys[i].y == y + deltaY) && (enemys[i].x == x + deltaX)){
 					disable(ps);
 					upd_draw_cherry(enemys[i].y, enemys[i].x);
-					enemys[i].is_alive = 0;
 					send(score_lives_pid, DEAD_ENEMY_SCORE);
 					kill(enemys_pid[i]);
 					enemys_proccess_is_alive[i]=0;
+					if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
 					restore(ps);
+					break;
 			}
 		}
 	}

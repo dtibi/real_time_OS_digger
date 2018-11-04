@@ -11,7 +11,7 @@ typedef struct digger {
 	long last_time_shot;
 	} Digger;
 
-void move_digger(Digger *player, int direction);
+void move_digger(int direction);
 void fire(Digger* player);
 Digger create_digger();
 void digger_death_flow();
