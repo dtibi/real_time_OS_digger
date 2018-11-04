@@ -26,8 +26,9 @@ void restart_digger() {
 }
 
 void move_digger(Digger *player, int direction) {	
-	int x = (*player).x, y = (*player).y, p_direction = (*player).direction,obj_in_direction, gold_pid;
+	int x = (*player).x, y = (*player).y, p_direction = (*player).direction,obj_in_direction, gold_pid,ps;
 	int deltaX=0, deltaY=0, i;
+	sleept((int)((SECONDT/FACTOR)+(SECONDT/FACTOR)*gameMap.digger_speed));
 	if(direction != p_direction) { //check if the wanted move direction is diffrent from the current
 		(*player).direction = direction;
 		upd_draw_digger(*player);
@@ -58,14 +59,17 @@ void move_digger(Digger *player, int direction) {
 			deltaX = 1;
 		else
 			deltaY = 1;
-		
+		disable(ps);
 		for(i = 0; i < ENEMY_COUNT; i++){
 			if((enemys[i].y == (*player).y + deltaY) && (enemys[i].x == (*player).x + deltaX)){
 					enemys[i].is_alive = 0;
 					upd_draw_empty(enemys[i].y, enemys[i].x, 1);
 					send(score_lives_pid, DEAD_ENEMY_SCORE);
+					kill(enemys_pid[i]);
+					enemys_proccess_is_alive[i]=0;
 			}
 		}
+		restore(ps);
 	}
 	
 	else if (obj_in_direction == GOLD_BAG) //gold sack found
@@ -134,6 +138,8 @@ void move_digger(Digger *player, int direction) {
 
 
 void digger_death_flow(){
+	int ps;
+	disable(ps);
 	kill_all_enemys();
 	//reseting enemys counter
 	gameMap.monster_max_amount = monster_max_count[gameMap.level_id];;
@@ -150,5 +156,5 @@ void digger_death_flow(){
 	player.x=8;
 	player.y=7;
 	player.is_alive=1;
-	create_enemys();
+	restore(ps);
 }

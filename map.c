@@ -9,6 +9,9 @@ Map gameMap;
 int crazy_mode;
 volatile Enemy enemys[ENEMY_COUNT];
 char* debug_str;
+int enemys_pid[ENEMY_COUNT];
+int enemys_int[ENEMY_COUNT];
+int enemys_proccess_is_alive[ENEMY_COUNT];
 
 
 void draw_debug_line(char *str) {
@@ -146,7 +149,7 @@ void upd_draw_bag_moving(int i,int j,int direction){
 			}
 			gameMap.refresh_map[i][j] = 1;
 			gameMap.refresh_map[i+1][j] = 1;
-			sleept(2);
+			sleept(SECONDT/10);
 			row_pixel++;
 		}
 	} 
@@ -411,7 +414,7 @@ void upd_draw_grave(int y, int x){
 	gameMap.pixel_map[row_pixel+2][column_pixel+1][1] = GRAY_BG;
 	gameMap.pixel_map[row_pixel+2][column_pixel+2][1] = GRAY_BG;
 	gameMap.refresh_map[player.y][player.x] = 1;
-	sleept(8);
+	sleept(SECONDT/2);
 	
 	gameMap.pixel_map[row_pixel+1][column_pixel+3][0] = ' ';
 	gameMap.pixel_map[row_pixel+1][column_pixel+1][0] = ' ';
@@ -432,7 +435,7 @@ void upd_draw_grave(int y, int x){
 	gameMap.pixel_map[row_pixel+2][column_pixel][0] = ' ';
 	gameMap.pixel_map[row_pixel+2][column_pixel][1] = GRAY_BG;
 	gameMap.refresh_map[player.y][player.x] = 1;
-	sleept(8);
+	sleept(SECONDT/2);
 	
 	gameMap.pixel_map[row_pixel][column_pixel+3][0] = ' ';
 	gameMap.pixel_map[row_pixel][column_pixel+1][0] = ' ';
@@ -464,7 +467,7 @@ void upd_draw_grave(int y, int x){
 	gameMap.pixel_map[row_pixel+2][column_pixel][0] = ' ';
 	gameMap.pixel_map[row_pixel+2][column_pixel][1] = GRAY_BG;
 	gameMap.refresh_map[player.y][player.x] = 1;
-	sleept(26);
+	sleept(SECONDT*2);
 	
 	gameMap.level_map[player.y][player.x] = EMPTY;
 }
@@ -653,7 +656,7 @@ void shake_bag(int y, int x,int pid_to_fall){
 		gameMap.pixel_map[row_pixel + 1][column_pixel + 2][1] = GRAY_BG;
 		gameMap.pixel_map[row_pixel + 1][column_pixel + 3][1] = GRAY_ON_BROWN;
 		gameMap.refresh_map[y][x] = 1;
-		sleept(2);
+		sleept(SECONDT/10);
 	}	
 	gameMap.refresh_map[y][x] = 1;
 	resume(pid_to_fall);
@@ -673,7 +676,7 @@ void gold_falling(int i,int j){
 			if(obj==DIGGER){
 				player.is_alive=0;
 				upd_draw_empty(y, x,1);
-				sleept(10);
+				sleept(SECONDT/2);
 				y+=2;
 				counter+=2;
 				obj = get_object_in_direction(y,x,DOWN_ARROW);
@@ -687,14 +690,14 @@ void gold_falling(int i,int j){
 					}
 			}
 			counter++;
-			sleep(0);
+			sleept(0);
 			upd_draw_bag_moving(y, x,DOWN_ARROW);
 			upd_draw_empty(y, x,1);
 			y++;
 			obj = get_object_in_direction(y,x,DOWN_ARROW);
 		}
 		if(counter>1){
-			gold_chunks=tod%4+2;
+			gold_chunks=time_from_start%4+2;
 			upd_draw_open_bag(y,x,gold_chunks);
 		}
 		else upd_draw_bag(y,x);
@@ -737,11 +740,10 @@ void next_level() {
 	if(gameMap.level_id < NUMBER_OF_LEVELS) {
 		
 		disable(ps);
-		
+		crazy_mode=0;
 		kill_all_enemys();
 		
 		restart_digger((Digger*)(&player));
-		create_enemys();
 		
 		setup_clean_screen();
 		create_map(gameMap.level_id);
@@ -756,13 +758,13 @@ void next_level() {
 	else { //the player finished all the levels- won the game! 
 		//sprintf(debug_str, "You WON with score of %d!", player.score);
 		//send(debug, debug_str);
-		sleept(25);
+		sleept(SECONDT*2);
 		send(terminate_xinu_pid);
 	}
 }
 
 void fireball_advance(int y, int x, int direction){
-	int deltaX = 0, deltaY = 0, i;
+	int deltaX = 0, deltaY = 0, i,ps;
 	
 	if(direction == LEFT_ARROW)
 		deltaX = -1;
@@ -779,15 +781,19 @@ void fireball_advance(int y, int x, int direction){
 		x = x + deltaX;
 		y = y + deltaY;
 		upd_draw_fireball(y,x);
-		sleept(3);
+		sleept(SECONDT/9);
 	}
 	
 	if(get_object_in_direction(y,x, direction) == NOBBIN || get_object_in_direction(y,x, direction) == HOBBIN){
 		for(i = 0; i < ENEMY_COUNT; i++){
 			if((enemys[i].y == y + deltaY) && (enemys[i].x == x + deltaX)){
+					disable(ps);
 					upd_draw_cherry(enemys[i].y, enemys[i].x);
 					enemys[i].is_alive = 0;
 					send(score_lives_pid, DEAD_ENEMY_SCORE);
+					kill(enemys_pid[i]);
+					enemys_proccess_is_alive[i]=0;
+					restore(ps);
 			}
 		}
 	}

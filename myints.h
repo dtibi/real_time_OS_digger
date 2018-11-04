@@ -15,18 +15,17 @@
 #define SPACE_BAR 57
 
 
-//speed of sound delays
-#define LONG_DELAY 5
-#define SHORT_DELAY 1
+#define SECONDT 90
+#define LETCH 9700
+#define FACTOR 2
 
-#define SECONDT 18
-
-extern volatile unsigned long count,delay_timer;
-extern int uppid, dispid, recvpid, debug,sound_effects_pid,score_lives_pid,bg_sound,terminate_xinu_pid,nobbin_creator_pid;
-extern int receiver_pid;
+extern int num_of_pids,dig_uppid,mon_uppid, dispid, recvpid, debug,sound_effects_pid,score_lives_pid,bg_sound,terminate_xinu_pid,nobbin_creator_pid,receiver_pid;
+extern long time_from_start;
+extern int num_of_pids,pressed_flag,pressed;
 
 void setup_interrupts();
 void restore_ints();
+void kill_xinu();
 extern INTPROC (*Int9Save)(int);
 extern INTPROC (*Int8Save) (int);
 INTPROC MyISR9(int mdevno);

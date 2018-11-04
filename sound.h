@@ -3,8 +3,9 @@
 #define ON (1)
 #define OFF (0)
 
-#define SHORT 10
-#define LONG 30
+//speed of sound delays
+#define LONG_DELAY 30
+#define SHORT_DELAY 5
 
 #define BB4 247
 #define C4 	262

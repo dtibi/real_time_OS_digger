@@ -15,12 +15,12 @@ typedef struct enemy {
 	long last_time_hobin;
 } Enemy;
 
+void move_nobbin(int i);
 void move_enemies();
 void kill_all_enemys();
-void create_enemys();
 int find_direction_to_digger(Enemy enemy);
 int find_path_to_digger_len(int xE, int yE, int direction);
-Enemy create_enemy();
+Enemy create_enemy(int i);
 void nobbin_creator();
 
 #endif
