@@ -26,7 +26,7 @@ void restart_digger() {
 }
 
 void move_digger(Digger *player, int direction) {	
-	int x = (*player).x, y = (*player).y, p_direction = (*player).direction,obj_in_direction, gold_pid;
+	int x = (*player).x, y = (*player).y, p_direction = (*player).direction, obj_in_direction, gold_pid;
 	int deltaX=0, deltaY=0, i;
 	if(direction != p_direction) { //check if the wanted move direction is diffrent from the current
 		(*player).direction = direction;
@@ -60,7 +60,7 @@ void move_digger(Digger *player, int direction) {
 			deltaY = 1;
 		
 		for(i = 0; i < ENEMY_COUNT; i++){
-			if((enemys[i].y == (*player).y + deltaY) && (enemys[i].x == (*player).x + deltaX)){
+			if((enemys[i].y == (*player).y + deltaY) && (enemys[i].x == (*player).x + deltaX)) {
 					enemys[i].is_alive = 0;
 					upd_draw_empty(enemys[i].y, enemys[i].x, 1);
 					send(score_lives_pid, DEAD_ENEMY_SCORE);
