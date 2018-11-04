@@ -42,7 +42,9 @@ void move_digger( int direction) {
 	if (obj_in_direction == DIAMOND) { //diamond found
 		send(score_lives_pid, DIAMOND_SCORE);
 		send(sound_effects_pid,2);
+		disable(ps);
 		if(count_diamonds() - 1 == 0) next_level(); //all the diamonds were taken
+		restore(ps);
 	}
 	
 	if (obj_in_direction == CHERRY) { //cherry found

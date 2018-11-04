@@ -735,8 +735,6 @@ void create_map(int level_id) { //char level_map[ROWS][COLUMNS], int level_id) {
 }
 
 void next_level() {
-	int ps;
-	
 	gameMap.level_id++;
 	
 	if(gameMap.level_id < NUMBER_OF_LEVELS) {

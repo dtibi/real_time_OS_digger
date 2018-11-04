@@ -102,7 +102,7 @@ void receiver() {
 }
 
 
-void digger_updater() {
+void updater() {
 	int i, j, direction, button_sc;
 	while(1) {
 		receive();
@@ -142,7 +142,7 @@ xmain() {
 	
 	resume(dispid = create(displayer, INITSTK, INITPRIO, "DISPLAYER", 0));
 	resume(recvpid = create(receiver, INITSTK, INITPRIO+3, "RECIVEVER", 0));
-	resume(dig_uppid = create(digger_updater, INITSTK, INITPRIO, "digger_UPDATER", 0));
+	resume(dig_uppid = create(updater, INITSTK, INITPRIO, "UPDATER", 0));
 	resume(debug = create(refresh_debug_map, INITSTK, INITPRIO + 3, "debug_line",0));
 	resume( sound_effects_pid = create(sound_effects,INITSTK,INITPRIO+1,"sound_effects_pid",0));
 	resume( score_lives_pid = create(score_lives_updater,INITSTK,INITPRIO+3,"score_lives_updating",0));

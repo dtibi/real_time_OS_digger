@@ -26,6 +26,9 @@ void move_nobbin(int i){
 	int  direction, obj_in_direction,ps;
 	while(1) {
 		sleept((int)((SECONDT/FACTOR)+(SECONDT/FACTOR)*gameMap.monster_speed));
+		disable(ps);
+		if (enemys_proccess_is_alive[i]==0) return;
+		restore(ps);
 		disp_draw_pixel_with_char(0,50+i,RED_BG, ' ');
 		if (!enemys[i].is_hobin) {
 			if((time_from_start-enemys[i].last_time_hobin)/SECONDT >= gameMap.monster_become_angry_time) {
@@ -49,18 +52,10 @@ void move_nobbin(int i){
 		restore(ps);
 		upd_draw_empty(enemys[i].y, enemys[i].x, 1);
 		if (gameMap.level_map[enemys[i].y][enemys[i].x]==DIGGER && !crazy_mode) {
-			disable(ps);
 			player.is_alive=0;
-			enemys_proccess_is_alive[i]=0;
-			restore(ps);
-			return;
 		}
 		if (get_object_in_direction(enemys[i].y, enemys[i].x,direction)==DIGGER && !crazy_mode)	{
-			disable(ps);
 			player.is_alive=0;
-			enemys_proccess_is_alive[i]=0;
-			restore(ps);
-			return;
 		}
 		
 		upd_draw_empty(enemys[i].y, enemys[i].x, 1);
@@ -245,14 +240,14 @@ void nobbin_creator(){
 	all_enemys_created = 0;
 	while(gameMap.monster_max_amount>0) {
 		disp_draw_pixel_with_char(0, 69, BABY_BG, ' ');
+		disable(ps);
 		n = number_of_live_enemys();
+		restore(ps);
 		if (n<gameMap.monster_start_amount){
 			lowest_dead_nobbin = get_lowest_dead_nobbin();
 			if(lowest_dead_nobbin>=0) {
-				disable(ps);
 				enemys[lowest_dead_nobbin] = create_enemy(lowest_dead_nobbin);
 				gameMap.monster_max_amount--;
-				restore(ps);
 			}
 		}
 		disp_draw_pixel_with_char(0, 69, BLACK_BG, ' ');
@@ -271,21 +266,24 @@ int get_lowest_dead_nobbin() {
 }
 
 void kill_enemy(int i){
-	kill(enemys_pid[i]);
-	wakeup(enemys_pid[i]);
+	SYSCALL kill_status;
+	
+	kill_status = kill(enemys_pid[i]);
+	if (kill_status==SYSERR) {
+		printf("could not kill pid:%d",enemys_pid[i]);
+	}
+	ready(enemys_pid[i]);
 	enemys_proccess_is_alive[i]=0;
 }
 
 void kill_all_enemys() {
 	int i,ps;
-	disable(ps);
 	for(i = 0; i < ENEMY_COUNT; i++){
 		if(enemys_proccess_is_alive[i]==1) {
 			upd_draw_empty(enemys[i].y,enemys[i].x,1);
 			kill_enemy(i);	
 		}
 	}
-	restore(ps);
 }
 
 int number_of_live_enemys() {
