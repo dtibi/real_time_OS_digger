@@ -616,6 +616,25 @@ void disp_draw_map(){
 	return;
 }
 
+void upd_draw_map(){
+	int i,j;
+	for (i=0; i<ROWS; i++) {
+		//printf("i:%d-",i);
+		for(j=0;j<COLUMNS; j++) {
+			//printf("j:%d",j);
+			gameMap.refresh_map[i][j]=0;
+			if 		(gameMap.level_map[i][j]==DIRT) upd_draw_dirt(i,j);
+			else if (gameMap.level_map[i][j]==DIAMOND) upd_draw_diamond(i,j);
+			else if (gameMap.level_map[i][j]==GOLD_BAG) {upd_draw_dirt(i,j);upd_draw_bag(i,j);}
+			else if (gameMap.level_map[i][j]==EMPTY) {upd_draw_empty(i,j,1);} 
+			//else if (gameMap.level_map[i][j]==DIGGER) {upd_draw_digger(player);} 
+			else if (gameMap.level_map[i][j]==NOBBIN) {upd_draw_digger(player);} 
+		}
+		//printf("|\n");
+	}
+	return;
+}
+
 void disp_draw_cube(int i,int j){
 	int row_pixel = row_2_pixel(i), column_pixel = column_2_pixel(j), k, l;
 	for (k=row_pixel;k<row_pixel+HEIGHT && k<ROWS_PIXELS;k++){
@@ -740,26 +759,25 @@ void disp_next_level() {
 	if(gameMap.level_id < NUMBER_OF_LEVELS) {
 		crazy_mode=0;
 		if (all_enemys_created==0){
+			disable(ps);
 			if(kill(nobbin_creator_pid)==SYSERR) printf("could not kill nobbin_creator!!!");
-			ready(nobbin_creator_pid);
+			if(proctab[nobbin_creator_pid].pstate==PRSLEEP) ready(nobbin_creator_pid);
+			restore(ps);
 		}
 		kill_all_enemys();
 		
 		restart_digger((Digger*)(&player));
-		
+		disable(ps);
 		setup_clean_screen();
 		create_map(gameMap.level_id);
-		
-		disp_draw_map();
-		disp_draw_lives(player.lives);
-		disp_draw_score(player.score);
-		
+		upd_draw_map();
+		restore(ps);
 		resume(nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
 	}
 	else { //the player finished all the levels- won the game! 
-		//sprintf(debug_str, "You WON with score of %d!", player.score);
-		//send(debug, debug_str);
-		sleept(SECONDT*2);
+		setup_clean_screen();
+		printf(debug_str, "You WON with score of %d!", player.score);
+		sleept(SECONDT*3);
 		send(terminate_xinu_pid);
 	}
 }

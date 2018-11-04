@@ -20,7 +20,7 @@
 #define LETCH 9700
 #define FACTOR 2
 
-extern int num_of_pids,dig_uppid,mon_uppid, dispid, recvpid, debug,sound_effects_pid,score_lives_pid,bg_sound,terminate_xinu_pid,nobbin_creator_pid,receiver_pid;
+extern int num_of_pids,dig_uppid,mon_uppid, dispid, recvpid, debug,sound_effects_pid,score_lives_pid,terminate_xinu_pid,nobbin_creator_pid,receiver_pid;
 extern long time_from_start;
 extern int num_of_pids,pressed_flag,pressed;
 

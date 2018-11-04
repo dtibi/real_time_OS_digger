@@ -267,7 +267,7 @@ void kill_enemy(int i){
 	if(enemys_proccess_is_alive[i]==1){
 		kill_status = kill(enemys_pid[i]);
 		if (kill_status==SYSERR) printf("could not kill pid:%d",enemys_pid[i]);
-		ready(enemys_pid[i]);
+		if(proctab[enemys_pid[i]].pstate==PRSLEEP) ready(enemys_pid[i]);
 		enemys_proccess_is_alive[i]=0;
 	}
 	restore(ps);

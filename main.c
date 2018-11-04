@@ -152,7 +152,6 @@ xmain() {
 		recvpid == SYSERR ||
 		dig_uppid == SYSERR ||
 		debug == SYSERR ||
-		bg_sound == SYSERR ||
 		sound_effects_pid == SYSERR ||
 		score_lives_pid == SYSERR ||
 		terminate_xinu_pid == SYSERR ||

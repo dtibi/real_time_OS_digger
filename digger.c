@@ -139,9 +139,16 @@ void move_digger( int direction) {
 }
 
 void digger_death_flow(){
+	int ps;
+	if (all_enemys_created==0){
+		disable(ps);
+		if(kill(nobbin_creator_pid)==SYSERR) printf("could not kill nobbin_creator!!!");
+		if(proctab[nobbin_creator_pid].pstate==PRSLEEP) ready(nobbin_creator_pid);
+		restore(ps);
+	}
 	kill_all_enemys();
-	//reseting enemys counter
 	gameMap.monster_max_amount = monster_max_count[gameMap.level_id];;
+	resume(nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
 	player.lives--;
 	send(score_lives_pid,-1);
 	if(player.lives <=0) {
@@ -150,7 +157,7 @@ void digger_death_flow(){
 	}
 	send(sound_effects_pid,0);
 	upd_draw_grave(player.y,player.x);
-	sleept(15);
+	sleept(SECONDT);
 	upd_draw_empty(player.y,player.x,1);
 	player.x=8;
 	player.y=7;

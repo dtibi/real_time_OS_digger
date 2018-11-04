@@ -2,7 +2,7 @@
 #include "map.h"
 #include "sound.h"
 
-int dig_uppid,mon_uppid, dispid, recvpid, debug,gold_falling_pid,sound_effects_pid,score_lives_pid,bg_sound,terminate_xinu_pid,nobbin_creator_pid,receiver_pid;
+int dig_uppid,mon_uppid, dispid, recvpid, debug,gold_falling_pid,sound_effects_pid,score_lives_pid,terminate_xinu_pid,nobbin_creator_pid,receiver_pid;
 long time_from_start=0;
 int num_of_pids,pressed_flag=0,pressed=0;
 
@@ -102,7 +102,6 @@ void kill_xinu(int* sched_arr_pid ){
 	for(i=0; i < num_of_pids; i++){
 		kill(sched_arr_pid[i]);
 	} 
-	kill(bg_sound);
 	sleept(SECONDT);
 	no_sound();
 	setup_clean_screen();
