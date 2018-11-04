@@ -22,6 +22,7 @@ void kill_all_enemys();
 int find_direction_to_digger(Enemy enemy);
 int find_path_to_digger_len(int xE, int yE, int direction);
 Enemy create_enemy(int i);
+void kill_enemy(int i);
 void nobbin_creator();
 int number_of_live_enemys();
 

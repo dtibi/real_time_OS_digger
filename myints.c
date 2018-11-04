@@ -6,7 +6,6 @@ int dig_uppid,mon_uppid, dispid, recvpid, debug,gold_falling_pid,sound_effects_p
 long time_from_start=0;
 int num_of_pids,pressed_flag=0,pressed=0;
 
-
 INTPROC (*Int9Save)(int);
 INTPROC (*Int8Save) (int);
 
@@ -36,7 +35,10 @@ INTPROC MyISR9(int mdevno) {
 	}
 	else result = -1;
 	
-	//if(scan==3)send(sound_effects_pid,0);
+	if(scan==3){
+		setup_clean_screen();
+		send(butlerpid, MSGPSNAP);
+	}
 	Skip1:
 	if(pressed_flag==1 && scan==0) result=0;
 	if (scan==0) pressed_flag=1;

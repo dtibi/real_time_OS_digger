@@ -494,10 +494,7 @@ int move_is_possible(int y, int x, int direction, int i_can_dig) {
 		return 1;
 	
 	else{
-		if		(direction==UP_ARROW    && obj_in_direction==EMPTY) return 1;
-		else if (direction==DOWN_ARROW  && obj_in_direction==EMPTY) return 1;
-		else if (direction==RIGHT_ARROW && obj_in_direction==EMPTY) return 1;
-		else if (direction==LEFT_ARROW  && obj_in_direction==EMPTY) return 1;
+		if	(obj_in_direction==EMPTY || obj_in_direction==CHERRY || (obj_in_direction >= GOLD+2 && obj_in_direction <= GOLD+5)) return 1;
 	}
 	
 	return 0;
@@ -552,6 +549,7 @@ void score_lives_updater(){
 	int input;
 	while(1){
 		input = receive();
+		continue;
 		if(input==-1){
 			disp_draw_lives(player.lives);
 		} else {
@@ -636,6 +634,7 @@ void disp_draw_cube(int i,int j){
 void shake_bag(int y, int x,int pid_to_fall){
 	int row_pixel = row_2_pixel(y), column_pixel,j = column_2_pixel(x),p, next=-1;
 	int index[4];
+	disp_draw_pixel_with_char(0,j+2,BLUE_BG,'$');
 	gameMap.level_map[y][x] = MOVING_GOLD_BAG;
 	index[0] = j-1; index[1] =  j ; index[2] = j+1 ; index[3] =  j;
 	for (p=0;p<4*3;p++){
@@ -660,11 +659,13 @@ void shake_bag(int y, int x,int pid_to_fall){
 	}	
 	gameMap.refresh_map[y][x] = 1;
 	resume(pid_to_fall);
+	disp_draw_pixel_with_char(0,j+2,GRAY_BG,' ');
 	
 }
 
 void gold_falling(int i,int j){
-	int x,y,counter,obj,gold_chunks,ps;		
+	int x,y,counter,obj,gold_chunks,ps;	
+	disp_draw_pixel_with_char(0,column_2_pixel(j)+2,GRAY_BG,'$');
 	y=i;
 	x=j;
 	obj = get_object_in_direction(y,x,DOWN_ARROW);
@@ -687,8 +688,7 @@ void gold_falling(int i,int j){
 					if(enemys[i].x==x && enemys[i].y==y+1){
 						upd_draw_empty(y+1,x,1);
 						send(score_lives_pid, DEAD_ENEMY_SCORE);
-						kill(enemys_pid[i]);
-						enemys_proccess_is_alive[i]=0;
+						kill_enemy(i);
 						if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
 						break;
 					}
@@ -707,6 +707,7 @@ void gold_falling(int i,int j){
 		}
 		else upd_draw_bag(y,x);
 	}
+	disp_draw_pixel_with_char(0,column_2_pixel(j)+2,BLACK_BG,' ');
 }
 
 int count_diamonds() {
@@ -793,8 +794,7 @@ void fireball_advance(int y, int x, int direction){
 					disable(ps);
 					upd_draw_cherry(enemys[i].y, enemys[i].x);
 					send(score_lives_pid, DEAD_ENEMY_SCORE);
-					kill(enemys_pid[i]);
-					enemys_proccess_is_alive[i]=0;
+					kill_enemy(i);
 					if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
 					restore(ps);
 					break;
@@ -804,6 +804,7 @@ void fireball_advance(int y, int x, int direction){
 	
 	upd_draw_empty(y,x,1);
 }
+
 
 void refresh_debug_map(){
 	while(1){

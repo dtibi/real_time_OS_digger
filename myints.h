@@ -7,6 +7,7 @@
 #include <io.h>
 #include <sleep.h>
 #include <proc.h>
+#include <butler.h>
 
 #define LEFT_ARROW 75
 #define RIGHT_ARROW 77

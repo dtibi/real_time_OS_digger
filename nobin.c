@@ -15,8 +15,8 @@ Enemy create_enemy(int i) {
 	enemy.direction = LEFT_ARROW;
 	enemy.is_hobin = 0;
 	enemy.last_time_hobin=time_from_start;
-	sprintf(pname,"nobbin_move_%d",i);
-	resume(enemys_pid[i] = create(move_nobbin,INITSTK,INITPRIO-1,pname,1,i));
+	sprintf(pname,"nobbin_%d",i);
+	resume(enemys_pid[i] = create(move_nobbin,INITSTK,INITPRIO,pname,1,i));
 	enemys_proccess_is_alive[i]=1;
 	restore(ps);
 	return enemy;
@@ -48,26 +48,19 @@ void move_nobbin(int i){
 		if (obj_in_direction == DIAMOND && count_diamonds() - 1 == 0) next_level();  //all the diamonds were taken
 		restore(ps);
 		upd_draw_empty(enemys[i].y, enemys[i].x, 1);
-		if (gameMap.level_map[enemys[i].y][enemys[i].x]==DIGGER && !crazy_mode) player.is_alive=0;
-		if (gameMap.level_map[enemys[i].y][enemys[i].x]==DIGGER && crazy_mode) {
-			send(score_lives_pid, DEAD_ENEMY_SCORE);
+		if (gameMap.level_map[enemys[i].y][enemys[i].x]==DIGGER && !crazy_mode) {
 			disable(ps);
-			if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
+			player.is_alive=0;
+			enemys_proccess_is_alive[i]=0;
 			restore(ps);
-			upd_draw_digger(player);
-			return;//kill myself
+			return;
 		}
-		
-		if (get_object_in_direction(enemys[i].y, enemys[i].x,direction)==DIGGER) {
-			if(crazy_mode) {
-				send(score_lives_pid, DEAD_ENEMY_SCORE);
-				disable(ps);
-				if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
-				restore(ps);
-				upd_draw_digger(player);
-				return;//kill myself
-			}
-			else player.is_alive=0;
+		if (get_object_in_direction(enemys[i].y, enemys[i].x,direction)==DIGGER && !crazy_mode)	{
+			disable(ps);
+			player.is_alive=0;
+			enemys_proccess_is_alive[i]=0;
+			restore(ps);
+			return;
 		}
 		
 		upd_draw_empty(enemys[i].y, enemys[i].x, 1);
@@ -277,6 +270,11 @@ int get_lowest_dead_nobbin() {
 	return -1;
 }
 
+void kill_enemy(int i){
+	kill(enemys_pid[i]);
+	wakeup(enemys_pid[i]);
+	enemys_proccess_is_alive[i]=0;
+}
 
 void kill_all_enemys() {
 	int i,ps;
@@ -284,8 +282,7 @@ void kill_all_enemys() {
 	for(i = 0; i < ENEMY_COUNT; i++){
 		if(enemys_proccess_is_alive[i]==1) {
 			upd_draw_empty(enemys[i].y,enemys[i].x,1);
-			kill(enemys_pid[i]);
-			enemys_proccess_is_alive[i]=0;	
+			kill_enemy(i);	
 		}
 	}
 	restore(ps);

@@ -61,9 +61,9 @@ typedef struct map {
 	int diamond_amount;
 	int monster_start_amount;
 	int monster_max_amount;
-	int monster_become_angry_time;
-	int monster_angry_for_time;
-	int digger_reload_time;
+	long monster_become_angry_time;
+	long monster_angry_for_time;
+	long digger_reload_time;
 	int digger_speed;
 	int monster_speed;
 	float time_to_hobbin;

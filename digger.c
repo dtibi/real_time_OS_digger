@@ -64,8 +64,7 @@ void move_digger( int direction) {
 			if((enemys[i].y == player.y + deltaY) && (enemys[i].x == player.x + deltaX)) {
 					upd_draw_empty(enemys[i].y, enemys[i].x, 1);
 					send(score_lives_pid, DEAD_ENEMY_SCORE);
-					kill(enemys_pid[i]);
-					enemys_proccess_is_alive[i]=0;
+					kill_enemy(i);
 					if(number_of_live_enemys() == 0 && all_enemys_created) next_level();
 			}
 		}
@@ -84,7 +83,8 @@ void move_digger( int direction) {
 			if(move_is_possible(y,x + 2, DOWN_ARROW, 0)) {//check if there is no dirt under
 				upd_draw_empty(y, x+1,1);
 				gameMap.level_map[y][x+2]=MOVING_GOLD_BAG;//this is done to prevent digger from pushing the bag any more
-				resume(create(gold_falling, INITSTK, INITPRIO+1, "gold_falling", 2,y,x+2));
+				resume(gold_pid=create(gold_falling, INITSTK, INITPRIO+1, "g_fall_r", 2,y,x+2));
+				if (gold_pid==SYSERR) printf("ERROR! while creating g_fall_l");
 			}
 		}
 		
@@ -95,7 +95,8 @@ void move_digger( int direction) {
 			if(move_is_possible(y,x - 2, DOWN_ARROW, 0)) { //check if there is no dirt under
 				upd_draw_empty(y, x-1, 1);
 				gameMap.level_map[y][x-2]=MOVING_GOLD_BAG;//this is done to prevent digger from pushing the bag any more
-				resume(create(gold_falling, INITSTK, INITPRIO+1, "gold_falling", 2,y,x-2));
+				resume(gold_pid = create(gold_falling, INITSTK, INITPRIO+1, "g_fall_l", 2,y,x-2));
+				if (gold_pid==SYSERR) printf("ERROR! while creating g_fall_l");
 			}
 		} 
 		else {
@@ -124,9 +125,11 @@ void move_digger( int direction) {
 	if(x != player.x || y != player.y) {
 		upd_draw_empty(y,x,1);
 		if(get_object_in_direction(y,x,UP_ARROW)==GOLD_BAG) {
-			//upd_draw_dirt(y-1,x);
-			gold_pid = create(gold_falling, INITSTK, INITPRIO+1, "gold_falling", 2,y-1,x);
-			resume(create(shake_bag,INITSTK,INITPRIO+1,"gold_shaking",3,y-1,x,gold_pid));
+			upd_draw_dirt(y-1,x);
+			gold_pid = create(gold_falling, INITSTK, INITPRIO+1, "g_fall_d", 2,y-1,x);
+			if (gold_pid==SYSERR) printf("ERROR! while creating g_fall_d");
+			resume(gold_pid = create(shake_bag,INITSTK,INITPRIO+1,"gold_shaking",3,y-1,x,gold_pid));
+			if (gold_pid==SYSERR) printf("ERROR! while creating shake_bag");
 		}
 	}
 	
@@ -135,7 +138,6 @@ void move_digger( int direction) {
 	
 	upd_draw_digger(player);
 }
-
 
 void digger_death_flow(){
 	int ps;
