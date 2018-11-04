@@ -146,7 +146,7 @@ void upd_draw_bag_moving(int i,int j,int direction){
 			}
 			gameMap.refresh_map[i][j] = 1;
 			gameMap.refresh_map[i+1][j] = 1;
-			sleept(5);
+			sleept(2);
 			row_pixel++;
 		}
 	} 

@@ -12,6 +12,7 @@ typedef struct enemy {
 	char direction; 
 	char is_alive;
 	int is_hobin;
+	long last_time_hobin;
 } Enemy;
 
 extern int all_enemys_created;

@@ -13,7 +13,7 @@ Enemy create_enemy() {
 	enemy.direction = LEFT_ARROW;
 	enemy.is_alive = 0;
 	enemy.is_hobin = 0;
-	
+	enemy.last_time_hobin=tod;
 	return enemy;
 }
 
@@ -48,6 +48,17 @@ void move_nobbins(){
 	int i, direction, obj_in_direction;
 	for(i=0; i<ENEMY_COUNT; i++) {
 		if(enemys[i].is_alive == 1) {
+			if (!enemys[i].is_hobin) {
+				if((tod-enemys[i].last_time_hobin)/SECONDT >= gameMap.monster_become_angry_time) {
+					enemys[i].is_hobin=1;
+					enemys[i].last_time_hobin=tod;
+				}
+			} else {
+				if((tod-enemys[i].last_time_hobin)/SECONDT >= gameMap.monster_angry_for_time) {
+					enemys[i].is_hobin=0;
+					enemys[i].last_time_hobin=tod;
+				}
+			}
 			direction = find_direction_to_digger(enemys[i]);
 			obj_in_direction = get_object_in_direction(enemys[i].x, enemys[i].y, direction);
 			
