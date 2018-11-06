@@ -73,7 +73,8 @@ void move_nobbin(int i){
 int find_direction_to_digger(Enemy enemy) {
 	int can_right, can_left, can_up, can_down, path_amount;
 	int len_right = MAX_PATH_LEN, len_left = MAX_PATH_LEN, len_up = MAX_PATH_LEN, len_down = MAX_PATH_LEN, min_path_index;
-	int next_move;
+	int next_move = 0;
+	int diff_x, diff_y, abs_diff_x, abs_diff_y;
 	
 	can_right = move_is_possible(enemy.y, enemy.x, RIGHT_ARROW, enemy.is_hobin);
 	can_left = move_is_possible(enemy.y, enemy.x, LEFT_ARROW, enemy.is_hobin);
@@ -84,6 +85,43 @@ int find_direction_to_digger(Enemy enemy) {
 	if(is_digger_next_to_me(enemy.y, enemy.x) && !crazy_mode) {
 		player.is_alive = 0;
 		return is_digger_next_to_me(enemy.y, enemy.x);
+	}
+	
+	if (enemy.is_hobin) {
+		diff_x = enemy.x - player.x;
+		diff_y = enemy.y - player.y;
+		
+		abs_diff_x = diff_x;
+		abs_diff_y = diff_y;
+		
+		
+		if(diff_x < 0) abs_diff_x = - diff_x;
+		if(diff_y < 0) abs_diff_y = - diff_y;
+		
+		if(abs_diff_x > abs_diff_y) {
+			if (diff_x > 0 && can_left) next_move = LEFT_ARROW;
+			else if(can_right) next_move = RIGHT_ARROW;
+		} 
+		else { // abs_diff_y >= abs_diff_x
+			if (diff_y > 0 && can_up) next_move = UP_ARROW;
+			else if(can_down) next_move = DOWN_ARROW;
+		}
+		
+		if(!crazy_mode) return next_move;
+		else {
+			switch(next_move) {
+				case LEFT_ARROW:
+					return RIGHT_ARROW;
+				case RIGHT_ARROW:
+					return LEFT_ARROW;
+				case UP_ARROW:
+					return DOWN_ARROW;
+				case DOWN_ARROW:
+					return UP_ARROW;
+				default:
+					return 0;
+			}
+		}
 	}
 	
 	if(path_amount == 1) {
@@ -227,7 +265,6 @@ int max_index(int v1, int v2, int v3, int v4) {
 void nobbin_creator(){
 	int i,lowest_dead_nobbin=-1,n;
 
-	
 	while(1) {
 		sleept(SECONDT*5);
 		while(gameMap.monster_max_amount>0) {

@@ -67,6 +67,19 @@ void restore_ints(){
 			sys_imp[i].newisr = Int8Save;
 		}
 	}
+	
+	asm {
+	  CLI
+	  PUSH AX
+	  MOV AL,036h
+	  OUT 43h,AL
+	  MOV AX,65500
+	  OUT 40h,AL
+	  MOV AL,AH
+	  OUT 40h,AL 
+	  POP AX
+	  STI
+	} // asm
 }
 
 void setup_interrupts(){
@@ -107,6 +120,7 @@ void kill_xinu(int* sched_arr_pid ){
 	background_music();
 	no_sound();
 	setup_clean_screen();
+	restore_ints();
 	xdone();
 	asm INT 27; // terminate xinu
 	return;
