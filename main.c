@@ -60,7 +60,7 @@ void displayer() {
 		for(j = 0; j < COLUMNS; j++)
 			gameMap.level_map[i][j] = levels[gameMap.level_id][i][j];
 	}
-	upd_draw_digger(player);
+	upd_draw_digger();
 	disp_draw_map();
 	while (1) {
 		receive();

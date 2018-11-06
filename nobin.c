@@ -235,6 +235,9 @@ int max_index(int v1, int v2, int v3, int v4) {
 void nobbin_creator(){
 	int i,lowest_dead_nobbin=-1,n,ps;
 
+	sprintf(debug_str,"nobbin_creator- %d", all_enemys_created);
+	send(debug,debug_str);
+	
 	all_enemys_created = 0;
 	while(gameMap.monster_max_amount>0) {
 		disp_draw_pixel_with_char(0, 69, BABY_BG, ' ');

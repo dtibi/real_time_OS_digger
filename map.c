@@ -357,7 +357,7 @@ void disp_draw_area(int y, int x) {
 	}
 }
 
-void upd_draw_digger(Digger player) {
+void upd_draw_digger() {
 	int x = column_2_pixel(player.x), y = row_2_pixel(player.y);
 	int direction = player.direction;
 	
@@ -545,7 +545,6 @@ void score_lives_updater(){
 	int input;
 	while(1){
 		input = receive();
-		continue;
 		if(input==-1){
 			disp_draw_lives(player.lives);
 		} else {
@@ -607,8 +606,8 @@ void disp_draw_map(){
 			else if (gameMap.level_map[i][j]==DIAMOND) upd_draw_diamond(i,j);
 			else if (gameMap.level_map[i][j]==GOLD_BAG) {upd_draw_dirt(i,j);upd_draw_bag(i,j);}
 			else if (gameMap.level_map[i][j]==EMPTY) {upd_draw_empty(i,j,1);} 
-			//else if (gameMap.level_map[i][j]==DIGGER) {upd_draw_digger(player);} 
-			else if (gameMap.level_map[i][j]==NOBBIN) {upd_draw_digger(player);} 
+			//else if (gameMap.level_map[i][j]==DIGGER) {upd_draw_digger();} 
+			else if (gameMap.level_map[i][j]==NOBBIN) {upd_draw_digger();} 
 			disp_draw_cube(i,j);
 		}
 		//printf("|\n");
@@ -627,8 +626,8 @@ void upd_draw_map(){
 			else if (gameMap.level_map[i][j]==DIAMOND) upd_draw_diamond(i,j);
 			else if (gameMap.level_map[i][j]==GOLD_BAG) {upd_draw_dirt(i,j);upd_draw_bag(i,j);}
 			else if (gameMap.level_map[i][j]==EMPTY) {upd_draw_empty(i,j,1);} 
-			//else if (gameMap.level_map[i][j]==DIGGER) {upd_draw_digger(player);} 
-			else if (gameMap.level_map[i][j]==NOBBIN) {upd_draw_digger(player);} 
+			//else if (gameMap.level_map[i][j]==DIGGER) {upd_draw_digger();} 
+			else if (gameMap.level_map[i][j]==NOBBIN) {upd_draw_digger();} 
 		}
 		//printf("|\n");
 	}
@@ -769,11 +768,12 @@ void disp_next_level() {
 		}
 		else gameMap.monster_max_amount = monster_max_count[gameMap.level_id];
 		
-		restart_digger((Digger*)(&player));
 		disable(ps);
 		setup_clean_screen();
 		create_map(gameMap.level_id);
 		upd_draw_map();
+		restart_digger();
+		upd_draw_digger();
 		restore(ps);
 	}
 	else { //the player finished all the levels- won the game! 
