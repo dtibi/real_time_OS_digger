@@ -152,6 +152,10 @@ xmain() {
 	int i,j;
 	player = create_digger();
 	setup_clean_screen();
+	setup_interrupts();
+	disp_draw_welcome();
+	beethoven();
+	
 	create_map(0);
 	
 	disp_draw_map();
@@ -179,7 +183,6 @@ xmain() {
 			xdone();
 	}
 	receiver_pid = recvpid;
-	setup_interrupts();
     schedule(4,5, dispid, 1,  dig_uppid, 2, mon_uppid, 3,nob_uppid,4);
 	
 	return (OK);

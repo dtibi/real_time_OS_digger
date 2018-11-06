@@ -105,74 +105,73 @@ void background_music(){
 	
 	int i;
 	
-	while(1){
-		
-		my_delay(1,0);
-		sound(A4S);
-		my_delay(2,1);
-		
-		for(i = 0; i < 2; i++){
-			no_sound();
-			my_delay(2,1);
-			sound(A4S);
-			my_delay(1,1);
-			no_sound();
-			my_delay(2,0);
-			sound(A4S);
-			my_delay(1,1);
-			no_sound();
-			my_delay(1,0);
-			sound(A4S);
-			my_delay(1,1);
-			sound(G4S);
-			my_delay(1,1);
-			sound(A4S);
-			my_delay(1,1);
-			no_sound();
-			my_delay(2,0);
-			sound(A4S);
-			my_delay(2,1);
-		}
-		
+	my_delay(1,0);
+	sound(A4S);
+	my_delay(2,1);
+	
+	for(i = 0; i < 2; i++){
 		no_sound();
-		my_delay(2,1);
-		
-		sound(C5S);
 		my_delay(2,1);
 		sound(A4S);
-		my_delay(1,1);
-		no_sound();
-		my_delay(1,1);
-		sound(G4S);
-		my_delay(2,1);
-		sound(F4S);
-		my_delay(1,1);
-		
-		no_sound();
-		my_delay(1,1);
-		
-		sound(D4S);
 		my_delay(1,1);
 		no_sound();
 		my_delay(2,0);
-		sound(D4S);
-		my_delay(1,1);
-		sound(F4);
-		my_delay(1,1);
-		sound(F4S);
+		sound(A4S);
 		my_delay(1,1);
 		no_sound();
 		my_delay(1,0);
-		sound(D4S);
+		sound(A4S);
 		my_delay(1,1);
-		
+		sound(G4S);
+		my_delay(1,1);
+		sound(A4S);
+		my_delay(1,1);
 		no_sound();
-				
+		my_delay(2,0);
+		sound(A4S);
+		my_delay(2,1);
 	}
+	
+	no_sound();
+	my_delay(2,1);
+	
+	sound(C5S);
+	my_delay(2,1);
+	sound(A4S);
+	my_delay(1,1);
+	no_sound();
+	my_delay(1,1);
+	sound(G4S);
+	my_delay(2,1);
+	sound(F4S);
+	my_delay(1,1);
+	
+	no_sound();
+	my_delay(1,1);
+	
+	sound(D4S);
+	my_delay(1,1);
+	no_sound();
+	my_delay(2,0);
+	sound(D4S);
+	my_delay(1,1);
+	sound(F4);
+	my_delay(1,1);
+	sound(F4S);
+	my_delay(1,1);
+	no_sound();
+	my_delay(1,0);
+	sound(D4S);
+	my_delay(1,1);
+	no_sound();
+	sound(A4S);
+	my_delay(2,1);
+	no_sound();
+	my_delay(2,1);
+			
 }
 
 void beethoven(){
-	while(1){
 		sound(E4);
 		my_delay(1,1);
 		no_sound();
@@ -258,7 +257,6 @@ void beethoven(){
 		my_delay(1,1);
 		no_sound();
 		my_delay(1,1);
-	}
 }
 
 void play_death(){
