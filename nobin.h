@@ -14,6 +14,7 @@ typedef struct enemy {
 	char direction; 
 	int is_hobin;
 	long last_time_hobin;
+	char is_alive;
 } Enemy;
 
 void move_nobbin(int i);
@@ -21,7 +22,7 @@ void move_enemies();
 void kill_all_enemys();
 int find_direction_to_digger(Enemy enemy);
 int find_path_to_digger_len(int xE, int yE, int direction);
-Enemy create_enemy(int i);
+Enemy create_enemy();
 void kill_enemy(int i);
 void nobbin_creator();
 int number_of_live_enemys();

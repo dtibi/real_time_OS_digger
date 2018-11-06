@@ -110,8 +110,6 @@ void updater() {
 		if(!player.is_alive) digger_death_flow();
 		if(pressed) {
 			button_sc = ch_arr;
-			sprintf(debug_str,"next_avl_procces_id=%d",new_pid());
-			send(debug,debug_str);
 			if(button_sc == SPACE_BAR){
 				if ((time_from_start - player.last_time_shot) / SECONDT >= gameMap.digger_reload_time){
 					player.last_time_shot = time_from_start;
@@ -131,6 +129,23 @@ void updater() {
   }
 }
 
+void nobbin_updater() {
+	int i, j, direction, button_sc;
+	while(1) {
+		receive();
+		sleept((int)((SECONDT/FACTOR)+(SECONDT/FACTOR)*gameMap.monster_speed));
+		disp_draw_pixel_with_char(0,66,BROWN_BG, ' ');
+		for (i=0;i<ENEMY_COUNT;i++) {	
+			if(enemys[i].is_alive) {
+				move_nobbin(i);
+				sprintf(debug_str,"enemy %d is beeing moved",i);
+				send(debug,debug_str);
+			}
+		}
+		disp_draw_pixel_with_char(0,66,BLACK_BG, ' ');
+  }
+}
+
 
 
 xmain() {
@@ -145,7 +160,8 @@ xmain() {
 	
 	resume(dispid = create(displayer, INITSTK, INITPRIO, "DISPLAYER", 0));
 	resume(recvpid = create(receiver, INITSTK, INITPRIO+3, "RECIVEVER", 0));
-	resume(dig_uppid = create(updater, INITSTK, INITPRIO, "UPDATER", 0));
+	resume(dig_uppid = create(updater, INITSTK, INITPRIO, "dUPDATER", 0));
+	resume(nob_uppid = create(nobbin_updater, INITSTK, INITPRIO, "nUPDATER", 0));
 	resume(debug = create(refresh_debug_map, INITSTK, INITPRIO + 3, "debug_line",0));
 	resume( sound_effects_pid = create(sound_effects,INITSTK,INITPRIO+1,"sound_effects_pid",0));
 	resume( score_lives_pid = create(score_lives_updater,INITSTK,INITPRIO+3,"score_lives_updating",0));
@@ -164,7 +180,7 @@ xmain() {
 	}
 	receiver_pid = recvpid;
 	setup_interrupts();
-    schedule(3,4, dispid, 1,  dig_uppid, 2, mon_uppid, 3);
+    schedule(4,5, dispid, 1,  dig_uppid, 2, mon_uppid, 3,nob_uppid,4);
 	
 	return (OK);
 }

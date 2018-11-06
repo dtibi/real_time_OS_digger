@@ -547,7 +547,6 @@ void score_lives_updater(){
 	int input;
 	while(1){
 		input = receive();
-		continue;
 		if(input==-1){
 			disp_draw_lives(player.lives);
 		} else {
@@ -742,6 +741,7 @@ void create_map(int level_id) { //char level_map[ROWS][COLUMNS], int level_id) {
 			gameMap.level_map[i][j] = levels[level_id][i][j];
 		}
 	}
+	for(i=0;i<ENEMY_COUNT;i++)enemys[i]=create_enemy();
 	gameMap.monster_start_amount = monster_count[level_id];
 	gameMap.monster_max_amount = monster_max_count[level_id];
 	gameMap.monster_become_angry_time = become_hobin[level_id];
@@ -757,7 +757,7 @@ void create_map(int level_id) { //char level_map[ROWS][COLUMNS], int level_id) {
 
 void stop_crazy_mode() {
 	crazy_mode=0;
-	gameMap.monster_speed+=DELTA_SPEED;
+	gameMap.monster_speed+=2*DELTA_SPEED;
 	upd_draw_map();
 }
 
@@ -825,19 +825,18 @@ void fireball_advance(int y, int x, int direction){
 	if(get_object_in_direction(y,x, direction) == NOBBIN || get_object_in_direction(y,x, direction) == HOBBIN){
 		for(i = 0; i < ENEMY_COUNT; i++){
 			if((enemys[i].y == y + deltaY) && (enemys[i].x == x + deltaX)){
-					
+					kill_enemy(i);
 					send(score_lives_pid, DEAD_ENEMY_SCORE);			
 					send(sound_effects_pid,1);
 					upd_draw_empty(y + deltaY, x + deltaX,1);
 					upd_draw_cherry(enemys[i].y, enemys[i].x);
-					kill_enemy(i);
 					if(number_of_live_enemys() == 0 && all_enemys_created) disp_next_level();
 					break;
 			}
 		}
 	}
 	if(gameMap.level_map[y][x] != DIGGER)
-		upd_draw_empty(y,x,1);
+		upd_draw_empty(y,x,1); 
 }
 
 
