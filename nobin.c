@@ -82,6 +82,7 @@ int find_direction_to_digger(Enemy enemy) {
 	int can_right, can_left, can_up, can_down, path_amount;
 	int len_right = MAX_PATH_LEN, len_left = MAX_PATH_LEN, len_up = MAX_PATH_LEN, len_down = MAX_PATH_LEN, min_path_index;
 	int next_move;
+	int diff_x, diff_y, abs_diff_x, abs_diff_y;
 	
 	can_right = move_is_possible(enemy.y, enemy.x, RIGHT_ARROW, enemy.is_hobin);
 	can_left = move_is_possible(enemy.y, enemy.x, LEFT_ARROW, enemy.is_hobin);
@@ -92,6 +93,28 @@ int find_direction_to_digger(Enemy enemy) {
 	if(is_digger_next_to_me(enemy.y, enemy.x) && !crazy_mode) {
 		player.is_alive = 0;
 		return is_digger_next_to_me(enemy.y, enemy.x);
+	}
+	
+	if (enemy.is_hobin) {
+		diff_x = enemy.x - player.x;
+		diff_y = enemy.y - player.y;
+		
+		if(abs_diff_x > abs_diff_y) {
+			if (diff_x > 0)
+				if(can_right) return RIGHT_ARROW;
+			else if(can_left) return LEFT_ARROW;
+		} 
+		else {
+			if (diff_y > 0) if(can_up) return UP_ARROW;
+			else if(can_down) return DOWN_ARROW;
+		}
+		
+		if (can_right) return RIGHT_ARROW;
+		else if(can_left) return LEFT_ARROW;
+		else if(can_up) return UP_ARROW;
+		else if(can_down) return DOWN_ARROW;
+		
+		return 0;
 	}
 	
 	if(path_amount == 1) {
