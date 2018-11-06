@@ -23,6 +23,7 @@
 #define PURPLE_BG 80
 #define BROWN_BG 96
 #define GRAY_BG 0x70
+#define BLINK_BG 0x8
 #define BROWN_ON_RED 70
 #define GREEN_ON_BLACK 2
 #define BROWN_ON_BLACK 6
@@ -68,6 +69,7 @@ typedef struct map {
 	int monster_speed;
 	float time_to_hobbin;
 	float time_of_hobbin;
+	float crazy_mode_time;
 	} Map;
 
 extern Map gameMap;
@@ -114,7 +116,8 @@ int monster_max_count [NUMBER_OF_LEVELS] = { 8, 10, 15 };
 int become_hobin [NUMBER_OF_LEVELS] = { 90,60,60  };
 int hobin_time [NUMBER_OF_LEVELS] = { 15,20,30  };
 int digger_time [NUMBER_OF_LEVELS] = { 2,4,7};
-float digger_speed [NUMBER_OF_LEVELS] = { 0.0,0.0,0.2};
+int crazy_mode_time [NUMBER_OF_LEVELS] = { 15 , 10 , 5 };
+float digger_speed [NUMBER_OF_LEVELS] = { 0.0 ,0.0,0.2};
 float monster_speed [NUMBER_OF_LEVELS] = { 1.0,0.6,0.6};
 void setup_clean_screen();
 void disp_draw_map();
@@ -144,4 +147,6 @@ void refresh_map();
 void draw_debug_line(char* str);
 void refresh_debug_map();
 void restart_game();
+void stop_crazy_mode();
+void start_crazy_mode();
 #endif

@@ -15,6 +15,7 @@ Digger create_digger() {
 	player.lives = 3;
 	player.score = 0;
 	player.last_time_shot = 0;
+	player.last_time_cherry = 0;
 	return player;
 }
 
@@ -48,7 +49,8 @@ void move_digger( int direction) {
 	if (obj_in_direction == CHERRY) { //cherry found
 		send(score_lives_pid, CHERRY_SCORE);
 		send(sound_effects_pid,3);
-		crazy_mode = 1;
+		start_crazy_mode();
+		player.last_time_cherry = tod;
 	}
 	
 	if((obj_in_direction == HOBBIN || obj_in_direction == NOBBIN) && crazy_mode) {

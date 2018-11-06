@@ -12,6 +12,7 @@ char* debug_str;
 int enemys_pid[ENEMY_COUNT];
 int enemys_int[ENEMY_COUNT];
 int enemys_proccess_is_alive[ENEMY_COUNT];
+int blink=0;
 
 
 void draw_debug_line(char *str) {
@@ -45,11 +46,12 @@ void setup_clean_screen() {
 void disp_draw_pixel_with_char(int row, int col, char color, char ch) {
 	unsigned int screen_address = start_address + row * 10; 
 	int col_2 = col * 2;
-	char c = ch;
+	char c = ch,add_blink=8;
 	if (row < 0 || row >= ROWS_PIXELS || col < 0 || col >= COLUMNS_PIXELS) {
 		printf("WARNING! skipping illegal screen address  x:%d , y:%d color:%d , char:%c \n", col, row,color,ch);
 		return;
 	}
+	if(crazy_mode) color = color | add_blink;
 	
 	asm {
 		PUSH AX
@@ -748,16 +750,29 @@ void create_map(int level_id) { //char level_map[ROWS][COLUMNS], int level_id) {
 	gameMap.digger_reload_time=digger_time[level_id];
 	gameMap.digger_speed = digger_speed[level_id];
 	gameMap.monster_speed = monster_speed[level_id];
+	gameMap.crazy_mode_time = crazy_mode_time[level_id];
 	
 }
 
+
+void stop_crazy_mode() {
+	crazy_mode=0;
+	gameMap.monster_speed+=DELTA_SPEED;
+	upd_draw_map();
+}
+
+void start_crazy_mode() {
+	crazy_mode=1;
+	gameMap.monster_speed-=DELTA_SPEED;
+	upd_draw_map();
+}
 void disp_next_level() {
 	int ps;
 
 	gameMap.level_id++;
 	
 	if(gameMap.level_id < NUMBER_OF_LEVELS) {
-		crazy_mode=0;
+		stop_crazy_mode();
 		if (all_enemys_created==0){
 			disable(ps);
 			if(kill(nobbin_creator_pid)==SYSERR) printf("could not kill nobbin_creator!!!");

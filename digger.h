@@ -9,6 +9,7 @@ typedef struct digger {
 	char lives;
 	int score;
 	long last_time_shot;
+	long last_time_cherry;
 	} Digger;
 
 void move_digger(int direction);
