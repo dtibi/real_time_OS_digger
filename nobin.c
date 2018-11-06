@@ -225,24 +225,28 @@ int max_index(int v1, int v2, int v3, int v4) {
 }
 
 void nobbin_creator(){
-	int i,lowest_dead_nobbin=-1,n,ps;
+	int i,lowest_dead_nobbin=-1,n;
 
-	all_enemys_created = 0;
-	while(gameMap.monster_max_amount>0) {
-		disp_draw_pixel_with_char(0, 69, BABY_BG, ' ');
-		n = number_of_live_enemys();
-		if (n<gameMap.monster_start_amount){
-			lowest_dead_nobbin = get_lowest_dead_nobbin();
-			if(lowest_dead_nobbin>=0) {
-				enemys[lowest_dead_nobbin] = create_enemy();
-				enemys[lowest_dead_nobbin].is_alive=1;
-				gameMap.monster_max_amount--;
-			}
-		}
-		disp_draw_pixel_with_char(0, 69, BLACK_BG, ' ');
+	
+	while(1) {
 		sleept(SECONDT*5);
+		while(gameMap.monster_max_amount>0) {
+			disp_draw_pixel_with_char(0, 69, BABY_BG, ' ');
+			all_enemys_created = 0;
+			n = number_of_live_enemys();
+			if (n<gameMap.monster_start_amount){
+				lowest_dead_nobbin = get_lowest_dead_nobbin();
+				if(lowest_dead_nobbin>=0) {
+					enemys[lowest_dead_nobbin] = create_enemy();
+					enemys[lowest_dead_nobbin].is_alive=1;
+					gameMap.monster_max_amount--;
+				}
+			}
+			disp_draw_pixel_with_char(0, 69, BLACK_BG, ' ');
+			sleept(SECONDT*5);
+		}
+		all_enemys_created = 1;
 	}
-	all_enemys_created = 1;
 }
 
 int get_lowest_dead_nobbin() {

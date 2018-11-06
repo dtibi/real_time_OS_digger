@@ -26,7 +26,7 @@ void restart_digger() {
 	player.direction = LEFT_ARROW;
 	player.is_alive = 1;
 	player.last_time_shot = 0;
-	upd_draw_digger(player);
+	upd_draw_digger();
 }
 
 //change the location or the direction of the digger base on its current location(if it's possible) and direction
@@ -51,27 +51,29 @@ void move_digger(int direction) {
 			send(sound_effects_pid,3);
 			start_crazy_mode();
 			player.last_time_cherry = tod;
-		} else if((obj_in_direction == HOBBIN || obj_in_direction == NOBBIN) && crazy_mode) { //the digger ate cherry that still efetcts him, and he found HOBBIN or NOBBIN
-			//check which one of the enemys was found and kill it
-			if(direction == LEFT_ARROW)
-				deltaX = -1;
-			else if(direction == UP_ARROW)
-				deltaY = -1;
-			else if(direction == RIGHT_ARROW)
-				deltaX = 1;
-			else //direction == RIGHT_DOWN
-				deltaY = 1;
-			
-			for(i = 0; i < ENEMY_COUNT; i++){
-				if((enemys[i].y == player.y + deltaY) && (enemys[i].x == player.x + deltaX)) {
-						upd_draw_empty(enemys[i].y, enemys[i].x, 1);
-						send(score_lives_pid, DEAD_ENEMY_SCORE);
-						kill_enemy(i);
-						
-						send(sound_effects_pid,1);
-						if(number_of_live_enemys() == 0 && all_enemys_created) disp_next_level();
+		}
+		else if((obj_in_direction == HOBBIN || obj_in_direction == NOBBIN)) { //the digger found HOBBIN or NOBBIN
+			if (crazy_mode) { //the digger ate cherry that still efetcts him
+				//check which one of the enemys was found and kill it
+				if(direction == LEFT_ARROW)
+					deltaX = -1;
+				else if(direction == UP_ARROW)
+					deltaY = -1;
+				else if(direction == RIGHT_ARROW)
+					deltaX = 1;
+				else //direction == RIGHT_DOWN
+					deltaY = 1;
+				
+				for(i = 0; i < ENEMY_COUNT; i++){
+					if((enemys[i].y == player.y + deltaY) && (enemys[i].x == player.x + deltaX)) {
+							upd_draw_empty(enemys[i].y, enemys[i].x, 1);
+							send(score_lives_pid, DEAD_ENEMY_SCORE);
+							kill_enemy(i);
+							send(sound_effects_pid,1);
+							if(number_of_live_enemys() == 0 && all_enemys_created) disp_next_level();
+					}
 				}
-			}
+			} else player.is_alive = 0;
 		}
 		
 		else if (obj_in_direction == GOLD_BAG) //gold sack found
@@ -107,7 +109,7 @@ void move_digger(int direction) {
 		}
 		
 		//gold nugets found
-		else if (obj_in_direction >= GOLD+2 && obj_in_direction <= GOLD+5) send(score_lives_pid, (obj_in_direction-GOLD)*GOLD_NUGGET_SCORE);
+		else if (obj_in_direction >= GOLD+2 && obj_in_direction <= GOLD+5) send(score_lives_pid, (obj_in_direction-GOLD) * GOLD_NUGGET_SCORE);
 		
 		//change the location of the digger, base on the direction and the current location
 		switch (direction) {
@@ -135,7 +137,7 @@ void move_digger(int direction) {
 		}
 	}
 	
-	upd_draw_digger(player);
+	upd_draw_digger();
 }
 
 //the actions that need to be done when the digger died
@@ -143,13 +145,7 @@ void digger_death_flow() {
 	int ps;
 	
 	kill_all_enemys(); //kill all the enemys prosess  
-	if(all_enemys_created) {
-		resume( nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
-		if (nobbin_creator_pid == SYSERR ) {
-			printf("ERROR! could not create 1 of xmain proccesses");
-			xdone();
-		}
-	}
+		
 	//take one live of the digger and check if he have more lives
 	player.lives--;
 	send(score_lives_pid, -1);

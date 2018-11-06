@@ -136,7 +136,7 @@ void disp_draw_area(int y, int x);
 void disp_draw_lives(int lives);
 void score_lives_updater();
 void disp_draw_score(int score);
-void upd_draw_digger(Digger player);
+void upd_draw_digger();
 void disp_draw_cube(int i,int j);
 int  move_is_possible(int y, int x, int direction, int i_can_dig);
 void gold_falling(int y, int x);
