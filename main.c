@@ -111,8 +111,8 @@ void updater() {
 		if(pressed) {
 			button_sc = ch_arr;
 			if(button_sc == SPACE_BAR){
-				if ((time_from_start - player.last_time_shot) / SECONDT >= gameMap.digger_reload_time){
-					player.last_time_shot = time_from_start;
+				if ((tod - player.last_time_shot) / SECONDT >= gameMap.digger_reload_time){
+					player.last_time_shot = tod;
 					send(sound_effects_pid,4);
 					resume(create(fireball_advance, INITSTK, INITPRIO+1, "weapon_fired", 3 ,player.y ,player.x ,player.direction));
 					continue;

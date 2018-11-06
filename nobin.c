@@ -11,7 +11,7 @@ Enemy create_enemy() {
 	enemy.y = 0;
 	enemy.direction = LEFT_ARROW;
 	enemy.is_hobin = 0;
-	enemy.last_time_hobin=time_from_start;
+	enemy.last_time_hobin=tod;
 	enemy.is_alive=0;
 	return enemy;
 }
@@ -20,15 +20,15 @@ void move_nobbin(int i){
 	int  direction, obj_in_direction,ps;
 	disp_draw_pixel_with_char(0,50+i,RED_BG, ' ');
 	if (!enemys[i].is_hobin) {
-		if((time_from_start-enemys[i].last_time_hobin)/SECONDT >= gameMap.monster_become_angry_time) {
+		if((tod-enemys[i].last_time_hobin)/SECONDT >= gameMap.monster_become_angry_time) {
 			enemys[i].is_hobin=1;
-			enemys[i].last_time_hobin=time_from_start;
+			enemys[i].last_time_hobin=tod;
 		}
 
 	} else {
-		if((time_from_start-enemys[i].last_time_hobin)/SECONDT >= gameMap.monster_angry_for_time) {
+		if((tod-enemys[i].last_time_hobin)/SECONDT >= gameMap.monster_angry_for_time) {
 			enemys[i].is_hobin=0;
-			enemys[i].last_time_hobin=time_from_start;
+			enemys[i].last_time_hobin=tod;
 		}
 	}
 	direction = find_direction_to_digger(enemys[i]);
@@ -201,7 +201,7 @@ int find_path_to_digger_len(int xE, int yE, int direction) {
 		}
 		
 		else if (path_amount == 3 || path_amount == 4) {
-			rand = time_from_start%4;
+			rand = tod%4;
 			
 			try_up:
 			if (rand == 0) {

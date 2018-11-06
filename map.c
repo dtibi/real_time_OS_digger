@@ -716,7 +716,7 @@ void gold_falling(int i,int j){
 			obj = get_object_in_direction(y,x,DOWN_ARROW);
 		}
 		if(counter>1){
-			gold_chunks=time_from_start%4+2;
+			gold_chunks=tod%4+2;
 			upd_draw_open_bag(y,x,gold_chunks);
 		}
 		else upd_draw_bag(y,x);
