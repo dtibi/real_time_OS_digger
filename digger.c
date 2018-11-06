@@ -146,15 +146,14 @@ void move_digger(int direction) {
 void digger_death_flow() {
 	int ps;
 	
-	if (all_enemys_created == 0) { //if not all the enemys were created, the nobbin_creator proses need to be killed
-		disable(ps);
-		if(kill(nobbin_creator_pid)==SYSERR) printf("could not kill nobbin_creator!!!");
-		if(proctab[nobbin_creator_pid].pstate==PRSLEEP) ready(nobbin_creator_pid);
-		restore(ps);
-	}
-	
 	kill_all_enemys(); //kill all the enemys prosess  
-	
+	if(all_enemys_created) {
+		resume( nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
+		if (nobbin_creator_pid == SYSERR ) {
+			printf("ERROR! could not create 1 of xmain proccesses");
+			xdone();
+		}
+	}
 	//take one live of the digger and check if he have more lives
 	player.lives--;
 	send(score_lives_pid, -1);
@@ -163,9 +162,7 @@ void digger_death_flow() {
 		return;
 	}
 	
-	//recreate the nobbin_creator proses
 	gameMap.monster_max_amount = monster_max_count[gameMap.level_id];
-	resume(nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
 	
 	//grave and sound effects
 	send(sound_effects_pid, 0);
