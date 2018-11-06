@@ -15,6 +15,7 @@ Digger create_digger() {
 	player.lives = 3;
 	player.score = 0;
 	player.last_time_shot = 0;
+	player.last_time_cherry = 0;
 	return player;
 }
 
@@ -40,20 +41,16 @@ void move_digger(int direction) {
 	else {
 		obj_in_direction = get_object_in_direction(y, x, direction);
 		
-		if (!move_is_possible(y, x, direction, 1))
-			return;
-
+		if (!move_is_possible(y, x, direction, 1))	return;
 		else if (obj_in_direction == DIAMOND) { //diamond found
 			send(score_lives_pid, DIAMOND_SCORE);
 			send(sound_effects_pid, 2);
 			if(count_diamonds() - 1 == 0) disp_next_level(); //check if all the diamonds were taken
-		}
-		
-		else if (obj_in_direction == CHERRY) { //cherry found
+		} else if (obj_in_direction == CHERRY) { //cherry found
 			send(score_lives_pid, CHERRY_SCORE);
 			send(sound_effects_pid,3);
-			crazy_mode = 1;
-			//send(crazy_mode_count_pid); //TODO: add proses crazy_mode_count
+			start_crazy_mode();
+			player.last_time_cherry = tod;
 		}
 		
 		else if((obj_in_direction == HOBBIN || obj_in_direction == NOBBIN)) { //the digger found HOBBIN or NOBBIN

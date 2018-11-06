@@ -75,13 +75,13 @@ void displayer() {
 			}
 		}
 		
-		for (i=0; i<ROWS; i++) {
+		/* for (i=0; i<ROWS; i++) {
 			for(j=0;j<COLUMNS; j++) {
 				if(gameMap.level_map[i][j] == DIGGER) continue;
 				c = gameMap.level_map[i][j] + '0';
 				disp_draw_pixel_with_char(row_2_pixel(i)+(HEIGHT/2),column_2_pixel(j)+(WIDTH/2),BLACK_BG,c);
 			}
-		} 
+		}  */
 
 		
 		disp_draw_pixel_with_char(0, 70, BLACK_BG, ' ');
@@ -123,7 +123,10 @@ void updater() {
 				move_digger(button_sc);
 			}
 		}
-		
+		if (crazy_mode && (tod-player.last_time_cherry)/SECONDT >= gameMap.crazy_mode_time ) {
+			stop_crazy_mode();
+			crazy_mode = 0;
+		}
 		disp_draw_pixel_with_char(0,68,BLACK_BG, ' ');
   }
 }
