@@ -52,7 +52,6 @@ void move_digger(int direction) {
 			start_crazy_mode();
 			player.last_time_cherry = tod;
 		}
-		
 		else if((obj_in_direction == HOBBIN || obj_in_direction == NOBBIN)) { //the digger found HOBBIN or NOBBIN
 			if (crazy_mode) { //the digger ate cherry that still efetcts him
 				//check which one of the enemys was found and kill it
@@ -74,9 +73,7 @@ void move_digger(int direction) {
 							if(number_of_live_enemys() == 0 && all_enemys_created) disp_next_level();
 					}
 				}
-			}
-			
-			else player.is_alive = 0;
+			} else player.is_alive = 0;
 		}
 		
 		else if (obj_in_direction == GOLD_BAG) //gold sack found
@@ -148,13 +145,6 @@ void digger_death_flow() {
 	int ps;
 	
 	kill_all_enemys(); //kill all the enemys prosess  
-	if(all_enemys_created) {
-		resume( nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
-		if (nobbin_creator_pid == SYSERR ) {
-			printf("ERROR! could not create 1 of xmain proccesses");
-			xdone();
-		}
-	}
 		
 	//take one live of the digger and check if he have more lives
 	player.lives--;
