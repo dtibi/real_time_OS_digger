@@ -773,13 +773,17 @@ void disp_next_level() {
 	
 	if(gameMap.level_id < NUMBER_OF_LEVELS) {
 		stop_crazy_mode();
-		if (all_enemys_created==0){
-			disable(ps);
-			if(kill(nobbin_creator_pid)==SYSERR) printf("could not kill nobbin_creator!!!");
-			if(proctab[nobbin_creator_pid].pstate==PRSLEEP) ready(nobbin_creator_pid);
-			restore(ps);
-		}
+		
 		kill_all_enemys();
+		
+		if(all_enemys_created) {
+			resume( nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
+			if (nobbin_creator_pid == SYSERR ) {
+				printf("ERROR! could not create 1 of xmain proccesses");
+				xdone();
+			}
+		}
+		else gameMap.monster_max_amount = monster_max_count[gameMap.level_id];
 		
 		restart_digger((Digger*)(&player));
 		disable(ps);
@@ -787,7 +791,6 @@ void disp_next_level() {
 		create_map(gameMap.level_id);
 		upd_draw_map();
 		restore(ps);
-		resume(nobbin_creator_pid = create(nobbin_creator,INITSTK,INITPRIO,"nobbin_creator",0));
 	}
 	else { //the player finished all the levels- won the game! 
 		setup_clean_screen();

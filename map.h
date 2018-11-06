@@ -44,7 +44,6 @@
 #define DIGGER 99
 #define DEAD_DIGGER 100
 
-
 #define DIAMOND_SCORE 25
 #define GOLD_NUGGET_SCORE 100
 #define DEAD_ENEMY_SCORE 250

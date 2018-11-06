@@ -2,8 +2,8 @@
 #include "nobin.h"
 #include "map.h"
 #include "myints.h"
-int all_enemys_created = 0;
 
+int all_enemys_created = 0;
 
 Enemy create_enemy(int i) { 
 	int ps;
@@ -27,7 +27,6 @@ void move_nobbin(int i){
 	int  direction, obj_in_direction,ps;
 	while(1) {
 		sleept((int)((SECONDT/FACTOR)+(SECONDT/FACTOR)*gameMap.monster_speed));
-		if (enemys_proccess_is_alive[i]==0) return;
 		disp_draw_pixel_with_char(0,50+i,RED_BG, ' ');
 		if (!enemys[i].is_hobin) {
 			if((time_from_start-enemys[i].last_time_hobin)/SECONDT >= gameMap.monster_become_angry_time) {
@@ -56,6 +55,7 @@ void move_nobbin(int i){
 		}
 		
 		upd_draw_empty(enemys[i].y, enemys[i].x, 1);
+		
 		switch (direction) {
 			case LEFT_ARROW:
 				enemys[i].x--;
@@ -70,6 +70,7 @@ void move_nobbin(int i){
 				enemys[i].y--;
 				break;
 		}
+		if (enemys_proccess_is_alive[i]==0) return;
 		
 		if(enemys[i].is_hobin) upd_draw_hobbin(enemys[i].y,enemys[i].x,enemys[i].direction);
 		else upd_draw_nobbin(enemys[i].y,enemys[i].x);
@@ -261,16 +262,7 @@ int get_lowest_dead_nobbin() {
 }
 
 void kill_enemy(int i){
-	int ps;
-	SYSCALL kill_status = OK;
-	disable(ps);
-	if(enemys_proccess_is_alive[i]==1){
-		kill_status = kill(enemys_pid[i]);
-		if (kill_status==SYSERR) printf("could not kill pid:%d",enemys_pid[i]);
-		if(proctab[enemys_pid[i]].pstate==PRSLEEP) ready(enemys_pid[i]);
-		enemys_proccess_is_alive[i]=0;
-	}
-	restore(ps);
+	enemys_proccess_is_alive[i] = 0;
 }
 
 void kill_all_enemys() {

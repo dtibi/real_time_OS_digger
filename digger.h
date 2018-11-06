@@ -12,10 +12,11 @@ typedef struct digger {
 	long last_time_cherry;
 	} Digger;
 
-void move_digger(int direction);
-void fire(Digger* player);
 Digger create_digger();
+void restart_digger();
+void move_digger(int direction);
 void digger_death_flow();
-void restart_digger(Digger* player);
+
+//void fire(Digger* player);
 
 #endif
