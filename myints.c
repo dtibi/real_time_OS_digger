@@ -100,6 +100,8 @@ void kill_xinu(int* sched_arr_pid ){
 		kill(sched_arr_pid[i]);
 	} 
 	sleept(SECONDT);
+	disp_draw_game_over();
+	background_music();
 	no_sound();
 	setup_clean_screen();
 	restore_ints();

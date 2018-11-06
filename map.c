@@ -597,6 +597,267 @@ void disp_draw_score(int score){
 		disp_draw_pixel_with_char(0, i, 2, ch_score[i]);
 }
 
+void upd_draw_letter(int j, int i, char letter) {
+	int x = column_2_pixel(i),y=row_2_pixel(j);
+	switch (letter) {
+		case 'w':
+			gameMap.pixel_map[y][x][0] = '|';
+			gameMap.pixel_map[y][x][1] = RED_BG;
+			gameMap.pixel_map[y+1][x][0] = '|';
+			gameMap.pixel_map[y+1][x][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+1][0] = '\\';
+			gameMap.pixel_map[y+2][x+1][1] = RED_BG;
+			gameMap.pixel_map[y][x+4][0] = '|';
+			gameMap.pixel_map[y][x+4][1] = RED_BG;
+			gameMap.pixel_map[y+1][x+4][0] = '|';
+			gameMap.pixel_map[y+1][x+4][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+3][0] = '/';
+			gameMap.pixel_map[y+2][x+3][1] = RED_BG;
+			gameMap.pixel_map[y+1][x+2][0] = '^';
+			gameMap.pixel_map[y+1][x+2][1] = RED_BG;
+			break;
+		case 'e':
+			x++;
+			gameMap.pixel_map[y][x][0] = 'r';
+			gameMap.pixel_map[y][x][1] = RED_BG;
+			gameMap.pixel_map[y+1][x][0] = '|';
+			gameMap.pixel_map[y+1][x][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+1][0] = '-';
+			gameMap.pixel_map[y+2][x+1][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+2][0] = '-';
+			gameMap.pixel_map[y+2][x+2][1] = RED_BG;
+			gameMap.pixel_map[y][x+2][0] = '-';
+			gameMap.pixel_map[y][x+2][1] = RED_BG;
+			gameMap.pixel_map[y][x+1][0] = '-';
+			gameMap.pixel_map[y][x+1][1] = RED_BG;
+			gameMap.pixel_map[y+1][x+2][0] = '-';
+			gameMap.pixel_map[y+1][x+2][1] = RED_BG;
+			gameMap.pixel_map[y+2][x][0] = 'L';
+			gameMap.pixel_map[y+2][x][1] = RED_BG;
+			gameMap.pixel_map[y+1][x+1][0] = '-';
+			gameMap.pixel_map[y+1][x+1][1] = RED_BG;
+			break;
+		case 'l':
+			x++;
+			gameMap.pixel_map[y][x][0] = '|';
+			gameMap.pixel_map[y][x][1] = RED_BG;
+			gameMap.pixel_map[y+1][x][0] = '|';
+			gameMap.pixel_map[y+1][x][1] = RED_BG;
+			gameMap.pixel_map[y+2][x][0] = 'L';
+			gameMap.pixel_map[y+2][x][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+1][0] = '-';
+			gameMap.pixel_map[y+2][x+1][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+2][0] = '-';
+			gameMap.pixel_map[y+2][x+2][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+3][0] = '-';
+			gameMap.pixel_map[y+2][x+3][1] = RED_BG;
+			break;
+		case 'c':
+			x++;
+			gameMap.pixel_map[y][x][0] = 'r';
+			gameMap.pixel_map[y][x][1] = RED_BG;
+			gameMap.pixel_map[y+1][x][0] = '|';
+			gameMap.pixel_map[y+1][x][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+1][0] = '-';
+			gameMap.pixel_map[y+2][x+1][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+2][0] = '-';
+			gameMap.pixel_map[y+2][x+2][1] = RED_BG;
+			gameMap.pixel_map[y][x+2][0] = '-';
+			gameMap.pixel_map[y][x+2][1] = RED_BG;
+			gameMap.pixel_map[y][x+1][0] = '-';
+			gameMap.pixel_map[y][x+1][1] = RED_BG;
+			gameMap.pixel_map[y+2][x][0] = 'L';
+			gameMap.pixel_map[y+2][x][1] = RED_BG;
+			break;
+		case 'o':
+			x++;
+			gameMap.pixel_map[y][x][0] = 'r';
+			gameMap.pixel_map[y][x][1] = RED_BG;
+			gameMap.pixel_map[y+1][x][0] = '|';
+			gameMap.pixel_map[y+1][x][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+1][0] = '-';
+			gameMap.pixel_map[y+2][x+1][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+2][0] = 'J';
+			gameMap.pixel_map[y+2][x+2][1] = RED_BG;
+			gameMap.pixel_map[y][x+2][0] = '7';
+			gameMap.pixel_map[y][x+2][1] = RED_BG;
+			gameMap.pixel_map[y][x+1][0] = '-';
+			gameMap.pixel_map[y][x+1][1] = RED_BG;
+			gameMap.pixel_map[y+2][x][0] = 'L';
+			gameMap.pixel_map[y+2][x][1] = RED_BG;
+			gameMap.pixel_map[y+1][x+2][0] = '|';
+			gameMap.pixel_map[y+1][x+2][1] = RED_BG;
+			break;
+		case 'm':
+			x+=4;
+			y+=2;
+			gameMap.pixel_map[y][x][0] = '|';
+			gameMap.pixel_map[y][x][1] = RED_BG;
+			gameMap.pixel_map[y-1][x][0] = '|';
+			gameMap.pixel_map[y-1][x][1] = RED_BG;
+			gameMap.pixel_map[y-2][x-1][0] = '|';
+			gameMap.pixel_map[y-2][x-1][1] = RED_BG;
+			gameMap.pixel_map[y][x-4][0] = '|';
+			gameMap.pixel_map[y][x-4][1] = RED_BG;
+			gameMap.pixel_map[y-1][x-4][0] = '|';
+			gameMap.pixel_map[y-1][x-4][1] = RED_BG;
+			gameMap.pixel_map[y-2][x-3][0] = '|';
+			gameMap.pixel_map[y-2][x-3][1] = RED_BG;
+			gameMap.pixel_map[y-1][x-2][0] = 'V';
+			gameMap.pixel_map[y-1][x-2][1] = RED_BG;
+			break;
+		case 'a':
+			gameMap.pixel_map[y][x][0] = 'r';
+			gameMap.pixel_map[y][x][1] = RED_BG;
+			gameMap.pixel_map[y+1][x][0] = '|';
+			gameMap.pixel_map[y+1][x][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+1][0] = '-';
+			gameMap.pixel_map[y+2][x+1][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+2][0] = 'L';
+			gameMap.pixel_map[y+2][x+2][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+3][0] = '_';
+			gameMap.pixel_map[y+2][x+3][1] = RED_BG;
+			gameMap.pixel_map[y][x+2][0] = '7';
+			gameMap.pixel_map[y][x+2][1] = RED_BG;
+			gameMap.pixel_map[y][x+1][0] = '-';
+			gameMap.pixel_map[y][x+1][1] = RED_BG;
+			gameMap.pixel_map[y+2][x][0] = 'L';
+			gameMap.pixel_map[y+2][x][1] = RED_BG;
+			gameMap.pixel_map[y+1][x+2][0] = '|';
+			gameMap.pixel_map[y+1][x+2][1] = RED_BG;
+			break;
+		case 'g':
+			x++;
+			gameMap.pixel_map[y][x][0] = 'r';
+			gameMap.pixel_map[y][x][1] = RED_BG;
+			gameMap.pixel_map[y+1][x][0] = '|';
+			gameMap.pixel_map[y+1][x][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+1][0] = '-';
+			gameMap.pixel_map[y+2][x+1][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+2][0] = 'J';
+			gameMap.pixel_map[y+2][x+2][1] = RED_BG;
+			gameMap.pixel_map[y][x+1][0] = '-';
+			gameMap.pixel_map[y][x+1][1] = RED_BG;
+			gameMap.pixel_map[y+2][x][0] = 'L';
+			gameMap.pixel_map[y+2][x][1] = RED_BG;
+			gameMap.pixel_map[y+1][x+2][0] = 'T';
+			gameMap.pixel_map[y+1][x+2][1] = RED_BG;
+			break;
+		case 'v':
+			x++;
+			gameMap.pixel_map[y][x][0] = '|';
+			gameMap.pixel_map[y][x][1] = RED_BG;
+			gameMap.pixel_map[y+1][x][0] = '|';
+			gameMap.pixel_map[y+1][x][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+1][0] = 'V';
+			gameMap.pixel_map[y+2][x+1][1] = RED_BG;
+			gameMap.pixel_map[y][x+2][0] = '|';
+			gameMap.pixel_map[y][x+2][1] = RED_BG;
+			gameMap.pixel_map[y+1][x+2][0] = '|';
+			gameMap.pixel_map[y+1][x+2][1] = RED_BG;
+			break;
+		case 'r':
+			x++;
+			gameMap.pixel_map[y][x][0] = '|';
+			gameMap.pixel_map[y][x][1] = RED_BG;
+			gameMap.pixel_map[y][x+1][0] = '-';
+			gameMap.pixel_map[y][x+1][1] = RED_BG;
+			gameMap.pixel_map[y][x+2][0] = '>';
+			gameMap.pixel_map[y][x+2][1] = RED_BG;
+			gameMap.pixel_map[y+1][x][0] = '|';
+			gameMap.pixel_map[y+1][x][1] = RED_BG;
+			gameMap.pixel_map[y+2][x][0] = '|';
+			gameMap.pixel_map[y+2][x][1] = RED_BG;
+			gameMap.pixel_map[y+1][x+1][0] = '<';
+			gameMap.pixel_map[y+1][x+1][1] = RED_BG;
+			gameMap.pixel_map[y][x+2][0] = '|';
+			gameMap.pixel_map[y][x+2][1] = RED_BG;
+			gameMap.pixel_map[y+1][x+2][0] = '|';
+			gameMap.pixel_map[y+1][x+2][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+2][0] = '\\';
+			gameMap.pixel_map[y+2][x+2][1] = RED_BG;
+			break;
+		case 't':
+			x++;
+			gameMap.pixel_map[y][x][0] = '-';
+			gameMap.pixel_map[y][x][1] = RED_BG;
+			gameMap.pixel_map[y][x+1][0] = 'T';
+			gameMap.pixel_map[y][x+1][1] = RED_BG;
+			gameMap.pixel_map[y][x+2][0] = '-';
+			gameMap.pixel_map[y][x+2][1] = RED_BG;
+			gameMap.pixel_map[y+1][x+1][0] = '|';
+			gameMap.pixel_map[y+1][x+1][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+1][0] = '|';
+			gameMap.pixel_map[y+2][x+1][1] = RED_BG;
+			break;
+		case 'i':
+			x+=2;
+			gameMap.pixel_map[y][x][0] = '|';
+			gameMap.pixel_map[y][x][1] = RED_BG;
+			gameMap.pixel_map[y+1][x][0] = '|';
+			gameMap.pixel_map[y+1][x][1] = RED_BG;
+			gameMap.pixel_map[y+2][x][0] = '|';
+			gameMap.pixel_map[y+2][x][1] = RED_BG;
+			break;
+		case 'd':
+			x++;
+			gameMap.pixel_map[y][x][0] = 'r';
+			gameMap.pixel_map[y][x][1] = RED_BG;
+			gameMap.pixel_map[y+1][x][0] = '|';
+			gameMap.pixel_map[y+1][x][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+1][0] = '-';
+			gameMap.pixel_map[y+2][x+1][1] = RED_BG;
+			gameMap.pixel_map[y+2][x+2][0] = 'J';
+			gameMap.pixel_map[y+2][x+2][1] = RED_BG;
+			gameMap.pixel_map[y][x+2][0] = '7';
+			gameMap.pixel_map[y][x+2][1] = RED_BG;
+			gameMap.pixel_map[y][x+1][0] = '-';
+			gameMap.pixel_map[y][x+1][1] = RED_BG;
+			gameMap.pixel_map[y+2][x][0] = 'L';
+			gameMap.pixel_map[y+2][x][1] = RED_BG;
+			gameMap.pixel_map[y+1][x+2][0] = '|';
+			gameMap.pixel_map[y+1][x+2][1] = RED_BG;
+			break;
+	}
+	
+	
+}
+
+void disp_draw_game_over(){
+	int i,j;
+	crazy_mode=1;
+	for (i=0; i<ROWS; i++) {
+		//printf("i:%d-",i);
+		for(j=0;j<COLUMNS; j++) {
+			//printf("j:%d",j);
+			gameMap.refresh_map[i][j]=1;
+			upd_draw_empty(i,j,0);
+			upd_draw_letter(i,j,game_over[i][j]);
+			disp_draw_cube(i,j);
+		}
+		//printf("|\n");
+	}
+	crazy_mode=0;
+	return;
+}
+
+void disp_draw_welcome(){
+	int i,j;
+	crazy_mode=1;
+	for (i=0; i<ROWS; i++) {
+		//printf("i:%d-",i);
+		for(j=0;j<COLUMNS; j++) {
+			//printf("j:%d",j);
+			gameMap.refresh_map[i][j]=1;
+			upd_draw_empty(i,j,0);upd_draw_letter(i,j,welcome[i][j]);		
+			disp_draw_cube(i,j);
+		}
+		//printf("|\n");
+	}
+	crazy_mode=0;
+	return;
+}
+
 void disp_draw_map(){
 	int i,j;
 	for (i=0; i<ROWS; i++) {
@@ -610,6 +871,16 @@ void disp_draw_map(){
 			else if (gameMap.level_map[i][j]==EMPTY) {upd_draw_empty(i,j,1);} 
 			//else if (gameMap.level_map[i][j]==DIGGER) {upd_draw_digger();} 
 			else if (gameMap.level_map[i][j]==NOBBIN) {upd_draw_digger();} 
+			else if (gameMap.level_map[i][j]=='w') {upd_draw_empty(i,j,0);upd_draw_letter(i,j,gameMap.level_map[i][j]);} 
+			else if (gameMap.level_map[i][j]=='e') {upd_draw_empty(i,j,0);upd_draw_letter(i,j,gameMap.level_map[i][j]);} 
+			else if (gameMap.level_map[i][j]=='l') {upd_draw_empty(i,j,1);upd_draw_letter(i,j,gameMap.level_map[i][j]);} 
+			else if (gameMap.level_map[i][j]=='c') {upd_draw_empty(i,j,1);upd_draw_letter(i,j,gameMap.level_map[i][j]);} 
+			else if (gameMap.level_map[i][j]=='o') {upd_draw_empty(i,j,1);upd_draw_letter(i,j,gameMap.level_map[i][j]);} 
+			else if (gameMap.level_map[i][j]=='m') {upd_draw_empty(i,j,1);upd_draw_letter(i,j,gameMap.level_map[i][j]);} 
+			else if (gameMap.level_map[i][j]=='a') {upd_draw_empty(i,j,1);upd_draw_letter(i,j,gameMap.level_map[i][j]);} 
+			else if (gameMap.level_map[i][j]=='g') {upd_draw_empty(i,j,1);upd_draw_letter(i,j,gameMap.level_map[i][j]);} 
+			else if (gameMap.level_map[i][j]=='v') {upd_draw_empty(i,j,1);upd_draw_letter(i,j,gameMap.level_map[i][j]);} 
+			else if (gameMap.level_map[i][j]=='r') {upd_draw_empty(i,j,1);upd_draw_letter(i,j,gameMap.level_map[i][j]);} 		
 			disp_draw_cube(i,j);
 		}
 		//printf("|\n");
@@ -789,7 +1060,7 @@ void disp_next_level() {
 	else { //the player finished all the levels- won the game! 
 		setup_clean_screen();
 		printf(debug_str, "You WON with score of %d!", player.score);
-		sleept(SECONDT*3);
+		sleept(SECONDT*4);
 		send(terminate_xinu_pid);
 	}
 }
