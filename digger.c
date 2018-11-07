@@ -33,8 +33,6 @@ void restart_digger() {
 void move_digger(int direction) {	
 	int x = player.x, y = player.y, obj_in_direction, gold_pid, ps, deltaX=0, deltaY=0, i;
 	
-	sleept((int)((SECONDT/FACTOR)+(SECONDT/FACTOR)*gameMap.digger_speed));
-	
 	//check if the wanted move direction is diffrent from the current
 	if(direction != player.direction) player.direction = direction;
 	

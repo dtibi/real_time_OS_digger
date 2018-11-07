@@ -10,18 +10,6 @@ extern struct intmap far *sys_imp;
 
 
 char ch_arr;
-
-LOCAL new_pid()
-{
-	int	pid;			/* process id to return		*/
-	int	i;
-
-	for (i=1 ; i<NPROC ; i++) {	/* check all NPROC slots	*/
-		if (proctab[i].pstate == PRFREE)
-			return i;
-	}
-	return(SYSERR);
-}
  
 SYSCALL schedule(int no_of_pids, int cycle_length, int pid1, ...) {
 	int i,j;
@@ -126,7 +114,6 @@ void nobbin_updater() {
 	int i, j, direction, button_sc;
 	while(1) {
 		receive();
-		sleept((int)((SECONDT/FACTOR)+(SECONDT/FACTOR)*gameMap.monster_speed));
 		disp_draw_pixel_with_char(0,66,BROWN_BG, ' ');
 		for (i=0;i<ENEMY_COUNT;i++) {	
 			if(enemys[i].is_alive) {

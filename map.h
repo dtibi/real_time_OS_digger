@@ -58,14 +58,11 @@ typedef struct map {
 	int level_id;
 	char pixel_map[ROWS_PIXELS][COLUMNS_PIXELS][2];
 	char refresh_map[ROWS][COLUMNS];
-	int diamond_amount;
 	int monster_start_amount;
 	int monster_max_amount;
 	long monster_become_angry_time;
 	long monster_angry_for_time;
 	long digger_reload_time;
-	float digger_speed;
-	float monster_speed;
 	float time_to_hobbin;
 	float time_of_hobbin;
 	float crazy_mode_time;
@@ -74,8 +71,6 @@ typedef struct map {
 extern Map gameMap;
 extern Digger player;
 extern Enemy enemys[ENEMY_COUNT];
-extern int enemys_pid[ENEMY_COUNT];
-extern int enemys_proccess_is_alive[ENEMY_COUNT];
 extern int crazy_mode;
 extern char* debug_str;
 
@@ -138,8 +133,6 @@ int become_hobin [NUMBER_OF_LEVELS] = { 90,60,60  };
 int hobin_time [NUMBER_OF_LEVELS] = { 15,20,30  };
 int digger_time [NUMBER_OF_LEVELS] = { 2,4,7};
 int crazy_mode_time [NUMBER_OF_LEVELS] = { 15 , 10 , 5 };
-float digger_speed [NUMBER_OF_LEVELS] = { 0.0 ,0.0,0.2};
-float monster_speed [NUMBER_OF_LEVELS] = { 0.8,0.6,0.6};
 void setup_clean_screen();
 void disp_draw_map();
 void disp_draw_welcome();

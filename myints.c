@@ -32,12 +32,12 @@ INTPROC MyISR9(int mdevno) {
 	
 	//check if one of the arrows key or space was pressed
 	if (scan == LEFT_ARROW || scan == UP_ARROW || scan == RIGHT_ARROW || scan == DOWN_ARROW || scan == SPACE_BAR) result = scan;
-	else if (scan == 46) {
+	else if (scan == 46) {//check if 'c' was clicked
 		send(terminate_xinu_pid);
 		return(OK);
 	}
 	
-	//check if 'c' was clicked
+	//debug proccess table calling butller if '2' key is pressed
 	else if(scan == 3){
 		setup_clean_screen();
 		send(butlerpid, MSGPSNAP);
