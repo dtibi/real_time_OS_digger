@@ -2,15 +2,16 @@
 #include "map.h"
 #include "sound.h"
 
-int dig_uppid,mon_uppid, dispid, recvpid, nob_uppid,debug,gold_falling_pid,sound_effects_pid,score_lives_pid,terminate_xinu_pid,nobbin_creator_pid,receiver_pid;
-long tod=0;
-int num_of_pids,pressed_flag=0,pressed=0;
+int dig_uppid, mon_uppid, dispid, recvpid, nob_uppid, debug, gold_falling_pid, sound_effects_pid, score_lives_pid, terminate_xinu_pid, nobbin_creator_pid, receiver_pid;
+long tod = 0;
+int num_of_pids, pressed_flag=0, pressed=0;
 
 INTPROC (*Int9Save)(int);
 
+//ISR 9 handler- only when pressed get the scancode of the key 
 INTPROC MyISR9(int mdevno) {	
-	char scan=0,ascii=0,result=mdevno;
-	disp_draw_pixel_with_char(0,71,RED_BG, ' ');
+	char scan = 0, ascii = 0, result = mdevno;
+	disp_draw_pixel_with_char(0, 71, RED_BG, ' ');
 	asm {
 	  PUSH AX
 	  MOV AH,1
@@ -21,39 +22,41 @@ INTPROC MyISR9(int mdevno) {
 	  MOV BYTE PTR scan,AH
 	  MOV BYTE PTR ascii,AL
 	  POP AX
-	} //asm
+	}
 	
-	if (scan == LEFT_ARROW) result = LEFT_ARROW;
-	else if (scan == UP_ARROW) result = UP_ARROW;
-	else if (scan == RIGHT_ARROW) result = RIGHT_ARROW;
-	else if (scan == DOWN_ARROW) result = DOWN_ARROW;
-	else if (scan == SPACE_BAR) result = SPACE_BAR;
+	//check if one of the arrows key or space was pressed
+	if (scan == LEFT_ARROW || scan == UP_ARROW || scan == RIGHT_ARROW || scan == DOWN_ARROW || scan == SPACE_BAR) result = scan;
 	else if (scan == 46) {
 		send(terminate_xinu_pid);
 		return(OK);
 	}
-	else result = -1;
 	
-	if(scan==3){
+	//check if 'c' was clicked
+	else if(scan == 3){
 		setup_clean_screen();
 		send(butlerpid, MSGPSNAP);
 	}
+	
+	else result = -1;
+	
 	Skip1:
-	if(pressed_flag==1 && scan==0) result=0;
-	if (scan==0) pressed_flag=1;
+	if(pressed_flag == 1 && scan == 0) result = 0;
+	if (scan == 0) pressed_flag=1;
 	else pressed_flag=0; 
-	if(result!=-1) send(receiver_pid, result); 
+	
+	if(result != -1) send(receiver_pid, result); //send the scan code if it's not -1
+	
 	disp_draw_pixel_with_char(0,71,BLACK_BG, ' ');
 	return (OK);
 
-} // new_int9
+}
 
-void restore_ints(){
+//restore the interupts to original
+void restore_ints() {
 	int i;
-	for(i=0; i < 32; i++){
-		if (sys_imp[i].ivec == 9){
-			sys_imp[i].newisr = Int9Save;
-		}
+	
+	for(i = 0; i < 32; i++) {
+		if (sys_imp[i].ivec == 9) sys_imp[i].newisr = Int9Save;
 	}
 	
 	asm {
@@ -67,11 +70,13 @@ void restore_ints(){
 	  OUT 40h,AL 
 	  POP AX
 	  STI
-	} // asm
+	}
 }
 
-void setup_interrupts(){
+//setup the ISRs handlers
+void setup_interrupts() {
 	int i;
+	
 	asm {
 	  CLI
 	  PUSH AX
@@ -83,22 +88,24 @@ void setup_interrupts(){
 	  OUT 40h,AL 
 	  POP AX
 	  STI
-	} // asm
-	for(i=0; i < 32; i++){
-		if (sys_imp[i].ivec == 9){
-			Int9Save = sys_imp[i].newisr;
-			sys_imp[i].newisr = MyISR9;
+	}
+	
+	for(i=0; i < 32; i++) {
+		if (sys_imp[i].ivec == 9) {
+			Int9Save = sys_imp[i].newisr; //save the original ISR
+			sys_imp[i].newisr = MyISR9; //set the MyISR9 as the ISR 9
 		}
 	}
 }
 
-
-void kill_xinu(int* sched_arr_pid ){
+//execute all the processes, restore the ISR and shut program off
+void kill_xinu(int* sched_arr_pid ) {
 	int i;
+	
 	receive();
-	for(i=0; i < num_of_pids; i++){
+	for(i=0; i < num_of_pids; i++)
 		kill(sched_arr_pid[i]);
-	} 
+	
 	sleept(SECONDT);
 	disp_draw_game_over();
 	background_music();
@@ -109,4 +116,3 @@ void kill_xinu(int* sched_arr_pid ){
 	asm INT 27; // terminate xinu
 	return;
 }
-
