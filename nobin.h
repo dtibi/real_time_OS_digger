@@ -8,7 +8,6 @@
 extern int all_enemys_created;
 
 typedef struct enemy {
-	Digger *digger;
 	int x;
 	int y;
 	char direction; 
@@ -17,14 +16,15 @@ typedef struct enemy {
 	char is_alive;
 } Enemy;
 
+Enemy create_enemy();
 void move_nobbin(int i);
-void move_enemies();
-void kill_all_enemys();
 int find_direction_to_digger(Enemy enemy);
 int find_path_to_digger_len(int xE, int yE, int direction);
-Enemy create_enemy();
-void kill_enemy(int i);
+int min_index(int v1, int v2, int v3, int v4);
+int max_index(int v1, int v2, int v3, int v4);
 void nobbin_creator();
+int get_lowest_dead_nobbin();
+void kill_all_enemys();
 int number_of_live_enemys();
 
 #endif

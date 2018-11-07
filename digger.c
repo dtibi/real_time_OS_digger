@@ -68,7 +68,7 @@ void move_digger(int direction) {
 					if((enemys[i].y == player.y + deltaY) && (enemys[i].x == player.x + deltaX)) {
 							upd_draw_empty(enemys[i].y, enemys[i].x, 1);
 							send(score_lives_pid, DEAD_ENEMY_SCORE);
-							kill_enemy(i);
+							enemys[i].is_alive = 0; //kil enemy
 							send(sound_effects_pid,1);
 							if(number_of_live_enemys() == 0 && all_enemys_created) disp_next_level();
 					}
