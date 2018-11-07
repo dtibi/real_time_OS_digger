@@ -1028,15 +1028,13 @@ void create_map(int level_id) { //char level_map[ROWS][COLUMNS], int level_id) {
 
 void stop_crazy_mode() {
 	crazy_mode=0;
-	gameMap.monster_speed+=DELTA_SPEED;
-	printf("%fl",gameMap.monster_speed);
+	sched_arr_int[2] = MONSTER_80;
 	upd_draw_map();
 }
 
 void start_crazy_mode() {
 	crazy_mode=1;
-	gameMap.monster_speed-=DELTA_SPEED;
-	sprintf("                                      mon_speed= %fl",gameMap.monster_speed);
+	sched_arr_int[2] = MONSTER_120; // changes the monster speed cycle
 	upd_draw_map();
 }
 void disp_next_level() {

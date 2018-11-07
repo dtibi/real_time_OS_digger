@@ -64,7 +64,7 @@ int mdevno;				/* minor device number		*/
 
        for(i=0; i < gno_of_pids; i++) 
        {
-          if(point_in_cycle == sched_arr_int[i])
+          if(point_in_cycle%sched_arr_int[i]==0)
             {
              noresched_send(sched_arr_pid[i], 11);
              resched_flag = 1;

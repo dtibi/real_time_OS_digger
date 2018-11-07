@@ -5,13 +5,6 @@
 #include "myints.c"
 
 
-int sched_arr_pid[10];
-int sched_arr_int[10];
-int point_in_cycle;
-int gcycle_length;
-int gno_of_pids;
-
-
 extern SYSCALL  sleept(int);
 extern struct intmap far *sys_imp;
 
@@ -183,7 +176,7 @@ xmain() {
 			xdone();
 	}
 	receiver_pid = recvpid;
-    schedule(3,5, dispid, 1,  dig_uppid, 2, nob_uppid,4);
+    schedule(3,SECONDT, dispid, SECONDT/10,  dig_uppid, DIGGER_SPEED, nob_uppid,MONSTER_80);
 	
 	return (OK);
 }

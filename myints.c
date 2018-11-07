@@ -6,6 +6,12 @@ int dig_uppid,mon_uppid, dispid, recvpid, nob_uppid,debug,gold_falling_pid,sound
 long tod=0;
 int num_of_pids,pressed_flag=0,pressed=0;
 
+int sched_arr_pid[10];
+int sched_arr_int[10];
+int point_in_cycle;
+int gcycle_length;
+int gno_of_pids;
+
 INTPROC (*Int9Save)(int);
 
 INTPROC MyISR9(int mdevno) {	
