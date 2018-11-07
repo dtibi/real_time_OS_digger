@@ -12,7 +12,7 @@ Enemy create_enemy() {
 	enemy.y = 0;
 	enemy.direction = LEFT_ARROW;
 	enemy.is_hobin = 0;
-	enemy.last_time_hobin = time_from_start;
+	enemy.last_time_hobin = tod;
 	enemy.is_alive = 0;
 	return enemy;
 }
@@ -23,16 +23,16 @@ void move_nobbin(int i) {
 	
 	disp_draw_pixel_with_char(0,50+i,RED_BG, ' ');
 	if (!enemys[i].is_hobin) { //if the enemy is nobin
-		if((time_from_start - enemys[i].last_time_hobin) / SECONDT >= gameMap.monster_become_angry_time) { //check if the nobin need to become hobin
+		if((tod - enemys[i].last_time_hobin) / SECONDT >= gameMap.monster_become_angry_time) { //check if the nobin need to become hobin
 			enemys[i].is_hobin = 1;
-			enemys[i].last_time_hobin = time_from_start;
+			enemys[i].last_time_hobin = tod;
 		}
 
 	} 
 	else { //if the enemy is hobin
-		if((time_from_start - enemys[i].last_time_hobin)/SECONDT >= gameMap.monster_angry_for_time) { //check if the hobin need to become nobin
+		if((tod - enemys[i].last_time_hobin)/SECONDT >= gameMap.monster_angry_for_time) { //check if the hobin need to become nobin
 			enemys[i].is_hobin=0;
-			enemys[i].last_time_hobin = time_from_start;
+			enemys[i].last_time_hobin = tod;
 		}
 	}
 	
@@ -214,7 +214,7 @@ int find_path_to_digger_len(int xE, int yE, int direction) {
 		
 		//if there are 3 or 4 posible paths take randomaly one of the posible path(that will not get you back)
 		else if (path_amount == 3 || path_amount == 4) {
-			rand = time_from_start % 4;
+			rand = tod % 4;
 			
 			try_up:
 			if (rand == 0) {

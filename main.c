@@ -111,8 +111,8 @@ void updater() {
 		if(pressed) {
 			button_sc = ch_arr;
 			if(button_sc == SPACE_BAR){
-				if ((time_from_start - player.last_time_shot) / SECONDT >= gameMap.digger_reload_time){
-					player.last_time_shot = time_from_start;
+				if ((tod - player.last_time_shot) / SECONDT >= gameMap.digger_reload_time){
+					player.last_time_shot = tod;
 					send(sound_effects_pid,4);
 					resume(create(fireball_advance, INITSTK, INITPRIO+1, "weapon_fired", 3 ,player.y ,player.x ,player.direction));
 					continue;
@@ -152,6 +152,10 @@ xmain() {
 	int i,j;
 	player = create_digger();
 	setup_clean_screen();
+	setup_interrupts();
+	disp_draw_welcome();
+	beethoven();
+	
 	create_map(0);
 	
 	disp_draw_map();
@@ -179,8 +183,7 @@ xmain() {
 			xdone();
 	}
 	receiver_pid = recvpid;
-	setup_interrupts();
-    schedule(4,5, dispid, 1,  dig_uppid, 2, mon_uppid, 3,nob_uppid,4);
+    schedule(3,5, dispid, 1,  dig_uppid, 2, nob_uppid,4);
 	
 	return (OK);
 }

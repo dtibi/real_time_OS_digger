@@ -3,11 +3,10 @@
 #include "sound.h"
 
 int dig_uppid,mon_uppid, dispid, recvpid, nob_uppid,debug,gold_falling_pid,sound_effects_pid,score_lives_pid,terminate_xinu_pid,nobbin_creator_pid,receiver_pid;
-long time_from_start=0;
+long tod=0;
 int num_of_pids,pressed_flag=0,pressed=0;
 
 INTPROC (*Int9Save)(int);
-INTPROC (*Int8Save) (int);
 
 INTPROC MyISR9(int mdevno) {	
 	char scan=0,ascii=0,result=mdevno;
@@ -49,22 +48,11 @@ INTPROC MyISR9(int mdevno) {
 
 } // new_int9
 
-
-INTPROC MyISR8(int mdevno) {
-    Int8Save(mdevno);
-	time_from_start++;
-	
-	return(OK);
-} // newint8(void)
-
 void restore_ints(){
 	int i;
 	for(i=0; i < 32; i++){
 		if (sys_imp[i].ivec == 9){
 			sys_imp[i].newisr = Int9Save;
-		}
-		if (sys_imp[i].ivec == 8){
-			sys_imp[i].newisr = Int8Save;
 		}
 	}
 	
@@ -101,10 +89,6 @@ void setup_interrupts(){
 			Int9Save = sys_imp[i].newisr;
 			sys_imp[i].newisr = MyISR9;
 		}
-		if (sys_imp[i].ivec == 8){
-			Int8Save = sys_imp[i].newisr;
-			sys_imp[i].newisr = MyISR8;
-		}
 	}
 }
 
@@ -116,6 +100,8 @@ void kill_xinu(int* sched_arr_pid ){
 		kill(sched_arr_pid[i]);
 	} 
 	sleept(SECONDT);
+	disp_draw_game_over();
+	background_music();
 	no_sound();
 	setup_clean_screen();
 	restore_ints();

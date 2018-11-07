@@ -64,8 +64,8 @@ typedef struct map {
 	long monster_become_angry_time;
 	long monster_angry_for_time;
 	long digger_reload_time;
-	int digger_speed;
-	int monster_speed;
+	float digger_speed;
+	float monster_speed;
 	float time_to_hobbin;
 	float time_of_hobbin;
 	float crazy_mode_time;
@@ -81,7 +81,7 @@ extern char* debug_str;
 
 
 //unsigned static int start_address = 0xB800; //B800h
-static char levels [NUMBER_OF_LEVELS][ROWS][COLUMNS] = {{
+static char levels [NUMBER_OF_LEVELS+1][ROWS][COLUMNS] = {{
 	{0 , 1 , 3 , 1 , 3 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 0 , 0},
 	{0 , 2 , 2 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 3 , 1},
 	{0 , 2 , 2 , 1 , 1 , 2 , 3 , 1 , 1 , 1 , 1 , 1 , 1 , 0 , 1 , 1},
@@ -108,7 +108,29 @@ static char levels [NUMBER_OF_LEVELS][ROWS][COLUMNS] = {{
 	{1 , 2 , 2 , 1 , 1 , 2 , 1 , 0 , 1 , 2 , 1 , 1 , 1 , 1 , 1 , 1},
 	{2 , 1 , 1 , 1 , 1 , 2 , 1 , 0 , 1 , 2 , 1 , 1 , 1 , 1 , 1 , 2},
 	{2 , 2 , 1 , 1 , 1 , 2 , 1 , 0 , 1 , 2 , 1 , 1 , 1 , 1 , 2 , 2} 
-}};
+}
+};	
+
+static char welcome[ROWS][COLUMNS] = {
+	{0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
+	{0 , 'w' , 'e' , 'l' , 'c' , 'o' , 'm' , 'e' , 0 , 0 , 't' , 'o' , 0 , 0 , 0 , 0},
+	{0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
+	{0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
+	{0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
+	{0 , 0 , 0 , 'd' , 'i' , 'g' , 'g' , 'e' , 'r' , 0 , 0 , 0 , 0 , 0 , 0 , 0},
+	{0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
+	{0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0}};
+	
+static char game_over[ROWS][COLUMNS] = {
+	{0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
+	{0 , 'g' , 'a' , 'm' , 'e' , 0 , 0 , 'o' , 'v' , 'e' , 'r' , 0 , 0 , 0 , 0 , 0 },
+	{0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
+	{0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
+	{0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
+	{0 , 0 , 0 ,  'd' , 'i' , 'g' , 'g' , 'e' , 'r' , 0 , 0 , 0 , 0 , 0 , 0 , 0},
+	{0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0},
+	{0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0 , 0}};
+	
 	
 int monster_count [NUMBER_OF_LEVELS] = { 5, 5, 10 };
 int monster_max_count [NUMBER_OF_LEVELS] = { 8, 10, 15 };
@@ -117,9 +139,10 @@ int hobin_time [NUMBER_OF_LEVELS] = { 15,20,30  };
 int digger_time [NUMBER_OF_LEVELS] = { 2,4,7};
 int crazy_mode_time [NUMBER_OF_LEVELS] = { 15 , 10 , 5 };
 float digger_speed [NUMBER_OF_LEVELS] = { 0.0 ,0.0,0.2};
-float monster_speed [NUMBER_OF_LEVELS] = { 1.0,0.6,0.6};
+float monster_speed [NUMBER_OF_LEVELS] = { 0.8,0.6,0.6};
 void setup_clean_screen();
 void disp_draw_map();
+void disp_draw_welcome();
 void disp_next_level();
 void create_map(int level_id);
 
@@ -132,6 +155,7 @@ void upd_draw_bag_moving(int i,int j,int direction);
 void upd_draw_empty(int i,int j,int update_map);
 void upd_draw_nobbin(int i, int j);
 void upd_draw_hobbin(int i, int j,int direction);
+void upd_draw_letter(int i, int j, char letter);
 void disp_draw_area(int y, int x);
 void disp_draw_lives(int lives);
 void score_lives_updater();
