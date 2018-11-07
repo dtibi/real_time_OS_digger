@@ -109,7 +109,7 @@ void kill_xinu(int* sched_arr_pid ) {
 	sleept(SECONDT);
 	disp_draw_game_over();
 	background_music();
-	no_sound();
+	change_speaker(OFF);
 	setup_clean_screen();
 	restore_ints();
 	xdone();

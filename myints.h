@@ -23,7 +23,7 @@
 
 extern int num_of_pids, dig_uppid, mon_uppid, dispid, nob_uppid, recvpid, debug, sound_effects_pid, score_lives_pid, terminate_xinu_pid, nobbin_creator_pid, receiver_pid;
 extern long tod;
-extern int num_of_pids, pressed_flag, pressed;
+extern int pressed_flag, pressed;
 extern INTPROC (*Int9Save)(int);
 
 void kill_xinu(int* sched_arr_pid );

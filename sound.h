@@ -23,21 +23,16 @@
 #define C5 	523
 #define C5S 554
 
-
-void my_delay(int n,int type);
+void my_delay(int n, int type);
 void change_speaker(int status);
 void sound(int hertz);
-void no_sound(void);
-void sound_effects(void);
-
-void play_death(void);
-void enemy_killed_sound(void);
-void fire_sound(void);
-void diamond_taken_sound(void);
-void cherry_taken_sound(void);
-
-void beethoven(void);
-
-void background_music(void);
+void background_music();
+void beethoven();
+void play_death();
+void enemy_killed_sound();
+void fire_sound();
+void diamond_taken_sound();
+void cherry_taken_sound();
+void sound_effects();
 
 #endif
