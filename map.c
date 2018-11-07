@@ -915,7 +915,7 @@ void disp_draw_cube(int i,int j){
 void shake_bag(int y, int x,int pid_to_fall){
 	int row_pixel = row_2_pixel(y), column_pixel,j = column_2_pixel(x),p, next=-1;
 	int index[4];
-	disp_draw_pixel_with_char(0,j+2,BLUE_BG,'$');
+	//disp_draw_pixel_with_char(0,j+2,BLUE_BG,'$');
 	gameMap.level_map[y][x] = MOVING_GOLD_BAG;
 	index[0] = j-1; index[1] =  j ; index[2] = j+1 ; index[3] =  j;
 	for (p=0;p<4*3;p++){
@@ -940,13 +940,13 @@ void shake_bag(int y, int x,int pid_to_fall){
 	}	
 	gameMap.refresh_map[y][x] = 1;
 	resume(pid_to_fall);
-	disp_draw_pixel_with_char(0,j+2,GRAY_BG,' ');
+	//disp_draw_pixel_with_char(0,j+2,GRAY_BG,' ');
 	
 }
 
 void gold_falling(int i,int j){
 	int x,y,counter,obj,gold_chunks,ps;	
-	disp_draw_pixel_with_char(0,column_2_pixel(j)+2,GRAY_BG,'$');
+	//disp_draw_pixel_with_char(0,column_2_pixel(j)+2,GRAY_BG,'$');
 	y=i;
 	x=j;
 	obj = get_object_in_direction(y,x,DOWN_ARROW);
@@ -986,7 +986,7 @@ void gold_falling(int i,int j){
 		}
 		else upd_draw_bag(y,x);
 	}
-	disp_draw_pixel_with_char(0,column_2_pixel(j)+2,BLACK_BG,' ');
+	//disp_draw_pixel_with_char(0,column_2_pixel(j)+2,BLACK_BG,' ');
 }
 
 int count_diamonds() {
