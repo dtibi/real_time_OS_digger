@@ -485,15 +485,9 @@ int move_is_possible(int y, int x, int direction, int i_can_dig) {
 	   (direction == RIGHT_ARROW && x + 1 >= COLUMNS ) ||
 	   (direction == LEFT_ARROW  && x - 1 < 0		 ) ) return 0;
 	
-	if (direction != UP_ARROW && direction != DOWN_ARROW && direction != RIGHT_ARROW && direction != LEFT_ARROW) 
-		return 0;
-	
-	if(i_can_dig && obj_in_direction != MOVING_GOLD_BAG)
-		return 1;
-	
-	else{
-		if	(obj_in_direction==EMPTY || obj_in_direction==CHERRY || (obj_in_direction >= GOLD+2 && obj_in_direction <= GOLD+5)) return 1;
-	}
+	if (direction != UP_ARROW && direction != DOWN_ARROW && direction != RIGHT_ARROW && direction != LEFT_ARROW) return 0;
+	else if(i_can_dig && obj_in_direction != MOVING_GOLD_BAG) return 1;
+	else if	(obj_in_direction==EMPTY || obj_in_direction==CHERRY || (obj_in_direction >= GOLD+2 && obj_in_direction <= GOLD+5)) return 1;
 	
 	return 0;
 }
@@ -974,7 +968,7 @@ void gold_falling(int i,int j){
 					if(enemys[i].x==x && enemys[i].y==y+1){
 						upd_draw_empty(y+1,x,1);
 						send(score_lives_pid, DEAD_ENEMY_SCORE);
-						kill_enemy(i);
+						enemys[i].is_alive = 0; //kil enemy
 						if(number_of_live_enemys() == 0 && all_enemys_created) disp_next_level();
 						break;
 					}
@@ -1090,7 +1084,7 @@ void fireball_advance(int y, int x, int direction){
 	if(get_object_in_direction(y,x, direction) == NOBBIN || get_object_in_direction(y,x, direction) == HOBBIN){
 		for(i = 0; i < ENEMY_COUNT; i++){
 			if((enemys[i].y == y + deltaY) && (enemys[i].x == x + deltaX)){
-					kill_enemy(i);
+					enemys[i].is_alive = 0; //kil enemy
 					send(score_lives_pid, DEAD_ENEMY_SCORE);			
 					send(sound_effects_pid,1);
 					upd_draw_empty(y + deltaY, x + deltaX,1);
