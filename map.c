@@ -1012,7 +1012,7 @@ void create_map(int level_id) { //char level_map[ROWS][COLUMNS], int level_id) {
 	gameMap.monster_become_angry_time = become_hobin[level_id];
 	gameMap.monster_angry_for_time = hobin_time[level_id];
 	gameMap.level_id = level_id;
-	gameMap.digger_reload_time=digger_time[level_id];
+	gameMap.digger_reload_time=digger_reload_time[level_id];
 	gameMap.crazy_mode_time = crazy_mode_time[level_id];
 	
 }
